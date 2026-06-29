@@ -1,103 +1,113 @@
-import Image from "next/image";
+import React from "react";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { BlockRenderer } from "@/components/cms/BlockRenderer";
+import { db } from "@/db";
 
-export default function Home() {
+export const revalidate = 60; // ISR validation time
+
+// Predefined mock blocks to render on home page if database hasn't been populated
+const MOCK_HOME_BLOCKS = [
+  {
+    id: "block-1",
+    blockType: "hero",
+    properties: {
+      title: "Sana Amnis Luxury",
+      subtitle: "The Summer Collection 2026",
+      backgroundImage: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600",
+      ctaText: "Discover Now",
+      ctaUrl: "/catalog",
+    },
+  },
+  {
+    id: "block-2",
+    blockType: "rich_text",
+    properties: {
+      title: "Sustainable Elegance",
+      content: "We believe in a slow approach to fashion. Each Sana Amnis piece is crafted using organic fibers, fair trade cashmere, and state-of-the-art weaving technologies. Our design guidelines center on structural geometry, premium fabrics, and timeless, neutral palettes.",
+      alignment: "center",
+    },
+  },
+  {
+    id: "block-3",
+    blockType: "featured_products",
+    properties: {
+      title: "Season Favorites",
+      products: [
+        {
+          id: "1",
+          title: "Amnis Cashmere Overcoat",
+          slug: "amnis-cashmere-overcoat",
+          category: "Coats",
+          price: "185,000",
+          imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600",
+        },
+        {
+          id: "2",
+          title: "Linen Minimalist Kimono",
+          slug: "linen-minimalist-kimono",
+          category: "Outerwear",
+          price: "95,000",
+          imageUrl: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=600",
+        },
+        {
+          id: "3",
+          title: "Silk Ribbed Turtleneck",
+          slug: "silk-ribbed-turtleneck",
+          category: "Knitwear",
+          price: "68,000",
+          imageUrl: "https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?q=80&w=600",
+        },
+        {
+          id: "4",
+          title: "Eco-Wool Pleated Trouser",
+          slug: "eco-wool-pleated-trouser",
+          category: "Trousers",
+          price: "82,000",
+          imageUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=600",
+        },
+      ],
+    },
+  },
+];
+
+export default async function Home() {
+  let blocks: any[] = MOCK_HOME_BLOCKS;
+
+  try {
+    const pageInDb = await db.query.pages.findFirst({
+      where: (pages, { eq }) => eq(pages.slug, "home"),
+      with: {
+        blocks: {
+          orderBy: (blocks, { asc }) => asc(blocks.sortOrder),
+        },
+      },
+    });
+
+    if (pageInDb && pageInDb.blocks && pageInDb.blocks.length > 0) {
+      blocks = pageInDb.blocks.map((b) => ({
+        id: b.id,
+        blockType: b.blockType,
+        properties: b.properties,
+      }));
+    }
+  } catch (err) {
+    console.error("DB query failed in homepage, falling back to mock blocks:", err);
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+    <>
+      <Header />
+      <main className="flex-1 w-full">
+        {blocks.map((block) => (
+          <BlockRenderer
+            key={block.id}
+            blockType={block.blockType}
+            properties={block.properties}
+          />
+        ))}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <Footer />
+    </>
   );
 }

@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 40 20% 98%;
+  --foreground: 133 10% 11%;
+  
+  --card: 40 20% 98%;
+  --card-foreground: 133 10% 11%;
+  
+  --popover: 40 20% 98%;
+  --popover-foreground: 133 10% 11%;
+  
+  --primary: 133 41% 19%;
+  --primary-foreground: 40 20% 98%;
+  
+  --secondary: 129 28% 29%;
+  --secondary-foreground: 40 20% 98%;
+  
+  --muted: 103 10% 94%;
+  --muted-foreground: 133 10% 35%;
+  
+  --accent: 45 65% 49%;
+  --accent-foreground: 133 10% 11%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 103 10% 77%;
+  --input: 103 10% 77%;
+  --ring: 133 41% 19%;
+  
+  --radius: 1.5rem; /* 24px radius specified in Stitch design */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: 133 10% 8%;
+  --foreground: 40 20% 98%;
+  
+  --card: 133 10% 10%;
+  --card-foreground: 40 20% 98%;
+  
+  --popover: 133 10% 10%;
+  --popover-foreground: 40 20% 98%;
+  
+  --primary: 133 41% 25%;
+  --primary-foreground: 40 20% 98%;
+  
+  --secondary: 129 28% 35%;
+  --secondary-foreground: 40 20% 98%;
+  
+  --muted: 103 10% 15%;
+  --muted-foreground: 133 10% 70%;
+  
+  --accent: 45 65% 55%;
+  --accent-foreground: 40 20% 98%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 103 10% 25%;
+  --input: 103 10% 25%;
+  --ring: 133 41% 25%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Manrope", sans-serif;
+  
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 6px);
+  --radius-sm: calc(var(--radius) - 12px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom premium visual classes */
+.glass {
+  background: rgba(250, 249, 246, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(114, 121, 112, 0.1);
+}
+
+.dark .glass {
+  background: rgba(26, 28, 26, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, hsl(133 41% 19%) 0%, hsl(129 28% 29%) 100%);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #ffe08e 0%, #ecc246 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
