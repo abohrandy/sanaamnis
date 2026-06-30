@@ -41,6 +41,9 @@ export default function Header() {
 
           {/* Navigation Links (Pure high-contrast black/green) */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
+            <Link href="/" className="text-black hover:text-[#1d4626] transition-colors !text-black">
+              Home
+            </Link>
             <Link href="/shop" className="text-black hover:text-[#1d4626] transition-colors !text-black">
               Shop
             </Link>
@@ -105,6 +108,9 @@ export default function Header() {
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
           <nav className="md:hidden border-t border-neutral-100 bg-white p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest">
+            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
+              Home
+            </Link>
             <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
               Shop
             </Link>
