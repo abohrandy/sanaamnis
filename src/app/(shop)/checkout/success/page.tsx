@@ -44,7 +44,7 @@ export default async function CheckoutSuccessPage({
 
           <div className="pt-4 border-t border-border/20 flex flex-col gap-3">
             <Link
-              href="/catalog"
+              href="/shop"
               className="py-3 bg-primary text-primary-foreground text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 hover:bg-primary/95 transition-all duration-300"
             >
               Continue Shopping
