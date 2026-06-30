@@ -15,67 +15,72 @@ export default function Header() {
   const isHydrated = useHydrated();
   const rawCount = useCartStore((state) => state.getTotalItems)();
   const cartItemsCount = isHydrated ? rawCount : 0;
-  const { data: session, isPending } = useSession();
-
+  const { data: session } = useSession();
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full glass border-b border-border/40 backdrop-blur-md">
+      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-800">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 -ml-2 text-foreground"
+            className="md:hidden p-2 -ml-2 text-[#1a1c1a] dark:text-white"
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="font-serif text-2xl font-bold tracking-[0.15em] text-foreground hover:text-primary transition-colors">
+            <span className="font-serif text-xl font-bold tracking-[0.2em] text-[#1d4626] dark:text-white transition-colors">
               SANA AMNIS
             </span>
           </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors">
-              Home
+          {/* Navigation Links (Matches Stitch specifications) */}
+          <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold uppercase tracking-widest text-[#424941] dark:text-neutral-300">
+            <Link href="/catalog" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
+              Shop
             </Link>
-            <Link href="/catalog" className="hover:text-foreground transition-colors">
-              Catalog
+            <Link href="/collections" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
+              Collections
+            </Link>
+            <Link href="/recipes" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
+              Recipes
+            </Link>
+            <Link href="/about" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
+              About Us
             </Link>
             {(session?.user as any)?.role === "admin" && (
-              <Link href="/admin" className="text-primary hover:text-primary/80 transition-colors">
+              <Link href="/admin" className="text-[#cea62c] hover:text-[#755b00] transition-colors">
                 Admin Panel
               </Link>
             )}
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-foreground hover:text-primary transition-colors hidden sm:block">
+          <div className="flex items-center gap-4 text-[#1d4626] dark:text-white">
+            <Link href="/search" className="p-2 hover:text-[#cea62c] transition-colors">
               <Search className="w-5 h-5" />
-            </button>
+            </Link>
 
             {/* User Session Action */}
             {session ? (
-              <div className="flex items-center gap-3">
-                <span className="hidden lg:inline text-xs font-medium text-muted-foreground">
-                  Hello, {session.user.name.split(" ")[0]}
-                </span>
+              <div className="flex items-center gap-2">
+                <Link href="/account" className="hidden lg:inline text-[10px] font-bold uppercase tracking-widest text-[#424941] dark:text-neutral-400">
+                  {session.user.name.split(" ")[0]}
+                </Link>
                 <button
                   onClick={() => signOut()}
-                  className="p-2 text-foreground hover:text-primary transition-colors"
+                  className="p-2 hover:text-[#cea62c] transition-colors"
                   title="Sign Out"
                 >
-                  <User className="w-5 h-5 text-primary" />
+                  <User className="w-5 h-5 text-[#cea62c]" />
                 </button>
               </div>
             ) : (
               <Link
                 href="/login"
-                className="p-2 text-foreground hover:text-primary transition-colors"
+                className="p-2 hover:text-[#cea62c] transition-colors"
                 title="Sign In"
               >
                 <User className="w-5 h-5" />
@@ -85,11 +90,11 @@ export default function Header() {
             {/* Shopping Bag Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="p-2 relative text-foreground hover:text-primary transition-colors"
+              className="p-2 relative hover:text-[#cea62c] transition-colors"
             >
               <ShoppingBag className="w-5 h-5" />
               {cartItemsCount > 0 && (
-                <span className="absolute top-0 right-0 w-4 h-4 bg-primary text-primary-foreground text-[9px] font-bold rounded-full flex items-center justify-center transform translate-x-1/3 -translate-y-1/3">
+                <span className="absolute top-0 right-0 w-4 h-4 bg-[#cea62c] text-white text-[9px] font-bold rounded-full flex items-center justify-center transform translate-x-1/3 -translate-y-1/3">
                   {cartItemsCount}
                 </span>
               )}
@@ -99,15 +104,21 @@ export default function Header() {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <nav className="md:hidden border-t border-border/40 bg-card p-6 flex flex-col gap-4 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-foreground py-2 border-b border-border/10">
-              Home
+          <nav className="md:hidden border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest text-[#424941] dark:text-neutral-300">
+            <Link href="/catalog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+              Shop
             </Link>
-            <Link href="/catalog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-foreground py-2 border-b border-border/10">
-              Catalog
+            <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+              Collections
+            </Link>
+            <Link href="/recipes" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+              Recipes
+            </Link>
+            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+              About Us
             </Link>
             {(session?.user as any)?.role === "admin" && (
-              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-primary hover:text-primary/80 py-2">
+              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-[#cea62c] py-2">
                 Admin Panel
               </Link>
             )}

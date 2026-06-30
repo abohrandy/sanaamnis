@@ -5,39 +5,31 @@ import Link from "next/link";
 import { ShoppingBag, SlidersHorizontal } from "lucide-react";
 import { db } from "@/db";
 
-// Fallback high-end products list for demonstration
+// Fallback coconut products list for demonstration
 const MOCK_PRODUCTS = [
   {
     id: "1",
-    title: "Amnis Cashmere Overcoat",
-    slug: "amnis-cashmere-overcoat",
-    category: "Coats",
-    price: "185000",
-    imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600",
+    title: "Extra Virgin Coconut Oil",
+    slug: "extra-virgin-coconut-oil",
+    category: "Organic Wellness",
+    price: "15000",
+    imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLtEqIT_GCpHNQ86QNj1d3bPOlvb9nkQc6svZvyYlyg1Hk3RZHwiIAPv9YCbyw1u0Rj0p73zt-Argu2A7GH5nvmHI045TzwWA2e9fL9omZXhv5idqLb76Wg3h89GyuMytVRKzJIsliofcN_BAcgsvJVHo8b5f8Q8aqeRAb1U7k9geoURsq168OaQUixCGl-WU2SRNk4SwilDr4UJkc83bAJamhtHfvfo0sh9qggUZS3nksvuQahllqEWWw",
   },
   {
     id: "2",
-    title: "Linen Minimalist Kimono",
-    slug: "linen-minimalist-kimono",
-    category: "Outerwear",
-    price: "95000",
-    imageUrl: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=600",
+    title: "Organic Coconut Water",
+    slug: "organic-coconut-water",
+    category: "Organic Wellness",
+    price: "4500",
+    imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
   },
   {
     id: "3",
-    title: "Silk Ribbed Turtleneck",
-    slug: "silk-ribbed-turtleneck",
-    category: "Knitwear",
-    price: "68000",
-    imageUrl: "https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?q=80&w=600",
-  },
-  {
-    id: "4",
-    title: "Eco-Wool Pleated Trouser",
-    slug: "eco-wool-pleated-trouser",
-    category: "Trousers",
-    price: "82000",
-    imageUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=600",
+    title: "Nourishing Coconut Body Butter",
+    slug: "coconut-body-butter",
+    category: "Premium Skincare",
+    price: "18000",
+    imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
   },
 ];
 
@@ -63,9 +55,9 @@ export default async function CatalogPage() {
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.category?.name || "Uncategorized",
+          category: p.category?.name || "Organic Wellness",
           price: firstVariantPrice,
-          imageUrl: firstVariantImage || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600",
+          imageUrl: firstVariantImage || "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
         };
       });
     }
@@ -84,12 +76,12 @@ export default async function CatalogPage() {
               <nav className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
                 <Link href="/" className="hover:text-foreground">Home</Link> &nbsp;/&nbsp; <span className="text-foreground">Catalog</span>
               </nav>
-              <h1 className="font-serif text-4xl font-semibold tracking-tight text-foreground">
+              <h1 className="font-serif text-4xl font-semibold tracking-tight text-[#1d4626]">
                 The Catalog
               </h1>
             </div>
             <p className="text-xs text-muted-foreground font-medium tracking-wide mt-4 sm:mt-0">
-              Showing {displayProducts.length} Premium Pieces
+              Showing {displayProducts.length} Premium Formulations
             </p>
           </div>
 
@@ -106,9 +98,8 @@ export default async function CatalogPage() {
                 <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Categories</h4>
                 <div className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wider">
                   <span className="text-primary cursor-pointer">All Collections</span>
-                  <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Outerwear</span>
-                  <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Knitwear</span>
-                  <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Trousers</span>
+                  <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Organic Wellness</span>
+                  <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Premium Skincare</span>
                 </div>
               </div>
 
@@ -128,7 +119,7 @@ export default async function CatalogPage() {
               {displayProducts.map((prod) => (
                 <div
                   key={prod.id}
-                  className="group flex flex-col border border-border/40 overflow-hidden bg-card transition-all duration-300 hover:shadow-lg"
+                  className="group flex flex-col border border-border/40 overflow-hidden bg-card transition-all duration-300 hover:shadow-lg rounded-2xl"
                 >
                   <div className="relative aspect-[3/4] overflow-hidden bg-muted">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
