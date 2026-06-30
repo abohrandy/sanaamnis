@@ -39,7 +39,7 @@ export default function Header() {
           </Link>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold uppercase tracking-widest text-[#424941] dark:text-neutral-300">
+          <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-[#222222] dark:text-neutral-100">
             <Link href="/shop" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
               Shop
             </Link>

@@ -128,7 +128,7 @@ export default function ProductInteractiveForm({
         className="w-full py-4 bg-primary text-primary-foreground font-semibold uppercase tracking-widest text-xs flex items-center justify-center gap-2 hover:bg-primary/95 transition-all duration-300 shadow-xl disabled:bg-neutral-300 disabled:text-neutral-500 disabled:cursor-not-allowed"
       >
         <ShoppingBag className="w-4 h-4" />
-        Add to Collection
+        Add to Cart
       </motion.button>
     </div>
   );
