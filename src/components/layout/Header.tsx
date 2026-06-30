@@ -43,9 +43,6 @@ export default function Header() {
             <Link href="/shop" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
               Shop
             </Link>
-            <Link href="/collections" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
-              Collections
-            </Link>
             <Link href="/recipes" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
               Recipes
             </Link>
@@ -109,9 +106,6 @@ export default function Header() {
           <nav className="md:hidden border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest text-[#424941] dark:text-neutral-300">
             <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
               Shop
-            </Link>
-            <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
-              Collections
             </Link>
             <Link href="/recipes" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
               Recipes
