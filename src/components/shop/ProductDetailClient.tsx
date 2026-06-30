@@ -140,6 +140,66 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         </div>
       </div>
 
+      {/* Related Products Grid Block */}
+      <div className="pt-16 border-t border-border/20">
+        <div className="flex justify-between items-end border-b border-neutral-200/60 pb-4 mb-8">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227]">Ritual Enhancements</span>
+            <h3 className="font-serif text-2xl font-semibold text-[#1d4626] mt-1">Related Formulations</h3>
+          </div>
+          <Link href="/shop" className="text-xs font-bold uppercase tracking-widest text-[#1d4626] hover:text-[#3b6845] transition-colors">
+            Browse All Shop Items →
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+          <div className="group border border-neutral-200/60 overflow-hidden bg-white p-5 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+            <div className="aspect-[4/3] overflow-hidden bg-neutral-100 rounded-xl mb-4">
+              <img src="https://images.unsplash.com/photo-1548364538-60b952c308b9?q=80&w=400" alt="Virgin Oil" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-[#C9A227] font-bold">Organic Wellness</span>
+              <h4 className="font-serif text-sm font-semibold text-[#1d4626] group-hover:text-primary transition-colors mt-1">Extra Virgin Coconut Oil</h4>
+              <p className="text-[10px] text-neutral-500 mt-1 line-clamp-2">Cold-pressed, pure virgin coconut extract for natural body and kitchen therapies.</p>
+            </div>
+            <div className="flex items-center justify-between border-t border-neutral-100 pt-3 mt-4">
+              <span className="font-serif text-xs font-bold text-[#1d4626]">₦15,000</span>
+              <Link href="/products/extra-virgin-coconut-oil" className="text-[10px] font-bold uppercase tracking-widest text-[#1d4626] hover:underline">Details</Link>
+            </div>
+          </div>
+
+          <div className="group border border-neutral-200/60 overflow-hidden bg-white p-5 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+            <div className="aspect-[4/3] overflow-hidden bg-neutral-100 rounded-xl mb-4">
+              <img src="https://images.unsplash.com/photo-1525385133336-25484cd6c648?q=80&w=400" alt="Coconut Water" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-[#C9A227] font-bold">Organic Wellness</span>
+              <h4 className="font-serif text-sm font-semibold text-[#1d4626] group-hover:text-primary transition-colors mt-1">Sana Amnis Coconut Water</h4>
+              <p className="text-[10px] text-neutral-500 mt-1 line-clamp-2">100% natural, electrolyte-rich hydration sourced directly from local Nigerian orchards.</p>
+            </div>
+            <div className="flex items-center justify-between border-t border-neutral-100 pt-3 mt-4">
+              <span className="font-serif text-xs font-bold text-[#1d4626]">₦3,000</span>
+              <Link href="/products/sana-amnis-coconut-water" className="text-[10px] font-bold uppercase tracking-widest text-[#1d4626] hover:underline">Details</Link>
+            </div>
+          </div>
+
+          <div className="group border border-neutral-200/60 overflow-hidden bg-white p-5 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all duration-300">
+            <div className="aspect-[4/3] overflow-hidden bg-neutral-100 rounded-xl mb-4">
+              <img src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=400" alt="Body Butter" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase tracking-wider text-[#C9A227] font-bold">Premium Skincare</span>
+              <h4 className="font-serif text-sm font-semibold text-[#1d4626] group-hover:text-primary transition-colors mt-1">Nourishing Coconut Body Butter</h4>
+              <p className="text-[10px] text-neutral-500 mt-1 line-clamp-2">Hydrating whipped butter for daily skin luxury and rich moisture replenishment.</p>
+            </div>
+            <div className="flex items-center justify-between border-t border-neutral-100 pt-3 mt-4">
+              <span className="font-serif text-xs font-bold text-[#1d4626]">₦18,000</span>
+              <Link href="/products/coconut-body-butter" className="text-[10px] font-bold uppercase tracking-widest text-[#1d4626] hover:underline">Details</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Reviews & Feedback Section */}
       <div className="grid md:grid-cols-12 gap-12 pt-16 border-t border-border/20">
         <div className="md:col-span-4 space-y-6">

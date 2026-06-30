@@ -13,8 +13,9 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const isHydrated = useHydrated();
-  const rawCount = useCartStore((state) => state.getTotalItems)();
-  const cartItemsCount = isHydrated ? rawCount : 0;
+  const cartItemsCount = useCartStore((state) => 
+    isHydrated ? state.items.reduce((sum, item) => sum + item.quantity, 0) : 0
+  );
   const { data: session } = useSession();
 
   return (
