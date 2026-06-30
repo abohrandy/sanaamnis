@@ -8,7 +8,13 @@ export default function Footer() {
         
         {/* Brand info */}
         <div className="col-span-1 md:col-span-4 space-y-6">
-          <span className="font-serif text-xl font-bold tracking-widest text-white">SANA AMNIS</span>
+          <Link href="/">
+            <img
+              src="/logo_long.png"
+              alt="Sana Amnis Premium Coconuts"
+              className="h-12 w-auto object-contain brightness-0 invert"
+            />
+          </Link>
           <p className="text-xs leading-relaxed max-w-xs text-neutral-500 font-sans">
             Elevating daily rituals with the purest organic coconut products, sustainably sourced from the heart of Nigeria.
           </p>
@@ -18,7 +24,7 @@ export default function Footer() {
         <div className="col-span-1 md:col-span-2 space-y-4">
           <h4 className="text-xs uppercase tracking-widest text-white font-semibold font-sans">Explore</h4>
           <ul className="space-y-3 text-xs font-medium">
-            <li><Link href="/catalog" className="hover:text-white transition-colors">Shop</Link></li>
+            <li><Link href="/shop" className="hover:text-white transition-colors">Shop</Link></li>
             <li><Link href="/collections" className="hover:text-white transition-colors">Collections</Link></li>
             <li><Link href="/recipes" className="hover:text-white transition-colors">Recipes</Link></li>
             <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>

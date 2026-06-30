@@ -29,16 +29,18 @@ export default function Header() {
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
-          {/* Logo */}
+          {/* Logo_long Image */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="font-serif text-xl font-bold tracking-[0.2em] text-[#1d4626] dark:text-white transition-colors">
-              SANA AMNIS
-            </span>
+            <img
+              src="/logo_long.png"
+              alt="Sana Amnis Premium Coconuts"
+              className="h-12 w-auto object-contain"
+            />
           </Link>
 
-          {/* Navigation Links (Matches Stitch specifications) */}
+          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-semibold uppercase tracking-widest text-[#424941] dark:text-neutral-300">
-            <Link href="/catalog" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
+            <Link href="/shop" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
               Shop
             </Link>
             <Link href="/collections" className="hover:text-[#1d4626] dark:hover:text-white transition-colors">
@@ -105,7 +107,7 @@ export default function Header() {
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
           <nav className="md:hidden border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest text-[#424941] dark:text-neutral-300">
-            <Link href="/catalog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+            <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
               Shop
             </Link>
             <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">

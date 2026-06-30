@@ -96,7 +96,7 @@ export default async function Home() {
             </p>
             <div className="pt-4">
               <Link
-                href="/catalog"
+                href="/shop"
                 className="inline-flex items-center gap-2 bg-[#1d4626] hover:bg-[#355e3b] text-white px-8 py-4 text-xs font-semibold uppercase tracking-widest transition-all duration-300 rounded-full shadow-lg hover:scale-105"
               >
                 Explore Collections <ChevronRight className="w-4 h-4" />
@@ -142,7 +142,7 @@ export default async function Home() {
               + Free Shipping
             </div>
             <Link
-              href="/catalog"
+              href="/shop"
               className="block w-full bg-[#1d4626] hover:bg-[#355e3b] text-white py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all"
             >
               Order Offer
@@ -194,7 +194,7 @@ export default async function Home() {
               <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227]">Our Formulation</span>
               <h3 className="font-serif text-2xl md:text-3xl font-semibold text-[#1d4626] mt-1">Featured Essentials</h3>
             </div>
-            <Link href="/catalog" className="text-xs font-bold uppercase tracking-widest text-[#1d4626] hover:text-[#355e3b] flex items-center gap-1 transition-colors">
+            <Link href="/shop" className="text-xs font-bold uppercase tracking-widest text-[#1d4626] hover:text-[#355e3b] flex items-center gap-1 transition-colors">
               Browse Catalog <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
