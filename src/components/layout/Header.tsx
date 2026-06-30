@@ -24,9 +24,9 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 -ml-2 text-[#1a1c1a]"
+            className="md:hidden p-2 -ml-2 text-black"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-6 h-6 text-black" /> : <Menu className="w-6 h-6 text-black" />}
           </button>
 
           {/* Logo_long Image */}
@@ -39,33 +39,33 @@ export default function Header() {
           </Link>
 
           {/* Navigation Links (Pure high-contrast black/green) */}
-          <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-[#222222]">
-            <Link href="/shop" className="hover:text-[#1d4626] transition-colors">
+          <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
+            <Link href="/shop" className="text-black hover:text-[#1d4626] transition-colors !text-black">
               Shop
             </Link>
-            <Link href="/recipes" className="hover:text-[#1d4626] transition-colors">
+            <Link href="/recipes" className="text-black hover:text-[#1d4626] transition-colors !text-black">
               Recipes
             </Link>
-            <Link href="/about" className="hover:text-[#1d4626] transition-colors">
+            <Link href="/about" className="text-black hover:text-[#1d4626] transition-colors !text-black">
               About Us
             </Link>
             {(session?.user as any)?.role === "admin" && (
-              <Link href="/admin" className="text-[#cea62c] hover:text-[#755b00] transition-colors">
+              <Link href="/admin" className="text-[#cea62c] hover:text-[#755b00] transition-colors !text-[#cea62c]">
                 Admin Panel
               </Link>
             )}
           </nav>
 
           {/* Actions (Pure high-contrast black/green) */}
-          <div className="flex items-center gap-4 text-[#1d4626]">
+          <div className="flex items-center gap-4">
             <Link href="/search" className="p-2 hover:text-[#cea62c] transition-colors">
-              <Search className="w-5 h-5 text-[#1d4626]" />
+              <Search className="w-5 h-5 text-black !text-black" />
             </Link>
 
             {/* User Session Action */}
             {session ? (
               <div className="flex items-center gap-2">
-                <Link href="/account" className="hidden lg:inline text-[10px] font-bold uppercase tracking-widest text-[#222222]">
+                <Link href="/account" className="hidden lg:inline text-[10px] font-bold uppercase tracking-widest text-black !text-black">
                   {session.user.name.split(" ")[0]}
                 </Link>
                 <button
@@ -73,7 +73,7 @@ export default function Header() {
                   className="p-2 hover:text-[#cea62c] transition-colors"
                   title="Sign Out"
                 >
-                  <User className="w-5 h-5 text-[#cea62c]" />
+                  <User className="w-5 h-5 text-[#cea62c] !text-[#cea62c]" />
                 </button>
               </div>
             ) : (
@@ -82,7 +82,7 @@ export default function Header() {
                 className="p-2 hover:text-[#cea62c] transition-colors"
                 title="Sign In"
               >
-                <User className="w-5 h-5 text-[#1d4626]" />
+                <User className="w-5 h-5 text-black !text-black" />
               </Link>
             )}
 
@@ -91,7 +91,7 @@ export default function Header() {
               onClick={() => setIsCartOpen(true)}
               className="p-2 relative hover:text-[#cea62c] transition-colors"
             >
-              <ShoppingBag className="w-5 h-5 text-[#1d4626]" />
+              <ShoppingBag className="w-5 h-5 text-black !text-black" />
               {cartItemsCount > 0 && (
                 <span className="absolute top-0 right-0 w-4 h-4 bg-[#cea62c] text-white text-[9px] font-bold rounded-full flex items-center justify-center transform translate-x-1/3 -translate-y-1/3">
                   {cartItemsCount}
@@ -103,18 +103,18 @@ export default function Header() {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <nav className="md:hidden border-t border-neutral-100 bg-white p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest text-[#222222]">
-            <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+          <nav className="md:hidden border-t border-neutral-100 bg-white p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest">
+            <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
               Shop
             </Link>
-            <Link href="/recipes" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+            <Link href="/recipes" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
               Recipes
             </Link>
-            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#1d4626] py-2 border-b border-neutral-100">
+            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
               About Us
             </Link>
             {(session?.user as any)?.role === "admin" && (
-              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-[#cea62c] py-2">
+              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-[#cea62c] py-2 !text-[#cea62c]">
                 Admin Panel
               </Link>
             )}
