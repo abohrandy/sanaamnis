@@ -3,28 +3,28 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { db } from "@/db";
-import { ShoppingBag, ChevronRight, Star, Heart, CheckCircle2, ShieldCheck, MapPin } from "lucide-react";
+import { ChevronRight, Star, CheckCircle2, ShieldCheck, MapPin, Dumbbell, Briefcase, Users, RefreshCw } from "lucide-react";
 
 export const revalidate = 60; // ISR validation time
 
 const FALLBACK_COCONUT_PRODUCTS = [
   {
     id: "1",
-    title: "Extra Virgin Coconut Oil",
-    slug: "extra-virgin-coconut-oil",
+    title: "Sana Amnis Coconut Water (500ml)",
+    slug: "sana-amnis-coconut-water",
     category: "Organic Wellness",
-    price: "15,000",
-    imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLtEqIT_GCpHNQ86QNj1d3bPOlvb9nkQc6svZvyYlyg1Hk3RZHwiIAPv9YCbyw1u0Rj0p73zt-Argu2A7GH5nvmHI045TzwWA2e9fL9omZXhv5idqLb76Wg3h89GyuMytVRKzJIsliofcN_BAcgsvJVHo8b5f8Q8aqeRAb1U7k9geoURsq168OaQUixCGl-WU2SRNk4SwilDr4UJkc83bAJamhtHfvfo0sh9qggUZS3nksvuQahllqEWWw",
-    description: "Cold-pressed from fresh organic coconuts in Nigeria, retaining all nutritional benefits and a delicate aroma.",
+    price: "3,000",
+    imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
+    description: "100% natural, refreshing coconut water packed with electrolytes, sustainably bottled at the source. Sourced from local Nigerian farms. No added sugar or artificial preservatives.",
   },
   {
     id: "2",
-    title: "Organic Coconut Water",
-    slug: "organic-coconut-water",
+    title: "Sana Amnis Coconut Water (250ml)",
+    slug: "sana-amnis-coconut-water",
     category: "Organic Wellness",
-    price: "4,500",
+    price: "1,500",
     imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
-    description: "100% natural, refreshing coconut water packed with electrolytes, sustainably bottled at the source.",
+    description: "Naturally sweet and refreshing coconut water in a convenient, eco-friendly 250ml pouch format.",
   },
   {
     id: "3",
@@ -50,15 +50,18 @@ export default async function Home() {
     });
 
     if (productsInDb && productsInDb.length > 0) {
-      products = productsInDb.map((p) => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        category: p.category?.name || "Organic Wellness",
-        price: p.variants?.[0]?.price ? parseFloat(p.variants[0].price).toLocaleString() : "15,000",
-        imageUrl: p.variants?.[0]?.imageUrl || "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
-        description: p.description,
-      }));
+      products = productsInDb.map((p) => {
+        const firstVariantPrice = p.variants?.[0]?.price ? parseFloat(p.variants[0].price).toLocaleString() : "3,000";
+        return {
+          id: p.id,
+          title: p.title,
+          slug: p.slug,
+          category: p.category?.name || "Organic Wellness",
+          price: firstVariantPrice,
+          imageUrl: p.variants?.[0]?.imageUrl || "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
+          description: p.description,
+        };
+      });
     }
   } catch (err) {
     console.error("DB query failed in homepage, falling back to mock products:", err);
@@ -85,11 +88,11 @@ export default async function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#1d4626]/40 to-transparent"></div>
           
           <div className="relative z-10 text-center text-white px-6 max-w-4xl space-y-6 animate-fade-in">
-            <h1 className="font-serif text-4xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white drop-shadow-md">
+            <h1 className="font-serif text-4xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white drop-shadow-lg">
               The Purest Essence<br />of Nigeria
             </h1>
             <p className="font-sans text-sm md:text-lg max-w-xl mx-auto text-neutral-100 opacity-95 leading-relaxed font-light drop-shadow-sm">
-              Sustainably sourced, traditionally crafted coconut products for a balanced, vibrant life.
+              Sustainably sourced, traditionally crafted coconut water and wellness formulas for a balanced, vibrant life.
             </p>
             <div className="pt-4">
               <Link
@@ -122,23 +125,73 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Rich Brand Intro Block */}
-        <section className="text-center max-w-3xl mx-auto space-y-6 py-4">
-          <h2 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight text-[#1d4626]">
-            Organic Precision & Botanical Purity
-          </h2>
-          <p className="font-sans text-neutral-600 leading-relaxed text-sm md:text-base">
-            We believe in elevating daily self-care rituals with high-end, cold-pressed coconut formulas. 
-            Sustainably harvested from local palms, our coconut water, butter, and oils are audited to guarantee 
-            uncompromised quality, zero additives, and direct empowerment of Nigerian farming families.
-          </p>
+        {/* Special Delivery Offer Banner */}
+        <section className="bg-[#F3EFE8] rounded-3xl p-8 md:p-12 border border-[#E5E7EB] flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="space-y-4 max-w-xl">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227]">Limited Promotion</span>
+            <h3 className="font-serif text-2xl md:text-3xl font-semibold text-[#1d4626]">Special Delivery Offer</h3>
+            <p className="text-sm text-neutral-600 leading-relaxed font-sans">
+              Buy 10+ 500ml bottles (or 20+ 250ml pouches) and get <strong>FREE DELIVERY</strong> anywhere in Nigeria! 
+              Save on delivery fees and enjoy our premium electrolyte-rich coconut water delivered straight to your doorstep.
+            </p>
+          </div>
+          <div className="bg-[#FAF9F6] p-6 rounded-2xl border border-neutral-200 shadow-sm min-w-[280px] space-y-4 text-center">
+            <div className="text-[#355E3B] font-serif font-bold text-2xl">₦30,000</div>
+            <div className="text-[10px] text-neutral-500 uppercase tracking-widest font-sans">10 Bottles (500ml) Pack</div>
+            <div className="bg-emerald-100 text-[#1d4626] py-2 rounded-full text-xs font-bold uppercase tracking-wide">
+              + Free Shipping
+            </div>
+            <Link
+              href="/catalog"
+              className="block w-full bg-[#1d4626] hover:bg-[#355e3b] text-white py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all"
+            >
+              Order Offer
+            </Link>
+          </div>
+        </section>
+
+        {/* Occasions Sections */}
+        <section className="space-y-12">
+          <div className="text-center space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227]">Ritual & Wellness</span>
+            <h3 className="font-serif text-2xl md:text-3xl font-semibold text-[#1d4626]">Perfect Occasions for Sana Amnis</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-2xl border border-neutral-100 text-center space-y-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-[#F3EFE8] rounded-full flex items-center justify-center mx-auto text-[#1d4626]">
+                <Dumbbell className="w-6 h-6" />
+              </div>
+              <h4 className="font-serif text-lg font-semibold text-[#1d4626]">Fitness & Workouts</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed font-sans">
+                Replenish active minerals and trace elements naturally after intense workout and weight sessions.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl border border-neutral-100 text-center space-y-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-[#F3EFE8] rounded-full flex items-center justify-center mx-auto text-[#1d4626]">
+                <Briefcase className="w-6 h-6" />
+              </div>
+              <h4 className="font-serif text-lg font-semibold text-[#1d4626]">Office Hydration</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed font-sans">
+                Stay refreshed, productive, and focused throughout long administrative days without bloating or sugar crashes.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl border border-neutral-100 text-center space-y-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-[#F3EFE8] rounded-full flex items-center justify-center mx-auto text-[#1d4626]">
+                <Users className="w-6 h-6" />
+              </div>
+              <h4 className="font-serif text-lg font-semibold text-[#1d4626]">Family Events</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed font-sans">
+                Serve a delicious, healthy beverage option for kids and gatherings. A natural replacement for sweet soda sodas.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Dynamic Products Grid Section */}
         <section className="space-y-12">
           <div className="flex justify-between items-end border-b border-neutral-100 pb-4">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#cea62c]">Our Formulation</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227]">Our Formulation</span>
               <h3 className="font-serif text-2xl md:text-3xl font-semibold text-[#1d4626] mt-1">Featured Essentials</h3>
             </div>
             <Link href="/catalog" className="text-xs font-bold uppercase tracking-widest text-[#1d4626] hover:text-[#355e3b] flex items-center gap-1 transition-colors">
@@ -152,7 +205,6 @@ export default async function Home() {
                 key={item.id}
                 className="group relative bg-[#f4f3f1] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_15px_50px_rgba(53,94,59,0.1)] flex flex-col justify-between"
               >
-                {/* Image Wrap */}
                 <div className="aspect-[4/3] w-full overflow-hidden bg-neutral-200 relative">
                   <img
                     alt={item.title}
@@ -164,7 +216,6 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* Details Content */}
                 <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
@@ -191,6 +242,18 @@ export default async function Home() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Satisfaction Guarantee Section */}
+        <section className="bg-white rounded-3xl p-8 md:p-12 text-center border border-neutral-100 max-w-4xl mx-auto space-y-6 shadow-sm">
+          <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto text-[#C9A227]">
+            <RefreshCw className="w-8 h-8 animate-spin-slow" />
+          </div>
+          <h3 className="font-serif text-2xl font-semibold text-[#1d4626]">100% Satisfaction Guarantee</h3>
+          <p className="text-sm text-neutral-600 leading-relaxed font-sans max-w-2xl mx-auto">
+            Not completely satisfied with your Sana Amnis coconut water? We offer a 100% money-back guarantee on all orders. 
+            Your health, wellness, and complete satisfaction remain our ultimate priorities.
+          </p>
         </section>
 
       </main>

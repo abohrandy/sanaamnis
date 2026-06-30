@@ -86,7 +86,44 @@ async function main() {
     // 3. Products
     console.log("Seeding Coconut Products and Variants...");
     
-    // Product 1: Extra Virgin Coconut Oil
+    // Product 1: Sana Amnis Coconut Water
+    const [waterProduct] = await db
+      .insert(schema.products)
+      .values({
+        title: "Sana Amnis Coconut Water",
+        slug: "sana-amnis-coconut-water",
+        description: "100% natural, refreshing coconut water packed with electrolytes, sustainably sourced from local Nigerian farms. No added sugar, no preservatives.",
+        categoryId: wellnessCatId,
+        isActive: true,
+      })
+      .onConflictDoNothing()
+      .returning();
+
+    if (waterProduct) {
+      await db
+        .insert(schema.productVariants)
+        .values([
+          {
+            productId: waterProduct.id,
+            sku: "SA-COCO-WTR-250",
+            name: "250ml Pouch",
+            price: "1500.00",
+            stock: 150,
+            imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
+          },
+          {
+            productId: waterProduct.id,
+            sku: "SA-COCO-WTR-500",
+            name: "500ml Bottle",
+            price: "3000.00",
+            stock: 120,
+            imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
+          },
+        ])
+        .onConflictDoNothing();
+    }
+
+    // Product 2: Extra Virgin Coconut Oil
     const [oilProduct] = await db
       .insert(schema.products)
       .values({
@@ -110,43 +147,6 @@ async function main() {
             price: "15000.00",
             stock: 50,
             imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLtEqIT_GCpHNQ86QNj1d3bPOlvb9nkQc6svZvyYlyg1Hk3RZHwiIAPv9YCbyw1u0Rj0p73zt-Argu2A7GH5nvmHI045TzwWA2e9fL9omZXhv5idqLb76Wg3h89GyuMytVRKzJIsliofcN_BAcgsvJVHo8b5f8Q8aqeRAb1U7k9geoURsq168OaQUixCGl-WU2SRNk4SwilDr4UJkc83bAJamhtHfvfo0sh9qggUZS3nksvuQahllqEWWw",
-          },
-          {
-            productId: oilProduct.id,
-            sku: "SA-COCO-OIL-500",
-            name: "500ml Glass Jar",
-            price: "28000.00",
-            stock: 35,
-            imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLtEqIT_GCpHNQ86QNj1d3bPOlvb9nkQc6svZvyYlyg1Hk3RZHwiIAPv9YCbyw1u0Rj0p73zt-Argu2A7GH5nvmHI045TzwWA2e9fL9omZXhv5idqLb76Wg3h89GyuMytVRKzJIsliofcN_BAcgsvJVHo8b5f8Q8aqeRAb1U7k9geoURsq168OaQUixCGl-WU2SRNk4SwilDr4UJkc83bAJamhtHfvfo0sh9qggUZS3nksvuQahllqEWWw",
-          },
-        ])
-        .onConflictDoNothing();
-    }
-
-    // Product 2: Organic Coconut Water
-    const [waterProduct] = await db
-      .insert(schema.products)
-      .values({
-        title: "Organic Coconut Water",
-        slug: "organic-coconut-water",
-        description: "100% natural, refreshing coconut water packed with electrolytes, sustainably bottled at the source.",
-        categoryId: wellnessCatId,
-        isActive: true,
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    if (waterProduct) {
-      await db
-        .insert(schema.productVariants)
-        .values([
-          {
-            productId: waterProduct.id,
-            sku: "SA-COCO-WTR-330",
-            name: "330ml Bottle",
-            price: "4500.00",
-            stock: 120,
-            imageUrl: "https://lh3.googleusercontent.com/aida/AP1WRLsnISaHCg5o21SrvBbZRdt8Qcl_tsL5caCWPyHPzlvMiBR7WZ5ltl4b6x8SXY7JoINwVeevisCReRMYVksaOuivD86v9Gd3sLH87Lekwd8eOJzsns4QOI3WRu2gIlhERvVW2nHQJG1wukkobTBbIcUviw8Y4_RBF6RIrCBnLg5Cb51z18bBhth15u82kTqhtDwxAPS-YjkJzyE6mYDYrLm7NIVKXYSAsOFHuC2U5ckPbXgKZHiQfLTm6VQ",
           },
         ])
         .onConflictDoNothing();
