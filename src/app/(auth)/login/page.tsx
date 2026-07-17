@@ -24,19 +24,33 @@ export default function LoginPage() {
 
     try {
       if (mode === "signin") {
-        await signIn.email({
+        const res = await signIn.email({
           email,
           password,
           callbackURL: "/admin", // Redirecting to admin on successful auth
         });
+        
+        if (res?.error) {
+          setError(res.error.message || "Failed to sign in. Please verify your credentials.");
+          setIsSubmitting(false);
+          return;
+        }
+
         window.location.href = "/admin";
       } else {
-        await signUp.email({
+        const res = await signUp.email({
           email,
           password,
           name,
           callbackURL: "/admin",
         });
+
+        if (res?.error) {
+          setError(res.error.message || "Failed to create account. Please verify your inputs.");
+          setIsSubmitting(false);
+          return;
+        }
+
         setSuccessMessage("Account created successfully! Redirecting...");
         // Explicit client-side redirect fallback
         window.location.href = "/admin";

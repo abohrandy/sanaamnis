@@ -9,7 +9,7 @@ export async function GET() {
 
     // Auto-promote executive admin user if registered
     await db.execute(
-      sql`UPDATE "user" SET role = 'admin' WHERE email = 'abohrandy@gmail.com'`
+      sql`UPDATE "user" SET role = 'admin' WHERE email IN ('abohrandy@gmail.com', 'me@randyaboh.com')`
     );
     
     return NextResponse.json(
