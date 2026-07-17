@@ -14,7 +14,7 @@ export async function GET() {
 
     // Auto-promote executive admin user if registered
     await db.execute(
-      sql`UPDATE "user" SET role = 'admin' WHERE email IN ('abohrandy@gmail.com', 'me@randyaboh.com')`
+      sql`UPDATE "user" SET role = 'admin', email_verified = true WHERE email IN ('abohrandy@gmail.com', 'me@randyaboh.com')`
     );
     
     return NextResponse.json(

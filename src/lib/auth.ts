@@ -29,12 +29,6 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "mock_google_client_secret",
     },
   },
-  emailVerification: {
-    sendOnSignUp: false,
-    sendVerificationEmail: async ({ user, url }: any) => {
-      console.log(`[Verification Link] Email verification sent to ${user.email}: ${url}`);
-    },
-  },
   passwordReset: {
     sendResetEmail: async ({ user, url }: any) => {
       console.log(`[Password Reset Link] Reset email sent to ${user.email}: ${url}`);
