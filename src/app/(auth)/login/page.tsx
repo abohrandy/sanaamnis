@@ -37,6 +37,8 @@ export default function LoginPage() {
           callbackURL: "/admin",
         });
         setSuccessMessage("Account created successfully! Redirecting...");
+        // Explicit client-side redirect fallback
+        window.location.href = "/admin";
       }
     } catch (err: any) {
       console.error(err);
