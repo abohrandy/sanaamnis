@@ -10,6 +10,7 @@ export const auth = betterAuth({
     "https://sanaamnis-production.up.railway.app",
     "http://localhost:3000",
   ],
+  trustHeaders: true,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
