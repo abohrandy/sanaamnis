@@ -29,6 +29,7 @@ export default function LoginPage() {
           password,
           callbackURL: "/admin", // Redirecting to admin on successful auth
         });
+        window.location.href = "/admin";
       } else {
         await signUp.email({
           email,
