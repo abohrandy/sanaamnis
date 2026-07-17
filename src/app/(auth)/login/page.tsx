@@ -3,43 +3,45 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/lib/auth-client";
-import { LogIn, Loader2, ShieldCheck } from "lucide-react";
+import { signIn, signUp } from "@/lib/auth-client";
+import { LogIn, Loader2, ShieldCheck, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
+    setSuccessMessage("");
 
     try {
-      await signIn.email({
-        email,
-        password,
-        callbackURL: "/admin", // Redirecting to admin on successful auth
-      });
+      if (mode === "signin") {
+        await signIn.email({
+          email,
+          password,
+          callbackURL: "/admin", // Redirecting to admin on successful auth
+        });
+      } else {
+        await signUp.email({
+          email,
+          password,
+          name,
+          callbackURL: "/admin",
+        });
+        setSuccessMessage("Account created successfully! Redirecting...");
+      }
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Invalid credentials. Please verify your email and password.");
+      setError(err.message || "Authentication process failed. Please verify inputs.");
       setIsSubmitting(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      await signIn.social({
-        provider: "google",
-        callbackURL: "/admin",
-      });
-    } catch (err: any) {
-      console.error(err);
-      setError("Google authentication failed. Please try again.");
     }
   };
 
@@ -54,8 +56,34 @@ export default function LoginPage() {
             className="mx-auto h-12 w-auto object-contain mb-2"
           />
           <p className="text-xs text-[#6B7280] leading-relaxed font-sans">
-            Please authenticate to access editorial tools and inventories.
+            {mode === "signin" 
+              ? "Please authenticate to access editorial tools and inventories." 
+              : "Register your secure account credentials to join the network."}
           </p>
+        </div>
+
+        {/* Tab Selector */}
+        <div className="flex border-b border-neutral-200">
+          <button
+            onClick={() => { setMode("signin"); setError(""); setSuccessMessage(""); }}
+            className={`flex-1 pb-3 text-xs uppercase tracking-widest font-bold transition-all ${
+              mode === "signin"
+                ? "border-b-2 border-[#355E3B] text-[#355E3B]"
+                : "text-neutral-400 hover:text-neutral-600"
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => { setMode("signup"); setError(""); setSuccessMessage(""); }}
+            className={`flex-1 pb-3 text-xs uppercase tracking-widest font-bold transition-all ${
+              mode === "signup"
+                ? "border-b-2 border-[#355E3B] text-[#355E3B]"
+                : "text-neutral-400 hover:text-neutral-600"
+            }`}
+          >
+            Register / Sign Up
+          </button>
         </div>
 
         {error && (
@@ -64,8 +92,25 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Email form */}
-        <form onSubmit={handleEmailLogin} className="space-y-6">
+        {successMessage && (
+          <div className="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 text-xs font-semibold uppercase tracking-wider">
+            {successMessage}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {mode === "signup" && (
+            <Input
+              label="Full Name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Randy A."
+            />
+          )}
+
           <Input
             label="Email Address"
             type="email"
@@ -91,12 +136,21 @@ export default function LoginPage() {
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Verifying Credentials...
+                {mode === "signin" ? "Verifying Credentials..." : "Creating Account..."}
               </>
             ) : (
               <>
-                <LogIn className="w-4 h-4" />
-                Sign In
+                {mode === "signin" ? (
+                  <>
+                    <LogIn className="w-4 h-4" />
+                    Sign In
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4" />
+                    Sign Up
+                  </>
+                )}
               </>
             )}
           </Button>
