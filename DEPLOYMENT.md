@@ -12,7 +12,7 @@ Before deploying, ensure you configure the following variables in your Railway S
 | :--- | :--- | :--- |
 | `DATABASE_URL` | PostgreSQL connection string (provided by Railway PG Plugin) | `postgresql://postgres:password@host:port/railway` |
 | `BETTER_AUTH_SECRET` | Random high-entropy signing key (minimum 32 characters) | `a8f89...6a81` |
-| `BETTER_AUTH_URL` | Canonical URL of your deployed application | `https://sana-amnis.up.railway.app` |
+| `BETTER_AUTH_URL` | Canonical URL of your deployed application | `https://sanaamnis-production.up.railway.app` |
 | `GOOGLE_CLIENT_ID` | Google OAuth credentials ID (for Social Sign-In) | `12345-abc.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET`| Google OAuth client secret key | `GOCSPX-abc123xyz` |
 | `PAYSTACK_SECRET_KEY` | Paystack merchant API private key | `sk_live_abc123...` |
