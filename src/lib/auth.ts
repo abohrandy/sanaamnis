@@ -5,6 +5,11 @@ import * as schema from "@/db/schema";
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET || "fallback_default_secret_minimum_32_characters_for_sana_amnis",
+  baseURL: process.env.BETTER_AUTH_URL || "https://sanaamnis-production.up.railway.app",
+  trustedOrigins: [
+    "https://sanaamnis-production.up.railway.app",
+    "http://localhost:3000",
+  ],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -25,7 +30,7 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    sendOnSignUp: true,
+    sendOnSignUp: false,
     sendVerificationEmail: async ({ user, url }: any) => {
       console.log(`[Verification Link] Email verification sent to ${user.email}: ${url}`);
     },

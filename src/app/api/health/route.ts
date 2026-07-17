@@ -7,6 +7,11 @@ export async function GET() {
     // Perform simple query to verify database connection healthiness
     await db.execute(sql`SELECT 1`);
 
+    // Ensure role column exists in user table (safe idempotent migration)
+    await db.execute(
+      sql`ALTER TABLE "user" ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'customer'`
+    );
+
     // Auto-promote executive admin user if registered
     await db.execute(
       sql`UPDATE "user" SET role = 'admin' WHERE email IN ('abohrandy@gmail.com', 'me@randyaboh.com')`
