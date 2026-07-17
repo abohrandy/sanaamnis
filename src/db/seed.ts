@@ -206,6 +206,13 @@ async function main() {
       ])
       .onConflictDoNothing();
 
+    // 6. Promote executive user to admin role
+    console.log("Promoting executive user to admin...");
+    await db
+      .update(schema.user)
+      .set({ role: "admin" })
+      .where(eq(schema.user.email, "abohrandy@gmail.com"));
+
     console.log("Database seeded successfully!");
   } catch (error) {
     console.error("Database seeding failed:", error);
