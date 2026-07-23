@@ -4,7 +4,7 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 
 const getBaseURL = () => {
-  const url = process.env.BETTER_AUTH_URL || "https://sanaamnis-production.up.railway.app";
+  const url = process.env.BETTER_AUTH_URL || "https://sanaamniscoconut.com";
   return url.replace(/\/$/, ""); // Strip trailing slash if present
 };
 
@@ -13,6 +13,8 @@ export const auth = betterAuth({
   baseURL: getBaseURL(),
   trustedOrigins: [
     getBaseURL(),
+    "https://sanaamniscoconut.com",
+    "https://www.sanaamniscoconut.com",
     "https://sanaamnis-production.up.railway.app",
     "https://www.sanaamnis-production.up.railway.app",
     "https://sanaamnis.com",
