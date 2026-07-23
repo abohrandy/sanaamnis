@@ -117,8 +117,9 @@ export default async function CatalogPage() {
             {/* Products Grid */}
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {displayProducts.map((prod) => (
-                <div
+                <Link
                   key={prod.id}
+                  href={`/products/${prod.slug}`}
                   className="group flex flex-col border border-border/40 overflow-hidden bg-card transition-all duration-300 hover:shadow-lg rounded-2xl"
                 >
                   <div className="relative aspect-[3/4] overflow-hidden bg-muted">
@@ -138,15 +139,12 @@ export default async function CatalogPage() {
                     </h3>
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/20">
                       <span className="font-serif font-semibold text-primary">₦{Number(prod.price).toLocaleString()}</span>
-                      <Link
-                        href={`/products/${prod.slug}`}
-                        className="text-xs font-semibold uppercase tracking-wider text-foreground hover:text-primary transition-colors flex items-center gap-1"
-                      >
+                      <div className="text-xs font-semibold uppercase tracking-wider text-foreground hover:text-primary transition-colors flex items-center gap-1">
                         Details <ShoppingBag className="w-3 h-3" />
-                      </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

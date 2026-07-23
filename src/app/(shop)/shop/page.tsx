@@ -88,8 +88,9 @@ export default async function ShopPage() {
           {/* Full Width Products Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayProducts.map((prod) => (
-              <div
+              <Link
                 key={prod.id}
+                href={`/products/${prod.slug}`}
                 className="group flex flex-col border border-neutral-200/60 overflow-hidden bg-white transition-all duration-300 hover:shadow-[0_15px_50px_rgba(53,94,59,0.08)] rounded-2xl"
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100">
@@ -110,15 +111,12 @@ export default async function ShopPage() {
                   </div>
                   <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
                     <span className="font-serif font-bold text-[#1d4626]">₦{Number(prod.price).toLocaleString()}</span>
-                    <Link
-                      href={`/products/${prod.slug}`}
-                      className="text-xs font-bold uppercase tracking-widest text-[#1d4626] hover:text-[#3b6845] transition-colors flex items-center gap-1.5"
-                    >
+                    <div className="text-xs font-bold uppercase tracking-widest text-[#1d4626] group-hover:text-[#3b6845] transition-colors flex items-center gap-1.5">
                       Details <ShoppingBag className="w-4 h-4" />
-                    </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
