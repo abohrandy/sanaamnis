@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 const getBaseURL = () => {
   const url = process.env.BETTER_AUTH_URL || "https://sanaamniscoconut.com";
@@ -24,6 +25,19 @@ export const auth = betterAuth({
     "http://localhost:3000",
   ],
   trustHeaders: true,
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          if (user.email === "abohrandy@gmail.com" || user.email === "me@randyaboh.com") {
+            await db.update(schema.user)
+              .set({ role: "admin", emailVerified: true })
+              .where(eq(schema.user.id, user.id));
+          }
+        },
+      },
+    },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
