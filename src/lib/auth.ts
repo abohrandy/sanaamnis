@@ -3,11 +3,22 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 
+const getBaseURL = () => {
+  const url = process.env.BETTER_AUTH_URL || "https://sanaamnis-production.up.railway.app";
+  return url.replace(/\/$/, ""); // Strip trailing slash if present
+};
+
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET || "fallback_default_secret_minimum_32_characters_for_sana_amnis",
-  baseURL: process.env.BETTER_AUTH_URL || "https://sanaamnis-production.up.railway.app",
+  baseURL: getBaseURL(),
   trustedOrigins: [
+    getBaseURL(),
     "https://sanaamnis-production.up.railway.app",
+    "https://www.sanaamnis-production.up.railway.app",
+    "https://sanaamnis.com",
+    "https://www.sanaamnis.com",
+    "https://healthycocomart.com",
+    "https://www.healthycocomart.com",
     "http://localhost:3000",
   ],
   trustHeaders: true,
