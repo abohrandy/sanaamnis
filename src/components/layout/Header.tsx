@@ -84,8 +84,8 @@ export default function Header() {
           </Link>
 
           {/* Desktop Links with Hover Mega Menu Triggers */}
-          <nav className="hidden md:flex items-center gap-9 text-[11px] font-sans uppercase font-bold tracking-[0.2em] text-[#161A17] dark:text-[#FAF8F5]">
-            <Link href="/" className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors">
+          <nav className="hidden md:flex items-center gap-8 text-[11px] font-sans uppercase font-bold tracking-[0.2em] text-[#161A17]">
+            <Link href="/" className="hover:text-[#C9A227] transition-colors py-2">
               Home
             </Link>
 
@@ -93,30 +93,30 @@ export default function Header() {
               className="relative py-2 cursor-pointer"
               onMouseEnter={() => setActiveMegaMenu("selection")}
             >
-              <span className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
+              <Link href="/shop" className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
                 Selection <ChevronDown className="w-3 h-3 text-[#C9A227]" />
-              </span>
+              </Link>
             </div>
 
             <div
               className="relative py-2 cursor-pointer"
               onMouseEnter={() => setActiveMegaMenu("recipes")}
             >
-              <span className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
+              <Link href="/recipes" className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
                 Recipes <ChevronDown className="w-3 h-3 text-[#C9A227]" />
-              </span>
+              </Link>
             </div>
 
             <div
               className="relative py-2 cursor-pointer"
               onMouseEnter={() => setActiveMegaMenu("journal")}
             >
-              <span className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
+              <Link href="/blog" className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
                 Journal <ChevronDown className="w-3 h-3 text-[#C9A227]" />
-              </span>
+              </Link>
             </div>
 
-            <Link href="/about" className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors">
+            <Link href="/about" className="hover:text-[#C9A227] transition-colors py-2">
               Ethos
             </Link>
           </nav>

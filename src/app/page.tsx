@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Newsletter } from "@/components/layout/Newsletter";
 import { NigerianHeritageStory } from "@/components/ds/storytelling/NigerianHeritageStory";
 import { ColdPressProcess } from "@/components/ds/storytelling/ColdPressProcess";
+import { HeroSlider } from "@/components/ds/storytelling/HeroSlider";
 import { ChevronRight, CheckCircle2, ShieldCheck, MapPin, Dumbbell, Briefcase, Users, RefreshCw, Sparkles, ArrowRight } from "lucide-react";
 
 export const revalidate = 60; // ISR validation time
@@ -79,44 +80,8 @@ export default async function Home() {
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-6 space-y-24">
         
-        {/* Editorial Hero Layout Block */}
-        <section className="relative h-[75vh] md:h-[85vh] w-full flex items-center justify-center rounded-[2rem] overflow-hidden shadow-ambient-lg border border-[#E2E6E3]/60">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt="Sana Amnis Premium Coconut Wellness Sanctuary"
-            className="absolute inset-0 w-full h-full object-cover rounded-[2rem] brightness-90 scale-100 transition-transform duration-1000 hover:scale-105"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC07WXtYVjd0cZ9GcvZZNyzIPOmSCd0hhyaAN-9MubRN4TsLY7XXhWir0ekH142Oz3vkrBiUu4feTlSttsylndaVvNfTEnSGqMYHrdwgs0ou6YLOYY0yPPoqqixY_--KWZZupzbKmKGXPr29VfWW_MqJ4Sexb666SbUw2B9MrqbAKT9m0zWefDFTSlb0u2raljI1un8yXbmxuB9GWepc21NMP4Uw_EkYElqw1rjiKZACv-ZT3j4ge1Z1ZQ_FrTo6o9dJTRP-JdT4Q0"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1C3322]/80 via-[#1C3322]/30 to-transparent"></div>
-          
-          <div className="relative z-10 text-center text-[#FAF8F5] px-6 max-w-4xl space-y-6">
-            <Badge variant="gold" size="md" className="mx-auto shadow-ambient-sm">
-              Single-Origin Coastal Harvest
-            </Badge>
-
-            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] text-[#FAF8F5] drop-shadow-md">
-              The Purest Essence<br />of Nigeria
-            </h1>
-
-            <p className="font-sans text-sm md:text-lg max-w-xl mx-auto text-[#FAF8F5]/90 font-light leading-relaxed drop-shadow-sm">
-              Sustainably harvested cold-pressed extra virgin coconut oil and bioactive hydration formulated for mindful luxury.
-            </p>
-
-            <div className="pt-4 flex items-center justify-center gap-4">
-              <Link href="/shop">
-                <Button variant="gold" size="lg" className="flex items-center gap-2">
-                  Explore Catalog <ChevronRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/about" className="hidden sm:inline-block">
-                <Button variant="alabaster" size="lg">
-                  Read Ethos
-                </Button>
-              </Link>
-            </div>
-
-          </div>
-        </section>
+        {/* Editorial Hero Slider Block */}
+        <HeroSlider />
 
         {/* Floating Organic Stats Panel */}
         <section className="-mt-14 relative z-20 max-w-5xl mx-auto">
