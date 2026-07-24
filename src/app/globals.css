@@ -1,102 +1,122 @@
 @import "tailwindcss";
 
 :root {
-  /* HSL translations for Shadcn/UI and default compatibility */
-  --background: 40 20% 98%;      /* #FAF9F6 */
-  --foreground: 0 0% 13%;        /* #222222 */
+  /* ==========================================================================
+     Sana Amnis Design Language System Tokens
+     Inspiration: Apple (Precision & Glass) x Aesop (Botanical & Amber) x Ritual (Clean Science & Gold)
+     ========================================================================== */
+
+  /* Canvas & Base Color Tokens */
+  --background: 40 25% 98%;         /* #FAF8F5 - Warm Organic Alabaster Canvas */
+  --foreground: 160 10% 10%;        /* #161A17 - Deep Charcoal Espresso */
   
-  --card: 40 20% 98%;            /* #FAF9F6 */
-  --card-foreground: 0 0% 13%;   /* #222222 */
+  --card: 40 25% 98%;               /* #FAF8F5 */
+  --card-foreground: 160 10% 10%;   /* #161A17 */
   
-  --popover: 40 20% 98%;         /* #FAF9F6 */
-  --popover-foreground: 0 0% 13%;/* #222222 */
+  --popover: 40 25% 98%;            /* #FAF8F5 */
+  --popover-foreground: 160 10% 10%;/* #161A17 */
   
-  --primary: 129 28% 29%;        /* #355E3B */
-  --primary-foreground: 40 20% 98%; /* #FAF9F6 */
+  /* Primary Botanical Core */
+  --primary: 135 28% 15%;           /* #1C3322 - Aesop Deep Forest Green */
+  --primary-foreground: 40 25% 98%;  /* #FAF8F5 - Warm Light */
   
-  --secondary: 40 22% 93%;       /* #F3EFE8 */
-  --secondary-foreground: 0 0% 13%; /* #222222 */
+  /* Secondary Sand / Amber Tones */
+  --secondary: 38 24% 93%;          /* #F3EFE8 - Soft Organic Sand */
+  --secondary-foreground: 160 10% 10%;
   
-  --muted: 40 22% 93%;           /* #F3EFE8 */
-  --muted-foreground: 215 16% 47%;/* #6B7280 */
+  --muted: 38 24% 93%;              /* #F3EFE8 */
+  --muted-foreground: 215 10% 45%;  /* #676E6A - Muted Botanical Grey */
   
-  --accent: 45 68% 47%;          /* #C9A227 */
-  --accent-foreground: 40 20% 98%;/* #FAF9F6 */
+  /* Metallic Champagne Gold Accent */
+  --accent: 45 68% 47%;             /* #C9A227 - Warm Champagne Gold */
+  --accent-foreground: 40 25% 98%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
   
-  --border: 220 14% 91%;         /* #E5E7EB */
-  --input: 220 14% 91%;          /* #E5E7EB */
-  --ring: 129 28% 29%;           /* #355E3B */
+  /* Hairlines & Borders */
+  --border: 140 8% 88%;             /* #E2E6E3 - Hairline Leaf Border */
+  --input: 140 8% 88%;
+  --ring: 135 28% 15%;
   
-  --radius: 1.5rem; /* 24px radius specified in Stitch design */
+  /* Border Radius Hierarchy */
+  --radius: 1.25rem;                /* 20px - Apple-esque Rounded Geometry */
+  --radius-sm: 0.5rem;              /* 8px - Tactile Controls */
+  --radius-md: 0.875rem;            /* 14px - Sub-cards & Badges */
+  --radius-lg: 1.25rem;             /* 20px - Cards & Drawers */
+  --radius-pill: 9999px;            /* Full Capsule Tag */
 }
 
 .dark {
-  --background: 0 0% 10%;
-  --foreground: 40 20% 98%;
+  --background: 160 10% 8%;         /* #121412 - Dark Obsidian Canopy */
+  --foreground: 40 25% 96%;        /* #FAF8F5 */
   
-  --card: 0 0% 12%;
-  --card-foreground: 40 20% 98%;
+  --card: 160 10% 11%;
+  --card-foreground: 40 25% 96%;
   
-  --popover: 0 0% 12%;
-  --popover-foreground: 40 20% 98%;
+  --popover: 160 10% 11%;
+  --popover-foreground: 40 25% 96%;
   
-  --primary: 129 28% 35%;
-  --primary-foreground: 40 20% 98%;
+  --primary: 135 28% 28%;
+  --primary-foreground: 40 25% 98%;
   
-  --secondary: 0 0% 15%;
-  --secondary-foreground: 40 20% 98%;
+  --secondary: 160 10% 15%;
+  --secondary-foreground: 40 25% 96%;
   
-  --muted: 0 0% 15%;
-  --muted-foreground: 215 16% 70%;
+  --muted: 160 10% 15%;
+  --muted-foreground: 160 6% 65%;
   
   --accent: 45 68% 55%;
-  --accent-foreground: 40 20% 98%;
+  --accent-foreground: 40 25% 98%;
   
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-  
-  --border: 0 0% 20%;
-  --input: 0 0% 20%;
-  --ring: 129 28% 35%;
+  --border: 160 10% 20%;
+  --input: 160 10% 20%;
+  --ring: 135 28% 28%;
 }
 
 @theme {
-  --font-sans: "Inter", sans-serif;
-  --font-serif: "Manrope", sans-serif;
+  /* Typography Tokens */
+  --font-sans: var(--font-sans), "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: var(--font-serif), "Playfair Display", Georgia, serif;
   
-  --color-border: #E5E7EB;
-  --color-input: #E5E7EB;
-  --color-ring: #355E3B;
-  --color-background: #FAF9F6;
-  --color-foreground: #222222;
+  /* Color Palette Maps */
+  --color-alabaster-canvas: #FAF8F5;
+  --color-alabaster-surface: #F3EFE8;
+  --color-forest-dark: #1C3322;
+  --color-forest-moss: #2D4E35;
+  --color-gold-accent: #C9A227;
+  --color-amber-warm: #8C531B;
+  --color-charcoal-dark: #161A17;
+  --color-hairline: #E2E6E3;
+
+  --color-border: #E2E6E3;
+  --color-input: #E2E6E3;
+  --color-ring: #1C3322;
+  --color-background: #FAF8F5;
+  --color-foreground: #161A17;
   
-  --color-primary: #355E3B;
-  --color-primary-foreground: #FAF9F6;
+  --color-primary: #1C3322;
+  --color-primary-foreground: #FAF8F5;
   
   --color-secondary: #F3EFE8;
-  --color-secondary-foreground: #222222;
-  
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-secondary-foreground: #161A17;
   
   --color-muted: #F3EFE8;
-  --color-muted-foreground: #6B7280;
+  --color-muted-foreground: #676E6A;
   
   --color-accent: #C9A227;
-  --color-accent-foreground: #FAF9F6;
+  --color-accent-foreground: #FAF8F5;
   
-  --color-card: #FAF9F6;
-  --color-card-foreground: #222222;
+  --color-card: #FAF8F5;
+  --color-card-foreground: #161A17;
   
-  --color-popover: #FAF9F6;
-  --color-popover-foreground: #222222;
+  --color-popover: #FAF8F5;
+  --color-popover-foreground: #161A17;
   
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 6px);
-  --radius-sm: calc(var(--radius) - 12px);
+  --radius-lg: 1.25rem;
+  --radius-md: 0.875rem;
+  --radius-sm: 0.5rem;
+  --radius-pill: 9999px;
 }
 
 @layer base {
@@ -107,42 +127,92 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Custom premium visual classes */
-.glass {
-  background: rgba(250, 249, 246, 0.8);
+/* ==========================================================================
+   Luxury Glassmorphism & Elevation System (Apple x Aesop)
+   ========================================================================== */
+
+/* Frosted Alabaster Glass */
+.glass-alabaster {
+  background: rgba(250, 248, 245, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(226, 230, 227, 0.6);
+}
+
+.dark .glass-alabaster {
+  background: rgba(22, 26, 23, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Frosted Obsidian Glass */
+.glass-obsidian {
+  background: rgba(28, 51, 34, 0.88);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(229, 231, 235, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(201, 162, 39, 0.2);
 }
 
-.dark .glass {
-  background: rgba(34, 34, 34, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+/* Ambient Layered Shadows */
+.shadow-ambient-sm {
+  box-shadow: 0 4px 20px -2px rgba(28, 51, 34, 0.04);
 }
 
-.soft-shadow {
-  box-shadow: 0 10px 40px rgba(53, 94, 59, 0.05);
+.shadow-ambient-md {
+  box-shadow: 0 12px 36px -4px rgba(28, 51, 34, 0.07);
 }
 
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.shadow-ambient-lg {
+  box-shadow: 0 24px 64px -12px rgba(28, 51, 34, 0.12);
 }
 
-.hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 50px rgba(53, 94, 59, 0.1);
+/* Gold Hairline Accents */
+.border-gold-hairline {
+  border: 1px solid rgba(201, 162, 39, 0.3);
 }
 
-.premium-gradient {
-  background: linear-gradient(135deg, #355E3B 0%, #3b6845 100%);
-}
-
-.text-gold-gradient {
-  background: linear-gradient(135deg, #ffe08e 0%, #C9A227 100%);
+.text-gold-metallic {
+  background: linear-gradient(135deg, #E6C86E 0%, #C9A227 50%, #997814 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Smooth Tactile Micro-Interactions */
+.hover-lift-luxury {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift-luxury:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px -8px rgba(28, 51, 34, 0.12);
+}
+
+/* Shimmer Loading Skeleton Pulse */
+@keyframes luxury-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #F3EFE8 25%, #FAF8F5 50%, #F3EFE8 75%);
+  background-size: 200% 100%;
+  animation: luxury-shimmer 2s infinite ease-in-out;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(90deg, #1C1C1E 25%, #2C2C2E 50%, #1C1C1E 75%);
+  background-size: 200% 100%;
+  animation: luxury-shimmer 2s infinite ease-in-out;
+}
+

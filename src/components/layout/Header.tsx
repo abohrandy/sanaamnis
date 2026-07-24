@@ -4,95 +4,187 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import CartDrawer from "../shop/CartDrawer";
-import { ShoppingBag, User, Search, Menu, X } from "lucide-react";
-import { useSession, signOut } from "@/lib/auth-client";
+import { SearchModal } from "../shop/SearchModal";
+import { WishlistDrawer } from "../shop/WishlistDrawer";
+import { MegaMenu } from "./MegaMenu";
+import { AccountDropdown } from "./AccountDropdown";
+import { MobileNav } from "./MobileNav";
+import { ShoppingBag, User, Search, Menu, X, Heart, ChevronDown } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [activeMegaMenu, setActiveMegaMenu] = useState<"selection" | "collections" | "recipes" | "journal" | null>(null);
+
+  const { isScrolled } = useScrollPosition();
+
+  // Keyboard hotkey listeners: Cmd/Ctrl + K -> Search, Esc -> Close drawers
+  useKeyboardShortcuts({
+    onSearch: () => setIsSearchOpen(true),
+    onEscape: () => {
+      setIsCartOpen(false);
+      setIsSearchOpen(false);
+      setIsWishlistOpen(false);
+      setIsMobileMenuOpen(false);
+      setIsAccountOpen(false);
+      setActiveMegaMenu(null);
+    },
+  });
+
   const isHydrated = useHydrated();
-  const cartItemsCount = useCartStore((state) => 
+  const cartItemsCount = useCartStore((state) =>
     isHydrated ? state.items.reduce((sum, item) => sum + item.quantity, 0) : 0
   );
   const { data: session } = useSession();
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white border-b border-neutral-200/80 shadow-[0_2px_15px_rgba(0,0,0,0.02)]">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      {/* Editorial Top Announcement Bar */}
+      <div className="bg-[#1C3322] text-[#FAF8F5] text-[10px] font-sans font-semibold uppercase tracking-[0.25em] py-2.5 text-center border-b border-gold-hairline px-4 flex items-center justify-center gap-2 z-50 relative">
+        <span>Complimentary Express Shipping on Orders Above ₦50,000</span>
+        <span className="hidden md:inline text-[#C9A227]">|</span>
+        <span className="hidden md:inline text-[#C9A227]">Press CMD+K for Instant Search</span>
+      </div>
+
+      {/* Main Adaptive Header Shell (Transparent -> Frosted Glass on Scroll) */}
+      <header
+        className={cn(
+          "sticky top-0 z-40 w-full transition-all duration-500 ease-out",
+          isScrolled
+            ? "glass-alabaster dark:glass-obsidian shadow-ambient-md py-3 border-b border-[#E2E6E3]"
+            : "bg-transparent py-5 border-b border-transparent"
+        )}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 -ml-2 text-black"
+            className="md:hidden p-2 -ml-2 text-[#161A17] dark:text-[#FAF8F5] hover:text-[#1C3322] transition-colors"
+            aria-label="Toggle navigation menu"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6 text-black" /> : <Menu className="w-6 h-6 text-black" />}
+            <Menu className="w-6 h-6" />
           </button>
 
-          {/* Logo_long Image */}
-          <Link href="/" className="flex items-center gap-2">
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo_long.png"
-              alt="Sana Amnis Premium Coconuts"
-              className="h-12 w-auto object-contain"
+              alt="Sana Amnis Luxury Organic"
+              className="h-10 md:h-12 w-auto object-contain transition-all duration-300"
             />
           </Link>
 
-          {/* Navigation Links (Pure high-contrast black/green) */}
-          <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest">
-            <Link href="/" className="text-black hover:text-[#1d4626] transition-colors !text-black">
+          {/* Desktop Links with Hover Mega Menu Triggers */}
+          <nav className="hidden md:flex items-center gap-9 text-[11px] font-sans uppercase font-bold tracking-[0.2em] text-[#161A17] dark:text-[#FAF8F5]">
+            <Link href="/" className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors">
               Home
             </Link>
-            <Link href="/shop" className="text-black hover:text-[#1d4626] transition-colors !text-black">
-              Shop
-            </Link>
-            <Link href="/recipes" className="text-black hover:text-[#1d4626] transition-colors !text-black">
-              Recipes
-            </Link>
-            <Link href="/about" className="text-black hover:text-[#1d4626] transition-colors !text-black">
-              About Us
+
+            <div
+              className="relative py-2 cursor-pointer"
+              onMouseEnter={() => setActiveMegaMenu("selection")}
+            >
+              <span className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
+                Selection <ChevronDown className="w-3 h-3 text-[#C9A227]" />
+              </span>
+            </div>
+
+            <div
+              className="relative py-2 cursor-pointer"
+              onMouseEnter={() => setActiveMegaMenu("recipes")}
+            >
+              <span className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
+                Recipes <ChevronDown className="w-3 h-3 text-[#C9A227]" />
+              </span>
+            </div>
+
+            <div
+              className="relative py-2 cursor-pointer"
+              onMouseEnter={() => setActiveMegaMenu("journal")}
+            >
+              <span className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
+                Journal <ChevronDown className="w-3 h-3 text-[#C9A227]" />
+              </span>
+            </div>
+
+            <Link href="/about" className="hover:text-[#1C3322] dark:hover:text-[#C9A227] transition-colors">
+              Ethos
             </Link>
           </nav>
 
-          {/* Actions (Pure high-contrast black/green) */}
-          <div className="flex items-center gap-4">
-            <Link href="/search" className="p-2 hover:text-[#cea62c] transition-colors">
-              <Search className="w-5 h-5 text-black !text-black" />
-            </Link>
+          {/* Header Action Controls */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Search Trigger */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2.5 rounded-full hover:bg-[#F3EFE8] dark:hover:bg-white/10 text-[#161A17] dark:text-[#FAF8F5] hover:text-[#C9A227] transition-colors flex items-center gap-1.5"
+              title="Search (CMD+K)"
+              aria-label="Search"
+            >
+              <Search className="w-4 h-4" />
+              <span className="hidden lg:inline text-[9px] font-sans font-bold uppercase tracking-[0.18em] text-[#676E6A] bg-[#F3EFE8] dark:bg-[#1C1C1E] px-2 py-0.5 rounded-full border border-[#E2E6E3]/60">
+                ⌘K
+              </span>
+            </button>
 
-            {/* User Session Action */}
-            {session ? (
-              <div className="flex items-center gap-2">
-                <Link href="/account" className="hidden lg:inline text-[10px] font-bold uppercase tracking-widest text-black !text-black">
-                  {session.user.name.split(" ")[0]}
-                </Link>
+            {/* Wishlist Trigger */}
+            <button
+              onClick={() => setIsWishlistOpen(true)}
+              className="p-2.5 rounded-full hover:bg-[#F3EFE8] dark:hover:bg-white/10 text-[#161A17] dark:text-[#FAF8F5] hover:text-[#C9A227] transition-colors hidden sm:block"
+              title="Wishlist"
+              aria-label="Wishlist"
+            >
+              <Heart className="w-4 h-4" />
+            </button>
+
+            {/* Account Trigger & Dropdown */}
+            <div className="relative">
+              {session ? (
                 <button
-                  onClick={() => signOut()}
-                  className="p-2 hover:text-[#cea62c] transition-colors"
-                  title="Sign Out"
+                  onClick={() => setIsAccountOpen(!isAccountOpen)}
+                  className="p-2.5 rounded-full hover:bg-[#F3EFE8] text-[#C9A227] transition-colors flex items-center gap-2"
+                  title="Account Details"
                 >
-                  <User className="w-5 h-5 text-[#cea62c] !text-[#cea62c]" />
+                  <User className="w-4 h-4" />
+                  <span className="hidden lg:inline text-[10px] font-sans uppercase font-bold tracking-[0.18em] text-[#161A17] dark:text-[#FAF8F5]">
+                    {session.user.name.split(" ")[0]}
+                  </span>
                 </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="p-2 hover:text-[#cea62c] transition-colors"
-                title="Sign In"
-              >
-                <User className="w-5 h-5 text-black !text-black" />
-              </Link>
-            )}
+              ) : (
+                <Link
+                  href="/login"
+                  className="p-2.5 rounded-full hover:bg-[#F3EFE8] text-[#161A17] dark:text-[#FAF8F5] hover:text-[#C9A227] transition-colors"
+                  title="Sign In"
+                >
+                  <User className="w-4 h-4" />
+                </Link>
+              )}
 
-            {/* Shopping Bag Button */}
+              <AccountDropdown
+                isOpen={isAccountOpen}
+                onClose={() => setIsAccountOpen(false)}
+                session={session}
+              />
+            </div>
+
+            {/* Cart Trigger Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="p-2 relative hover:text-[#cea62c] transition-colors"
+              className="p-2.5 rounded-full bg-[#1C3322] text-[#FAF8F5] relative hover:bg-[#2D4E35] transition-all duration-300 shadow-ambient-sm cursor-pointer ml-1"
+              aria-label={`Shopping bag with ${cartItemsCount} items`}
             >
-              <ShoppingBag className="w-5 h-5 text-black !text-black" />
+              <ShoppingBag className="w-4 h-4" />
               {cartItemsCount > 0 && (
-                <span className="absolute top-0 right-0 w-4 h-4 bg-[#cea62c] text-white text-[9px] font-bold rounded-full flex items-center justify-center transform translate-x-1/3 -translate-y-1/3">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#C9A227] text-[#FAF8F5] text-[9px] font-bold rounded-full flex items-center justify-center border border-[#FAF8F5]">
                   {cartItemsCount}
                 </span>
               )}
@@ -100,27 +192,25 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <nav className="md:hidden border-t border-neutral-100 bg-white p-6 flex flex-col gap-4 text-xs font-semibold uppercase tracking-widest">
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
-              Home
-            </Link>
-            <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
-              Shop
-            </Link>
-            <Link href="/recipes" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
-              Recipes
-            </Link>
-            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
-              About Us
-            </Link>
-          </nav>
+        {/* Active Hover Mega Menu Overlay */}
+        {activeMegaMenu && (
+          <MegaMenu type={activeMegaMenu} onClose={() => setActiveMegaMenu(null)} />
         )}
       </header>
 
-      {/* Persistent Cart Drawer */}
+      {/* Drawers & Modals */}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <WishlistDrawer isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} />
+      <MobileNav
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        cartCount={cartItemsCount}
+        onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenWishlist={() => setIsWishlistOpen(true)}
+        session={session}
+      />
     </>
   );
 }

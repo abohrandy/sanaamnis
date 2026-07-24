@@ -1,154 +1,362 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
-import { Trash2, ShoppingBag, Plus, Minus, ArrowRight } from "lucide-react";
+import {
+  Trash2,
+  ShoppingBag,
+  Plus,
+  Minus,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  Gift,
+  Truck,
+  Clock,
+  Check,
+} from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ProductCard } from "@/components/ds/cards/product-card";
+
+const FREE_SHIPPING_THRESHOLD = 50000;
 
 export default function CartPage() {
   const hydrated = useHydrated();
   const items = useCartStore((state) => state.items);
+  const addItem = useCartStore((state) => state.addItem);
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const rawSubtotal = useCartStore((state) => state.getTotalAmount)();
 
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // Gift wrap state
+  const [includeGiftWrap, setIncludeGiftWrap] = useState(false);
+  const [giftNote, setGiftNote] = useState("");
+
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [couponSuccess, setCouponSuccess] = useState("");
+
+  // Delivery estimator state
+  const [selectedCity, setSelectedCity] = useState<"lagos" | "abuja" | "ph">("lagos");
+
+  // Recently viewed state
+  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
+
+  useEffect(() => {
+    const storedRaw = localStorage.getItem("sana_amnis_recently_viewed");
+    if (storedRaw) {
+      try {
+        setRecentlyViewed(JSON.parse(storedRaw).slice(0, 4));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError("");
+    setCouponSuccess("");
+
+    if (couponCode.toUpperCase() === "SANA10") {
+      setAppliedDiscount(0.1);
+      setCouponSuccess("10% Sanctuary Privilege Applied");
+    } else {
+      setCouponError("Invalid promo code. Try 'SANA10'");
+    }
+  };
+
+  const giftWrapFee = includeGiftWrap ? 2500 : 0;
+  const discountAmount = rawSubtotal * appliedDiscount;
+  const finalTotal = Math.max(0, rawSubtotal - discountAmount + giftWrapFee);
+
+  const progressPercentage = Math.min((rawSubtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - rawSubtotal, 0);
+
+  const deliveryEstimates = {
+    lagos: "24 Hours Express (Lagos Metropolis)",
+    abuja: "48 Hours Courier (Abuja FCT)",
+    ph: "48 Hours Courier (Port Harcourt)",
+  };
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center">
+      <div className="min-h-screen bg-[#FAF8F5] flex flex-col justify-center items-center">
         <Header />
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#1C3322] border-t-transparent rounded-full animate-spin"></div>
         <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
       <Header />
 
-      <main className="flex-grow max-w-7xl mx-auto px-6 py-20 w-full space-y-12">
-        {/* Header */}
-        <div className="max-w-2xl space-y-4">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
-            Order Inventory
-          </span>
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            My Shopping Bag
+      <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full space-y-12">
+        {/* Intro */}
+        <div className="max-w-2xl space-y-3">
+          <Badge variant="gold">SANCTUARY INVENTORY</Badge>
+          <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17]">
+            Shopping Bag
           </h1>
+          <p className="text-xs text-[#676E6A] font-sans">
+            Review your reserved cold-pressed elixirs, configure gift preferences, and calculate logistics delivery.
+          </p>
         </div>
 
         {items.length > 0 ? (
-          <div className="grid lg:grid-cols-3 gap-12 items-start">
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* Items Column */}
-            <div className="lg:col-span-2 space-y-6">
-              {items.map((item) => (
-                <div
-                  key={item.variantId}
-                  className="bg-card border border-border/40 rounded-2xl p-6 flex gap-6 shadow-[0_10px_40px_rgba(53,94,59,0.02)]"
-                >
-                  <div className="w-24 h-24 bg-muted rounded-xl overflow-hidden flex-shrink-0">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div className="flex-grow flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-serif text-base font-medium text-foreground">
-                          {item.title}
-                        </h3>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mt-1">
-                          {item.name}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => removeItem(item.variantId)}
-                        className="text-muted-foreground hover:text-destructive p-1 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="flex justify-between items-end pt-4">
-                      {/* Quantity buttons */}
-                      <div className="flex items-center border border-border/40 rounded-full bg-background px-2">
-                        <button
-                          onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                          className="p-1 hover:text-primary transition-colors"
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="px-3 text-xs font-semibold text-foreground">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                          className="p-1 hover:text-primary transition-colors"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      <span className="text-sm font-semibold text-primary">
-                        ₦{(item.price * item.quantity).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
+            <div className="lg:col-span-7 space-y-6">
+              {/* Free Shipping Progress Indicator */}
+              <div className="p-4 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm">
+                {remainingForFreeShipping > 0 ? (
+                  <p className="text-xs font-sans text-[#161A17] mb-2 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" />
+                    Add <span className="font-bold text-[#1C3322]">₦{remainingForFreeShipping.toLocaleString()}</span> for Complimentary Express Delivery
+                  </p>
+                ) : (
+                  <p className="text-xs font-sans text-[#1C3322] font-semibold mb-2 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#C9A227]" /> Complimentary Luxury Express Shipping Unlocked
+                  </p>
+                )}
+                <div className="w-full h-2 bg-[#E2E6E3] rounded-full overflow-hidden">
+                  <div
+                    style={{ width: `${progressPercentage}%` }}
+                    className="h-full bg-gradient-to-r from-[#1C3322] to-[#C9A227] transition-all duration-500"
+                  />
                 </div>
-              ))}
+              </div>
+
+              {/* Items Card List */}
+              <div className="space-y-4">
+                {items.map((item) => (
+                  <div
+                    key={item.variantId}
+                    className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster flex gap-6 shadow-ambient-sm"
+                  >
+                    <div className="w-24 h-28 bg-[#F3EFE8] rounded-[0.75rem] overflow-hidden border border-[#E2E6E3] shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.imageUrl || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300"}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-serif text-base font-medium text-[#161A17]">
+                            {item.title}
+                          </h3>
+                          <p className="text-[10px] uppercase tracking-[0.18em] text-[#676E6A] font-semibold mt-0.5">
+                            {item.name}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.variantId)}
+                          className="text-[#676E6A] hover:text-[#DC2626] p-1 transition-colors cursor-pointer"
+                          aria-label="Remove item"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="flex justify-between items-end pt-4">
+                        <div className="flex items-center border border-[#E2E6E3] rounded-[0.5rem] bg-[#FAF8F5] overflow-hidden">
+                          <button
+                            onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                            className="p-2 hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
+                            disabled={item.quantity <= 1}
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="px-3 text-xs font-bold text-[#161A17]">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                            className="p-2 hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <span className="font-serif text-lg font-bold text-[#1C3322]">
+                          ₦{(item.price * item.quantity).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Organic Gift Wrap Option */}
+              <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster space-y-3">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
+                    <Gift className="w-4 h-4 text-[#C9A227]" />
+                    <span>Organic Linen Gift Wrapping & Custom Handwritten Card (+₦2,500)</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={includeGiftWrap}
+                    onChange={(e) => setIncludeGiftWrap(e.target.checked)}
+                    className="w-4 h-4 accent-[#1C3322] cursor-pointer"
+                  />
+                </label>
+
+                {includeGiftWrap && (
+                  <textarea
+                    rows={2}
+                    value={giftNote}
+                    onChange={(e) => setGiftNote(e.target.value)}
+                    placeholder="Enter custom gift note message..."
+                    className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs outline-none focus:border-[#1C3322] resize-none"
+                  />
+                )}
+              </div>
+
+              {/* Delivery Dispatch Estimator */}
+              <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster space-y-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
+                  <Truck className="w-4 h-4 text-[#C9A227]" />
+                  <span>Delivery Logistics Estimator</span>
+                </div>
+
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value as any)}
+                  className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none cursor-pointer"
+                >
+                  <option value="lagos">Lagos (Mainland & Islands)</option>
+                  <option value="abuja">Abuja (FCT Metropolis)</option>
+                  <option value="ph">Port Harcourt (Rivers)</option>
+                </select>
+
+                <p className="text-xs text-[#676E6A] flex items-center gap-1.5 pt-1">
+                  <Clock className="w-3.5 h-3.5 text-[#C9A227]" /> {deliveryEstimates[selectedCity]}
+                </p>
+              </div>
             </div>
 
-            {/* Summary Sidebar */}
-            <div className="bg-card border border-border/40 rounded-2xl p-8 space-y-6 shadow-[0_10px_40px_rgba(53,94,59,0.03)]">
-              <h3 className="font-serif text-lg font-medium text-foreground pb-4 border-b border-border/20">
-                Summary
+            {/* Order Summary Sidebar */}
+            <div className="lg:col-span-5 p-8 rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-md space-y-6 sticky top-28">
+              <h3 className="font-serif text-xl font-medium text-[#161A17] pb-4 border-b border-[#E2E6E3]">
+                Order Summary
               </h3>
 
-              <div className="space-y-3 text-xs uppercase tracking-widest font-bold text-muted-foreground">
+              <div className="space-y-3 text-xs font-sans text-[#676E6A]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="text-foreground">₦{subtotal.toLocaleString()}</span>
+                  <span className="font-bold text-[#161A17]">₦{rawSubtotal.toLocaleString()}</span>
                 </div>
+
+                {appliedDiscount > 0 && (
+                  <div className="flex justify-between text-green-700 font-semibold">
+                    <span>Privilege Discount (10%)</span>
+                    <span>-₦{discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+
+                {includeGiftWrap && (
+                  <div className="flex justify-between text-[#161A17]">
+                    <span>Linen Gift Wrap</span>
+                    <span>+₦2,500</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span className="text-foreground">Calculated next</span>
+                  <span>Shipping & Taxes</span>
+                  <span className="font-bold text-[#1C3322]">Calculated at Checkout</span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-border/20 flex justify-between items-baseline">
-                <span className="text-sm font-serif font-medium text-foreground">Total</span>
-                <span className="text-lg font-bold text-primary">₦{subtotal.toLocaleString()}</span>
+              {/* Coupon UX Form */}
+              <form onSubmit={handleApplyCoupon} className="flex gap-2 pt-2 border-t border-[#E2E6E3]">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Promo Code (e.g. SANA10)"
+                  className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs outline-none uppercase font-semibold focus:border-[#1C3322]"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-3 bg-[#1C3322] text-[#FAF8F5] text-xs uppercase font-bold tracking-wider rounded-[0.5rem] hover:bg-[#C9A227] hover:text-[#161A17] transition-colors cursor-pointer"
+                >
+                  Apply
+                </button>
+              </form>
+              {couponSuccess && <p className="text-[10px] text-green-600 font-bold">{couponSuccess}</p>}
+              {couponError && <p className="text-[10px] text-red-500 font-bold">{couponError}</p>}
+
+              <div className="pt-4 border-t border-[#E2E6E3] flex justify-between items-baseline">
+                <span className="font-sans text-xs uppercase font-bold tracking-[0.18em] text-[#161A17]">
+                  Final Total
+                </span>
+                <span className="font-serif text-3xl font-bold text-[#1C3322]">
+                  ₦{finalTotal.toLocaleString()}
+                </span>
               </div>
 
-              <Link
-                href="/checkout"
-                className="w-full py-4 bg-primary text-white text-[10px] uppercase tracking-widest font-bold flex items-center justify-center gap-2 hover:bg-secondary transition-colors rounded-xl"
-              >
-                Proceed to Checkout
-                <ArrowRight className="w-4 h-4" />
+              <Link href="/checkout" className="block w-full">
+                <Button variant="botanical" size="lg" className="w-full py-4 text-xs flex items-center justify-center gap-2 shadow-ambient-md">
+                  <span>Proceed to Secure Checkout</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
               </Link>
+
+              <p className="text-center text-[10px] uppercase tracking-[0.15em] text-[#676E6A] flex items-center justify-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#C9A227]" /> 256-Bit Encrypted Payment Powered by Paystack
+              </p>
             </div>
           </div>
         ) : (
-          <div className="py-24 text-center bg-card border border-border/20 rounded-2xl max-w-xl mx-auto space-y-6 p-8">
-            <p className="text-sm text-muted-foreground">
-              Your shopping bag is empty.
+          <div className="py-24 text-center bg-[#FAF8F5] border border-[#E2E6E3] rounded-[1.5rem] max-w-xl mx-auto space-y-6 p-10 shadow-ambient-sm">
+            <div className="w-16 h-16 rounded-full bg-[#F3EFE8] flex items-center justify-center mx-auto">
+              <ShoppingBag className="w-8 h-8 text-[#676E6A] stroke-[1.2]" />
+            </div>
+            <h3 className="font-serif text-xl font-medium text-[#161A17]">Your Shopping Bag is Empty</h3>
+            <p className="text-xs text-[#676E6A] font-sans max-w-sm mx-auto leading-relaxed">
+              Discover cold-pressed extra virgin oils, coconut waters, and whipped body soufflés in our catalog.
             </p>
-            <Link
-              href="/catalog"
-              className="inline-flex items-center py-4 px-6 bg-primary text-white text-[10px] uppercase tracking-widest font-bold gap-2 hover:bg-secondary transition-all rounded-xl"
-            >
-              Browse Products
-              <ArrowRight className="w-4 h-4" />
+            <Link href="/shop" className="inline-block">
+              <Button variant="botanical" size="md">
+                Browse Shop Catalog <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
             </Link>
+          </div>
+        )}
+
+        {/* Recently Viewed Formulations */}
+        {recentlyViewed.length > 0 && (
+          <div className="pt-16 border-t border-[#E2E6E3] space-y-6">
+            <h3 className="font-serif text-2xl font-medium text-[#161A17]">
+              Recently Viewed Formulations
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {recentlyViewed.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  slug={item.slug}
+                  category={item.category || "Organic Wellness"}
+                  price={Number(item.price)}
+                  imageUrl={item.imageUrl}
+                />
+              ))}
+            </div>
           </div>
         )}
       </main>
@@ -157,3 +365,4 @@ export default function CartPage() {
     </div>
   );
 }
+

@@ -1,18 +1,16 @@
 import React from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { ShopClient, ProductItem } from "@/components/shop/ShopClient";
 import { db } from "@/db";
 
-// Real high-quality individual product image fallbacks
-const MOCK_PRODUCTS = [
+const MOCK_PRODUCTS: ProductItem[] = [
   {
     id: "1",
     title: "Extra Virgin Coconut Oil",
     slug: "extra-virgin-coconut-oil",
     category: "Organic Wellness",
-    price: "15000",
+    price: 15000,
     imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
   },
   {
@@ -20,7 +18,7 @@ const MOCK_PRODUCTS = [
     title: "Sana Amnis Coconut Water",
     slug: "sana-amnis-coconut-water",
     category: "Organic Wellness",
-    price: "4500",
+    price: 4500,
     imageUrl: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000",
   },
   {
@@ -28,7 +26,7 @@ const MOCK_PRODUCTS = [
     title: "Pure Coconut Milk Powder",
     slug: "pure-coconut-milk-powder",
     category: "Organic Wellness",
-    price: "8500",
+    price: 8500,
     imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
   },
   {
@@ -36,7 +34,7 @@ const MOCK_PRODUCTS = [
     title: "Nourishing Coconut Body Butter",
     slug: "coconut-body-butter",
     category: "Premium Skincare",
-    price: "18000",
+    price: 18000,
     imageUrl: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000",
   },
   {
@@ -44,7 +42,7 @@ const MOCK_PRODUCTS = [
     title: "Restorative Coconut Hair Mask",
     slug: "restorative-coconut-hair-mask",
     category: "Hair & Body",
-    price: "14000",
+    price: 14000,
     imageUrl: "https://drive.google.com/thumbnail?id=1--CLF51noixdnvV8HhLmosvtP75RDlRE&sz=w1000",
   },
   {
@@ -52,7 +50,7 @@ const MOCK_PRODUCTS = [
     title: "Exfoliating Coconut Sugar Scrub",
     slug: "coconut-sugar-scrub",
     category: "Premium Skincare",
-    price: "12500",
+    price: 12500,
     imageUrl: "https://drive.google.com/thumbnail?id=1kfVkQ-lqEpTKfvtl_WT-zwa28NeEOO1n&sz=w1000",
   },
   {
@@ -60,7 +58,7 @@ const MOCK_PRODUCTS = [
     title: "Toasted Organic Coconut Chips",
     slug: "organic-coconut-chips",
     category: "Gourmet Snacks",
-    price: "3500",
+    price: 3500,
     imageUrl: "https://drive.google.com/thumbnail?id=16WhogTSxDzbjaVewUFprCCPbN_mfhPxg&sz=w1000",
   },
   {
@@ -68,18 +66,37 @@ const MOCK_PRODUCTS = [
     title: "Raw Organic Coconut Flour",
     slug: "raw-coconut-flour",
     category: "Culinary Essentials",
-    price: "6000",
+    price: 6000,
     imageUrl: "https://drive.google.com/thumbnail?id=1hk33UKAflm0EIoFg_sGRzbQ3jSZsPLUp&sz=w1000",
   },
 ];
 
-export const revalidate = 60; // ISR validation time
+const MOCK_CATEGORIES = [
+  { id: "Organic Wellness", name: "Organic Wellness", count: 3 },
+  { id: "Premium Skincare", name: "Premium Skincare", count: 2 },
+  { id: "Hair & Body", name: "Hair & Body", count: 1 },
+  { id: "Gourmet Snacks", name: "Gourmet Snacks", count: 1 },
+  { id: "Culinary Essentials", name: "Culinary Essentials", count: 1 },
+];
+
+export const revalidate = 60;
 
 export default async function ShopPage() {
-  let displayProducts = MOCK_PRODUCTS;
+  let displayProducts: ProductItem[] = MOCK_PRODUCTS;
+  let categories: Array<{ id: string; name: string; count?: number }> = MOCK_CATEGORIES;
+
 
   try {
-    const productsInDb = await db.query.products.findMany({
+    const dbCategories = await db.query.categories.findMany();
+    if (dbCategories && dbCategories.length > 0) {
+      categories = dbCategories.map((c) => ({
+        id: c.id,
+        name: c.name,
+      }));
+    }
+
+
+    const dbProducts = await db.query.products.findMany({
       where: (products, { eq }) => eq(products.isActive, true),
       with: {
         category: true,
@@ -87,17 +104,24 @@ export default async function ShopPage() {
       },
     });
 
-    if (productsInDb && productsInDb.length > 0) {
-      displayProducts = productsInDb.map((p) => {
-        const firstVariantPrice = p.variants?.[0]?.price || "0";
+    if (dbProducts && dbProducts.length > 0) {
+      displayProducts = dbProducts.map((p) => {
+        const firstVariantPrice = Number(p.variants?.[0]?.price) || 0;
         const firstVariantImage = p.variants?.[0]?.imageUrl || "";
         return {
           id: p.id,
           title: p.title,
           slug: p.slug,
-          category: p.category?.name || "Organic Wellness",
+          category: p.category ? { id: p.category.id, name: p.category.name } : "Organic Wellness",
           price: firstVariantPrice,
           imageUrl: firstVariantImage || "https://images.unsplash.com/photo-1525385133336-25484cd6c648?q=80&w=600",
+          description: p.description || "",
+          variants: p.variants?.map((v) => ({
+            id: v.id,
+            name: v.name,
+            price: Number(v.price) || 0,
+            stock: v.stock || 0,
+          })),
         };
       });
     }
@@ -108,60 +132,11 @@ export default async function ShopPage() {
   return (
     <>
       <Header />
-      <main className="flex-grow bg-[#faf9f6] py-16 px-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-neutral-200/60 pb-8 mb-12">
-            <div>
-              <nav className="text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-                <Link href="/" className="hover:text-foreground">Home</Link> &nbsp;/&nbsp; <span className="text-foreground">Shop</span>
-              </nav>
-              <h1 className="font-serif text-4xl font-semibold tracking-tight text-[#1d4626]">
-                The Shop
-              </h1>
-            </div>
-            <p className="text-xs text-neutral-500 font-medium tracking-wide mt-4 sm:mt-0">
-              Showing {displayProducts.length} Premium Formulations
-            </p>
-          </div>
-
-          {/* Full Width Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayProducts.map((prod) => (
-              <Link
-                key={prod.id}
-                href={`/products/${prod.slug}`}
-                className="group flex flex-col border border-neutral-200/60 overflow-hidden bg-white transition-all duration-300 hover:shadow-[0_15px_50px_rgba(53,94,59,0.08)] rounded-2xl"
-              >
-                <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100">
-                  <img
-                    src={prod.imageUrl}
-                    alt={prod.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-6 flex flex-col flex-1 justify-between space-y-4">
-                  <div>
-                    <span className="text-[9px] uppercase tracking-wider text-[#C9A227] font-bold block mb-1">
-                      {prod.category}
-                    </span>
-                    <h3 className="font-serif text-base font-semibold text-[#1d4626] group-hover:text-[#3b6845] transition-colors leading-tight">
-                      {prod.title}
-                    </h3>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
-                    <span className="font-serif font-bold text-[#1d4626]">₦{Number(prod.price).toLocaleString()}</span>
-                    <div className="text-xs font-bold uppercase tracking-widest text-[#1d4626] group-hover:text-[#3b6845] transition-colors flex items-center gap-1.5">
-                      Details <ShoppingBag className="w-4 h-4" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+      <main className="flex-grow bg-[#FAF8F5]">
+        <ShopClient initialProducts={displayProducts} categories={categories} />
       </main>
       <Footer />
     </>
   );
 }
+
