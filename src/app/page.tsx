@@ -110,7 +110,7 @@ export default async function Home() {
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-6 md:p-8 flex flex-wrap justify-around items-center shadow-[0_10px_40px_rgba(53,94,59,0.05)] border border-white">
             <div className="flex items-center gap-3 py-2">
               <CheckCircle2 className="w-6 h-6 text-[#1d4626]" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#424941]">Free Delivery</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#424941]">Cold Pressed Pure</span>
             </div>
             <div className="hidden md:block w-px h-8 bg-neutral-200" />
             <div className="flex items-center gap-3 py-2">
@@ -122,31 +122,6 @@ export default async function Home() {
               <MapPin className="w-6 h-6 text-[#1d4626]" />
               <span className="text-xs font-semibold uppercase tracking-widest text-[#424941]">Made in Nigeria</span>
             </div>
-          </div>
-        </section>
-
-        {/* Special Delivery Offer Banner */}
-        <section className="bg-[#F3EFE8] rounded-3xl p-8 md:p-12 border border-[#E5E7EB] flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="space-y-4 max-w-xl">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A227]">Limited Promotion</span>
-            <h3 className="font-serif text-2xl md:text-3xl font-semibold text-[#1d4626]">Special Delivery Offer</h3>
-            <p className="text-sm text-neutral-600 leading-relaxed font-sans">
-              Buy 10+ 500ml bottles (or 20+ 250ml pouches) and get <strong>FREE DELIVERY</strong> anywhere in Nigeria! 
-              Save on delivery fees and enjoy our premium electrolyte-rich coconut water delivered straight to your doorstep.
-            </p>
-          </div>
-          <div className="bg-[#FAF9F6] p-6 rounded-2xl border border-neutral-200 shadow-sm min-w-[280px] space-y-4 text-center">
-            <div className="text-[#355E3B] font-serif font-bold text-2xl">₦30,000</div>
-            <div className="text-[10px] text-neutral-500 uppercase tracking-widest font-sans">10 Bottles (500ml) Pack</div>
-            <div className="bg-emerald-100 text-[#1d4626] py-2 rounded-full text-xs font-bold uppercase tracking-wide">
-              + Free Shipping
-            </div>
-            <Link
-              href="/shop"
-              className="block w-full bg-[#1d4626] hover:bg-[#355e3b] text-white py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all"
-            >
-              Order Offer
-            </Link>
           </div>
         </section>
 

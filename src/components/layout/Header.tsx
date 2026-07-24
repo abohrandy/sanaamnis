@@ -53,11 +53,6 @@ export default function Header() {
             <Link href="/about" className="text-black hover:text-[#1d4626] transition-colors !text-black">
               About Us
             </Link>
-            {(session?.user as any)?.role === "admin" && (
-              <Link href="/admin" className="text-[#cea62c] hover:text-[#755b00] transition-colors !text-[#cea62c]">
-                Admin Panel
-              </Link>
-            )}
           </nav>
 
           {/* Actions (Pure high-contrast black/green) */}
@@ -120,11 +115,6 @@ export default function Header() {
             <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-black hover:text-[#1d4626] py-2 border-b border-neutral-100 !text-black">
               About Us
             </Link>
-            {(session?.user as any)?.role === "admin" && (
-              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-[#cea62c] py-2 !text-[#cea62c]">
-                Admin Panel
-              </Link>
-            )}
           </nav>
         )}
       </header>
