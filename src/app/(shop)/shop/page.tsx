@@ -13,15 +13,15 @@ const MOCK_PRODUCTS = [
     slug: "extra-virgin-coconut-oil",
     category: "Organic Wellness",
     price: "15000",
-    imageUrl: "https://images.unsplash.com/photo-1548364538-60b952c308b9?q=80&w=600",
+    imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
   },
   {
     id: "2",
     title: "Sana Amnis Coconut Water",
     slug: "sana-amnis-coconut-water",
     category: "Organic Wellness",
-    price: "3000",
-    imageUrl: "https://images.unsplash.com/photo-1525385133336-25484cd6c648?q=80&w=600",
+    price: "4500",
+    imageUrl: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w1000",
   },
   {
     id: "3",
@@ -29,7 +29,7 @@ const MOCK_PRODUCTS = [
     slug: "coconut-body-butter",
     category: "Premium Skincare",
     price: "18000",
-    imageUrl: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600",
+    imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
   },
 ];
 

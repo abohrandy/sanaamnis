@@ -8,25 +8,36 @@ import { db } from "@/db";
 
 // Fallback high-end product definition if DB is empty
 const MOCK_DETAILS: Record<string, any> = {
-  "amnis-cashmere-overcoat": {
+  "extra-virgin-coconut-oil": {
     id: "1",
-    title: "Amnis Cashmere Overcoat",
-    slug: "amnis-cashmere-overcoat",
-    description: "Indulge in unparalleled warmth and sophistication. Our cashmere coat features structural precision cutting, premium hand-sewn linings, and deep internal pockets. Crafted responsibly from eco-sourced Mongolian cashmere yarns.",
-    category: "Coats",
+    title: "Extra Virgin Coconut Oil",
+    slug: "extra-virgin-coconut-oil",
+    description: "Cold-pressed organic extra virgin coconut oil extracted from fresh coconut milk. Rich in medium-chain fatty acids (Lauric Acid) to nourish skin, condition hair, and enhance wellness.",
+    category: "Organic Wellness",
     variants: [
-      { id: "v1-m", sku: "AM-CASH-OCT-M", name: "Medium / Camel", price: "185000", stock: 8, imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600" },
-      { id: "v1-l", sku: "AM-CASH-OCT-L", name: "Large / Camel", price: "185000", stock: 4, imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600" },
+      { id: "v1-250", sku: "SA-COCO-OIL-250", name: "250ml Pouch", price: "15000", stock: 50, imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000" },
+      { id: "v1-500", sku: "SA-COCO-OIL-500", name: "500ml Glass Bottle", price: "28000", stock: 30, imageUrl: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w1000" },
     ],
   },
-  "linen-minimalist-kimono": {
+  "sana-amnis-coconut-water": {
     id: "2",
-    title: "Linen Minimalist Kimono",
-    slug: "linen-minimalist-kimono",
-    description: "Relaxed-fit unstructured kimono coat. Breathable organic flax linen tailored with raw hems, wide sleeves, and matching tie-belts. Essential layering piece for mild seasonal shifts.",
-    category: "Outerwear",
+    title: "Organic Coconut Water",
+    slug: "sana-amnis-coconut-water",
+    description: "100% pure bioactive coconut water harvested at peak freshness. Hydrates naturally with potassium, magnesium, and essential coconut electrolytes with zero added sugars.",
+    category: "Organic Wellness",
     variants: [
-      { id: "v2-one", sku: "AM-LIN-KMN-OS", name: "One Size / Ivory", price: "95000", stock: 12, imageUrl: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=600" },
+      { id: "v2-330", sku: "SA-COCO-WTR-330", name: "330ml Pack", price: "4500", stock: 120, imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000" },
+      { id: "v2-1000", sku: "SA-COCO-WTR-1L", name: "1 Litre Family Pack", price: "12000", stock: 60, imageUrl: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000" },
+    ],
+  },
+  "coconut-body-butter": {
+    id: "3",
+    title: "Nourishing Coconut Body Butter",
+    slug: "coconut-body-butter",
+    description: "Deeply moisturizing body cream crafted with raw coconut lipids, unrefined shea butter, and vitamin E. Restores skin elasticity and provides long-lasting velvety moisture.",
+    category: "Premium Skincare",
+    variants: [
+      { id: "v3-200", sku: "SA-COCO-BTR-200", name: "200g Jar", price: "18000", stock: 40, imageUrl: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000" },
     ],
   },
 };

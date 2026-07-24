@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Plus, Trash2, X, Image as ImageIcon, CheckCircle } from "lucide-react";
 
-// Initial Seed Data with Product Images
+// Initial Seed Data with Product Images from Google Drive
 const INITIAL_PRODUCTS = [
   {
     id: "1",
@@ -17,7 +17,7 @@ const INITIAL_PRODUCTS = [
     price: "15000",
     stock: 50,
     category: "Organic Wellness",
-    imageUrl: "https://images.unsplash.com/photo-1608248597263-0059e3614729?q=80&w=800",
+    imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
     description: "Cold-pressed organic extra virgin coconut oil for pure hair, skin, and culinary nourishment.",
   },
   {
@@ -28,7 +28,7 @@ const INITIAL_PRODUCTS = [
     price: "4500",
     stock: 120,
     category: "Organic Wellness",
-    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800",
+    imageUrl: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w1000",
     description: "100% natural bio-active coconut water packed with natural electrolytes.",
   },
   {
@@ -39,14 +39,13 @@ const INITIAL_PRODUCTS = [
     price: "18000",
     stock: 40,
     category: "Premium Skincare",
-    imageUrl: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=800",
-    description: "Rich restorative body butter infused with raw coconut extract and botanical shea butter.",
+    imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
   },
 ];
 
 const INITIAL_CATEGORIES = [
-  { id: "1", name: "Organic Wellness", slug: "organic-wellness", count: 2, imageUrl: "https://images.unsplash.com/photo-1608248597263-0059e3614729?q=80&w=800" },
-  { id: "2", name: "Premium Skincare", slug: "premium-skincare", count: 1, imageUrl: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=800" },
+  { id: "1", name: "Organic Wellness", slug: "organic-wellness", count: 2, imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000" },
+  { id: "2", name: "Premium Skincare", slug: "premium-skincare", count: 1, imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000" },
 ];
 
 const INITIAL_COUPONS = [
@@ -55,10 +54,12 @@ const INITIAL_COUPONS = [
 ];
 
 const SAMPLE_IMAGES = [
-  { label: "Coconut Oil", url: "https://images.unsplash.com/photo-1608248597263-0059e3614729?q=80&w=800" },
-  { label: "Coconut Water", url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800" },
-  { label: "Body Butter", url: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=800" },
-  { label: "Pure Coconut", url: "https://images.unsplash.com/photo-1520072959219-c595dc870360?q=80&w=800" },
+  { label: "Coconut Oil", url: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000" },
+  { label: "Coconut Water", url: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w1000" },
+  { label: "Body Butter", url: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000" },
+  { label: "Pure Coconut Milk", url: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000" },
+  { label: "Hair Mask", url: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000" },
+  { label: "Coconut Scrub", url: "https://drive.google.com/thumbnail?id=1--CLF51noixdnvV8HhLmosvtP75RDlRE&sz=w1000" },
 ];
 
 export default function AdminCatalogPage() {
