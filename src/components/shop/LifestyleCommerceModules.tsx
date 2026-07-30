@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   HeartPulse,
@@ -186,11 +187,12 @@ export function LifestyleCommerceModules({ products }: { products: CatalogProduc
 
           {/* Hero Photography Frame */}
           <div className="lg:col-span-5 relative aspect-square lg:aspect-auto overflow-hidden bg-[#242A26]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={activeModule.heroImage}
-              alt={activeModule.title}
-              className="w-full h-full object-cover"
+              alt=""
+              fill
+              sizes="(max-width: 1024px) 100vw, 42vw"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#161A17] via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#161A17] lg:via-transparent lg:to-transparent" />
           </div>

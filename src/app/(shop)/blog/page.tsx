@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -58,11 +59,13 @@ export default function BlogPage() {
               key={p.slug}
               className="group space-y-6"
             >
-              <div className="aspect-[16/10] bg-muted rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(53,94,59,0.02)]">
-                <img
+              <div className="relative aspect-[16/10] bg-[#F3EFE8] rounded-2xl overflow-hidden border border-[#E2E6E3]">
+                <Image
                   src={p.imageUrl}
-                  alt={p.title}
-                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
 

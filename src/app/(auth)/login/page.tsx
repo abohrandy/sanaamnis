@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/lib/auth-client";
@@ -67,9 +68,12 @@ export default function LoginPage() {
       <div className="max-w-md w-full bg-[#FAF9F6] border border-neutral-200/60 p-8 shadow-[0_15px_50px_rgba(53,94,59,0.15)] space-y-8 rounded-2xl">
         {/* Header with official Long Coconut Logo */}
         <div className="text-center space-y-2">
-          <img
+          <Image
             src="/logo_long.png"
-            alt="Sana Amnis Premium Coconuts"
+            alt="Sana Amnis"
+            width={240}
+            height={56}
+            priority
             className="mx-auto h-12 w-auto object-contain mb-2"
           />
           <p className="text-xs text-[#6B7280] leading-relaxed font-sans">

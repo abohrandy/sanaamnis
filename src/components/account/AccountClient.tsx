@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -288,9 +289,8 @@ export function AccountClient() {
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between p-3 rounded-[0.75rem] bg-[#F3EFE8] border border-[#E2E6E3]">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-12 rounded-[0.375rem] bg-[#E2E6E3] overflow-hidden shrink-0">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                          <div className="relative w-10 h-12 rounded-[0.375rem] bg-[#E2E6E3] overflow-hidden shrink-0">
+                            <Image src={item.imageUrl} alt="" fill sizes="40px" className="object-cover" />
                           </div>
                           <div>
                             <h4 className="text-xs font-semibold text-[#161A17]">{item.title}</h4>

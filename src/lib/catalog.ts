@@ -478,3 +478,43 @@ export function startingPrice(product: CatalogProduct): number {
 export function formatNaira(amount: number): string {
   return `₦${Math.round(amount).toLocaleString("en-NG")}`;
 }
+
+/**
+ * Free-text product search across title, tagline, category and SKU.
+ *
+ * Every term must match somewhere, so "coconut oil" narrows rather than widens.
+ * Results are ranked with a title match ahead of a body match — good enough for a
+ * sixteen-product catalog, and it avoids pulling in a search dependency.
+ */
+export function searchProducts(query: string, limit = 20): CatalogProduct[] {
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (terms.length === 0) return [];
+
+  const scored = CATALOG.map((product) => {
+    const title = product.title.toLowerCase();
+    const haystack = [
+      title,
+      product.tagline,
+      product.description,
+      CATEGORIES[product.categorySlug].name,
+      ...product.variants.map((v) => `${v.name} ${v.sku}`),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    if (!terms.every((term) => haystack.includes(term))) return null;
+
+    let score = 0;
+    for (const term of terms) {
+      if (title.startsWith(term)) score += 3;
+      else if (title.includes(term)) score += 2;
+      else score += 1;
+    }
+    return { product, score };
+  }).filter(Boolean) as Array<{ product: CatalogProduct; score: number }>;
+
+  return scored
+    .sort((a, b) => b.score - a.score || a.product.title.localeCompare(b.product.title))
+    .slice(0, limit)
+    .map((s) => s.product);
+}

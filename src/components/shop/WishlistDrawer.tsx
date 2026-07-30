@@ -1,37 +1,67 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, ShoppingBag, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { useCartStore } from "@/store/cartStore";
+import { useHydrated } from "@/hooks/useHydratedStore";
+import { CATALOG, formatNaira } from "@/lib/catalog";
 
 export interface WishlistDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  items?: Array<{
-    id: string;
-    title: string;
-    slug: string;
-    price: number;
-    imageUrl: string;
-  }>;
-  onRemoveItem?: (id: string) => void;
-  onAddToCart?: (item: any) => void;
 }
 
-export function WishlistDrawer({
-  isOpen,
-  onClose,
-  items = [],
-  onRemoveItem,
-  onAddToCart,
-}: WishlistDrawerProps) {
+/**
+ * Saved items panel.
+ *
+ * Reads the shared store directly. It previously took an `items` prop that the
+ * header never passed, so the drawer was permanently empty no matter what a
+ * customer had saved.
+ */
+export function WishlistDrawer({ isOpen, onClose }: WishlistDrawerProps) {
+  const hydrated = useHydrated();
+  const items = useWishlistStore((s) => s.items);
+  const remove = useWishlistStore((s) => s.remove);
+  const addItem = useCartStore((s) => s.addItem);
+
+  // Stop the page behind the drawer from scrolling while it is open.
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const saved = hydrated ? items : [];
+
+  const moveToBag = (slug: string, productId: string) => {
+    const product = CATALOG.find((p) => p.slug === slug);
+    const variant = product?.variants.find((v) => v.stock > 0) ?? product?.variants[0];
+    if (!product || !variant) return;
+
+    addItem({
+      variantId: variant.id,
+      productId: product.id,
+      sku: variant.sku,
+      name: variant.name,
+      title: product.title,
+      price: variant.price,
+      stock: variant.stock,
+      imageUrl: variant.imageUrl || product.images[0],
+    });
+    remove(productId);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -40,100 +70,119 @@ export function WishlistDrawer({
             className="fixed inset-0 bg-[#161A17]/60 backdrop-blur-sm z-50 cursor-pointer"
           />
 
-          {/* Wishlist Panel */}
-          <motion.div
+          <motion.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 350, damping: 30 }}
-            className="fixed right-0 top-0 bottom-0 w-full sm:w-[460px] bg-[#FAF8F5] border-l border-[#E2E6E3] z-50 flex flex-col shadow-ambient-lg"
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Saved items"
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-[#FAF8F5] z-50 flex flex-col shadow-ambient-lg border-l border-[#E2E6E3]"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-[#E2E6E3]">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#C9A227]/20 text-[#8C531B] flex items-center justify-center">
-                  <Heart className="w-4 h-4 fill-current" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-medium text-[#161A17]">Your Wishlist</h3>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-[#676E6A]">
-                    {items.length} Saved {items.length === 1 ? "Formula" : "Formulas"}
-                  </p>
-                </div>
-              </div>
+            <header className="flex items-center justify-between px-6 py-5 border-b border-[#E2E6E3]">
+              <h2 className="font-serif text-lg font-medium text-[#161A17] flex items-center gap-2">
+                <Heart className="w-4 h-4 text-[#C9A227]" aria-hidden="true" />
+                Saved items
+                {saved.length > 0 && (
+                  <span className="text-[10px] font-sans font-bold text-[#676E6A]">
+                    ({saved.length})
+                  </span>
+                )}
+              </h2>
               <button
+                type="button"
                 onClick={onClose}
-                className="p-2.5 rounded-full hover:bg-[#F3EFE8] text-[#161A17] transition-colors"
-                aria-label="Close wishlist drawer"
+                aria-label="Close saved items"
+                className="p-2 rounded-full hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
-            </div>
+            </header>
 
-            {/* Content List */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {items.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                  <div className="w-16 h-16 rounded-full bg-[#F3EFE8] flex items-center justify-center mb-4">
-                    <Heart className="w-8 h-8 text-[#676E6A] stroke-[1.2]" />
-                  </div>
-                  <h4 className="font-serif text-lg font-medium text-[#161A17] mb-1">No Saved Elixirs</h4>
-                  <p className="text-xs text-[#676E6A] font-sans max-w-[240px] mb-6 leading-relaxed">
-                    Save your favorite organic formulas to build your personalized daily wellness routine.
-                  </p>
-                  <Button variant="botanical" size="md" onClick={onClose}>
-                    Discover Products
-                  </Button>
+            {saved.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-8 space-y-4">
+                <div className="w-14 h-14 rounded-full bg-[#F3EFE8] border border-[#E2E6E3] flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-[#676E6A] stroke-[1.4]" aria-hidden="true" />
                 </div>
-              ) : (
-                items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4 pb-6 border-b border-[#E2E6E3] last:border-0"
-                  >
-                    <div className="w-20 h-24 rounded-[0.75rem] bg-[#F3EFE8] overflow-hidden border border-[#E2E6E3] shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 flex flex-col justify-between">
-                      <div>
-                        <h4 className="font-serif font-medium text-[#161A17] text-sm mb-1">
-                          {item.title}
-                        </h4>
-                        <span className="font-serif font-bold text-[#1C3322] text-sm">
-                          ₦{item.price.toLocaleString()}
-                        </span>
-                      </div>
+                <p className="text-sm text-[#676E6A] leading-relaxed max-w-xs">
+                  Nothing saved yet. Tap the heart on any product to keep it here.
+                </p>
+                <Link href="/shop" onClick={onClose}>
+                  <Button variant="botanical" size="md">
+                    Browse products
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <>
+                <ul className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+                  {saved.map((item) => (
+                    <li
+                      key={item.productId}
+                      className="flex gap-4 pb-4 border-b border-[#E2E6E3]/70 last:border-0"
+                    >
+                      <Link
+                        href={`/products/${item.slug}`}
+                        onClick={onClose}
+                        className="relative w-20 h-24 rounded-[0.6rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3] shrink-0"
+                      >
+                        <Image
+                          src={item.imageUrl}
+                          alt=""
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      </Link>
 
-                      <div className="flex items-center justify-between pt-2">
-                        {onAddToCart && (
+                      <div className="flex-1 min-w-0 flex flex-col">
+                        <span className="text-[10px] uppercase tracking-[0.16em] text-[#676E6A] font-semibold">
+                          {item.categoryName}
+                        </span>
+                        <Link
+                          href={`/products/${item.slug}`}
+                          onClick={onClose}
+                          className="font-serif text-sm font-medium text-[#161A17] hover:text-[#1C3322] transition-colors line-clamp-2"
+                        >
+                          {item.title}
+                        </Link>
+                        <span className="font-serif text-sm font-semibold text-[#1C3322] mt-1">
+                          {formatNaira(item.price)}
+                        </span>
+
+                        <div className="mt-auto pt-2 flex items-center gap-2">
                           <button
-                            onClick={() => onAddToCart(item)}
-                            className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-sans font-bold text-[#1C3322] hover:text-[#C9A227] transition-colors"
+                            type="button"
+                            onClick={() => moveToBag(item.slug, item.productId)}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-[0.5rem] bg-[#1C3322] text-[#FAF8F5] text-[10px] font-bold uppercase tracking-[0.14em] hover:bg-[#2D4E35] transition-colors cursor-pointer"
                           >
-                            <ShoppingBag className="w-3.5 h-3.5" /> Move to Cart
+                            <ShoppingBag className="w-3 h-3" /> Add to bag
                           </button>
-                        )}
-                        {onRemoveItem && (
                           <button
-                            onClick={() => onRemoveItem(item.id)}
-                            className="text-[#676E6A] hover:text-[#DC2626] transition-colors p-1"
-                            aria-label="Remove item from wishlist"
+                            type="button"
+                            onClick={() => remove(item.productId)}
+                            aria-label={`Remove ${item.title} from saved items`}
+                            className="p-2 rounded-[0.5rem] border border-[#E2E6E3] text-[#676E6A] hover:text-[#8C531B] hover:border-[#8C531B]/40 transition-colors cursor-pointer"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </motion.div>
+                    </li>
+                  ))}
+                </ul>
+
+                <footer className="px-6 py-5 border-t border-[#E2E6E3]">
+                  <Link href="/wishlist" onClick={onClose} className="block">
+                    <Button variant="alabaster" size="lg" className="w-full">
+                      View all saved items
+                    </Button>
+                  </Link>
+                </footer>
+              </>
+            )}
+          </motion.aside>
         </>
       )}
     </AnimatePresence>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, ShoppingBag, Heart, User, ChevronDown, Sparkles, BookOpen, ChefHat, Leaf } from "lucide-react";
@@ -55,8 +56,13 @@ export function MobileNav({
             {/* Top Drawer Header */}
             <div className="p-6 border-b border-[#E2E6E3] flex items-center justify-between">
               <Link href="/" onClick={onClose} className="flex items-center gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo_long.png" alt="Sana Amnis" className="h-9 w-auto object-contain" />
+                <Image
+                  src="/logo_long.png"
+                  alt="Sana Amnis"
+                  width={200}
+                  height={40}
+                  className="h-9 w-auto object-contain"
+                />
               </Link>
               <button
                 onClick={onClose}

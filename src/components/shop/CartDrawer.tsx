@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
 import { motion, AnimatePresence } from "framer-motion";
@@ -204,12 +205,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         key={item.variantId}
                         className="flex gap-4 pb-4 border-b border-[#E2E6E3] last:border-0"
                       >
-                        <div className="w-20 h-24 rounded-[0.75rem] bg-[#F3EFE8] overflow-hidden border border-[#E2E6E3] shrink-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={item.imageUrl || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300"}
-                            alt={item.title}
-                            className="w-full h-full object-cover"
+                        <div className="relative w-20 h-24 rounded-[0.75rem] bg-[#F3EFE8] overflow-hidden border border-[#E2E6E3] shrink-0">
+                          <Image
+                            src={item.imageUrl || "/products/placeholder.jpg"}
+                            alt=""
+                            fill
+                            sizes="80px"
+                            className="object-cover"
                           />
                         </div>
                         <div className="flex-1 flex flex-col justify-between">
@@ -320,9 +322,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           className="flex items-center justify-between p-3 rounded-[0.75rem] bg-[#FAF8F5] border border-[#E2E6E3]"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-[0.375rem] bg-[#F3EFE8] overflow-hidden shrink-0">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={cs.imageUrl} alt={cs.title} className="w-full h-full object-cover" />
+                            <div className="relative w-10 h-10 rounded-[0.375rem] bg-[#F3EFE8] overflow-hidden shrink-0">
+                              <Image src={cs.imageUrl} alt="" fill sizes="40px" className="object-cover" />
                             </div>
                             <div>
                               <h5 className="text-xs font-semibold text-[#161A17] line-clamp-1">{cs.title}</h5>

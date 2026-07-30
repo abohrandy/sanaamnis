@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -132,12 +133,13 @@ export default function CartPage() {
                     key={item.variantId}
                     className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster flex gap-6 shadow-ambient-sm"
                   >
-                    <div className="w-24 h-28 bg-[#F3EFE8] rounded-[0.75rem] overflow-hidden border border-[#E2E6E3] shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.imageUrl || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300"}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
+                    <div className="relative w-24 h-28 bg-[#F3EFE8] rounded-[0.75rem] overflow-hidden border border-[#E2E6E3] shrink-0">
+                      <Image
+                        src={item.imageUrl || "/products/placeholder.jpg"}
+                        alt=""
+                        fill
+                        sizes="96px"
+                        className="object-cover"
                       />
                     </div>
 

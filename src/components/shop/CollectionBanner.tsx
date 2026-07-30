@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Leaf } from "lucide-react";
@@ -23,11 +24,13 @@ export function CollectionBanner({
   return (
     <div className="relative rounded-[2rem] overflow-hidden bg-[#161A17] text-[#FAF8F5] mb-12 border border-gold-hairline shadow-ambient-lg min-h-[360px] flex items-center">
       {/* Background Hero Image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={imageUrl}
-        alt={title}
-        className="absolute inset-0 w-full h-full object-cover opacity-40 transition-transform duration-1000 scale-105"
+        alt=""
+        fill
+        sizes="100vw"
+        priority
+        className="object-cover opacity-40 scale-105"
       />
 
       {/* Gradient Vignette Overlay */}

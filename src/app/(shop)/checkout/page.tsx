@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useCartStore } from "@/store/cartStore";
@@ -320,12 +321,13 @@ export default function CheckoutPage() {
               <div className="divide-y divide-[#E2E6E3] max-h-[340px] overflow-y-auto pr-2 space-y-4">
                 {items.map((item) => (
                   <div key={item.variantId} className="flex gap-4 pt-4 first:pt-0">
-                    <div className="w-14 h-16 rounded-[0.5rem] bg-[#F3EFE8] overflow-hidden border border-[#E2E6E3] shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.imageUrl || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=200"}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
+                    <div className="relative w-14 h-16 rounded-[0.5rem] bg-[#F3EFE8] overflow-hidden border border-[#E2E6E3] shrink-0">
+                      <Image
+                        src={item.imageUrl || "/products/placeholder.jpg"}
+                        alt=""
+                        fill
+                        sizes="56px"
+                        className="object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">

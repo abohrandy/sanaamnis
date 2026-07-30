@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -32,11 +33,13 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="aspect-[4/3] bg-muted rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(53,94,59,0.03)]">
-            <img
-              src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600"
-              alt="Botanical Coconut Sourcing"
-              className="w-full h-full object-cover"
+          <div className="relative aspect-[4/3] bg-[#F3EFE8] rounded-2xl overflow-hidden shadow-ambient-md border border-[#E2E6E3]">
+            <Image
+              src="/products/range-full-light.jpg"
+              alt="The Sana Amnis range of coconut products"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
             />
           </div>
         </div>

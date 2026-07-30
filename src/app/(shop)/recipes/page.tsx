@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -58,11 +59,13 @@ export default function RecipesPage() {
               key={r.slug}
               className="group bg-card rounded-2xl overflow-hidden hover:shadow-[0_10px_40px_rgba(53,94,59,0.03)] transition-all duration-300"
             >
-              <div className="relative aspect-[16/9] bg-muted overflow-hidden">
-                <img
+              <div className="relative aspect-[16/9] bg-[#F3EFE8] overflow-hidden">
+                <Image
                   src={r.imageUrl}
-                  alt={r.title}
-                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <span className="absolute top-4 left-4 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-[9px] uppercase tracking-widest text-primary font-bold">
                   {r.difficulty}
