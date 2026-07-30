@@ -3,8 +3,12 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AccountClient } from "@/components/account/AccountClient";
 
-export const revalidate = 0;
-
+/**
+ * Statically rendered on purpose. Everything on this page is per-customer and comes
+ * from the session on the client, so there is nothing to render per request — and
+ * request-time page rendering is currently failing on the Railway deployment, which
+ * is what made this route return 500.
+ */
 export default function AccountPage() {
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
