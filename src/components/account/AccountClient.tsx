@@ -31,7 +31,23 @@ import { WishlistGrid } from "@/components/shop/WishlistGrid";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
 import { useSession } from "@/lib/auth-client";
+import { formatNaira } from "@/lib/catalog";
 import Link from "next/link";
+
+export interface AccountOrder {
+  id: string;
+  reference: string;
+  status: string;
+  total: number;
+  date: string;
+  items: Array<{
+    title: string;
+    name: string;
+    quantity: number;
+    price: number;
+    imageUrl: string;
+  }>;
+}
 
 export type AccountTab =
   | "overview"
@@ -43,84 +59,14 @@ export type AccountTab =
   | "security"
   | "notifications";
 
-const MOCK_ORDERS = [
-  {
-    id: "ord-1",
-    reference: "AMNIS-8902",
-    date: "June 25, 2026",
-    total: 30500,
-    status: "Delivered",
-    items: [
-      {
-        title: "Extra Virgin Coconut Oil",
-        name: "500ml Glass Bottle",
-        quantity: 1,
-        price: 28000,
-        imageUrl: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w300",
-      },
-      {
-        title: "Sana Amnis Coconut Water",
-        name: "250ml Pouch Pack",
-        quantity: 1,
-        price: 2500,
-        imageUrl: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w300",
-      },
-    ],
-    courier: "DHL Priority Express",
-    trackingNumber: "DHL-NG-889912",
-  },
-  {
-    id: "ord-2",
-    reference: "AMNIS-7712",
-    date: "May 14, 2026",
-    total: 12500,
-    status: "Delivered",
-    items: [
-      {
-        title: "Exfoliating Coconut Sugar Scrub",
-        name: "200g Glass Jar",
-        quantity: 1,
-        price: 12500,
-        imageUrl: "https://drive.google.com/thumbnail?id=1kfVkQ-lqEpTKfvtl_WT-zwa28NeEOO1n&sz=w300",
-      },
-    ],
-    courier: "GIG Logistics Express",
-    trackingNumber: "GIG-7712-LA",
-  },
-];
-
-const MOCK_ADDRESSES = [
-  {
-    id: "addr-1",
-    isDefault: true,
-    label: "Primary Residence",
-    name: "Chika Obi",
-    phone: "+234 803 123 4567",
-    street: "Plot 12, Admiralty Way, Phase 1",
-    city: "Lekki",
-    state: "Lagos State",
-    country: "Nigeria",
-  },
-  {
-    id: "addr-2",
-    isDefault: false,
-    label: "Office Sanctuary",
-    name: "Chika Obi",
-    phone: "+234 803 123 4567",
-    street: "Tower 2, Victoria Island Commercial Hub",
-    city: "Victoria Island",
-    state: "Lagos State",
-    country: "Nigeria",
-  },
-];
-
 export function AccountClient() {
   const { data: session } = useSession();
   const hydrated = useHydrated();
   const wishlistCount = useWishlistStore((s) => (hydrated ? s.items.length : 0));
 
   const [activeTab, setActiveTab] = useState<AccountTab>("overview");
-  const [addresses, setAddresses] = useState(MOCK_ADDRESSES);
+  const [orders, setOrders] = useState<AccountOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
   // Seeded from the signed-in session rather than a hardcoded persona.
   const [profileName, setProfileName] = useState("");
   const [profileEmail, setProfileEmail] = useState("");
@@ -132,6 +78,32 @@ export function AccountClient() {
     setProfileEmail((current) => current || session.user.email || "");
   }, [session]);
 
+  // Real orders replace the two hardcoded ones — complete with invented courier
+  // names and tracking numbers — that used to be shown to every visitor.
+  useEffect(() => {
+    let cancelled = false;
+    if (!session?.user) {
+      setOrders([]);
+      setOrdersLoading(false);
+      return;
+    }
+    setOrdersLoading(true);
+    fetch("/api/account/orders")
+      .then((r) => (r.ok ? r.json() : { orders: [] }))
+      .then((data) => {
+        if (!cancelled) setOrders(data.orders ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setOrders([]);
+      })
+      .finally(() => {
+        if (!cancelled) setOrdersLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
+
   // Notification toggles
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [harvestDrops, setHarvestDrops] = useState(true);
@@ -139,7 +111,7 @@ export function AccountClient() {
 
   const TABS = [
     { id: "overview", label: "Sanctuary Overview", icon: User },
-    { id: "orders", label: "Orders Archive", icon: ShoppingBag, badge: MOCK_ORDERS.length },
+    { id: "orders", label: "Orders Archive", icon: ShoppingBag, badge: orders.length },
     { id: "wishlist", label: "Saved Formulations", icon: Heart, badge: wishlistCount },
     { id: "addresses", label: "Saved Destinations", icon: MapPin },
     { id: "reviews", label: "My Critiques", icon: MessageSquare },
@@ -218,7 +190,7 @@ export function AccountClient() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-2">
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#676E6A]">Total Orders</span>
-                <span className="font-serif text-3xl font-bold text-[#1C3322] block">{MOCK_ORDERS.length}</span>
+                <span className="font-serif text-3xl font-bold text-[#1C3322] block">{orders.length}</span>
                 <span className="text-[10px] text-green-700 font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" /> All Delivered Cleanly
                 </span>
@@ -251,12 +223,12 @@ export function AccountClient() {
               <div className="space-y-4">
                 <div className="p-5 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3] flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <span className="font-serif font-bold text-sm text-[#161A17] block">{MOCK_ORDERS[0].reference}</span>
-                    <span className="text-[10px] text-[#676E6A] font-sans">{MOCK_ORDERS[0].date} — {MOCK_ORDERS[0].courier}</span>
+                    <span className="font-serif font-bold text-sm text-[#161A17] block">{orders[0]?.reference ?? "—"}</span>
+                    <span className="text-[10px] text-[#676E6A] font-sans">{orders[0] ? new Date(orders[0].date).toLocaleDateString("en-NG") : "No orders yet"}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Badge variant="gold">{MOCK_ORDERS[0].status}</Badge>
-                    <span className="font-serif font-bold text-base text-[#1C3322]">₦{MOCK_ORDERS[0].total.toLocaleString()}</span>
+                    <Badge variant="gold">{orders[0]?.status ?? "—"}</Badge>
+                    <span className="font-serif font-bold text-base text-[#1C3322]">{orders[0] ? formatNaira(orders[0].total) : "—"}</span>
                   </div>
                 </div>
               </div>
@@ -267,15 +239,35 @@ export function AccountClient() {
         {/* ORDERS TAB */}
         {activeTab === "orders" && (
           <div className="space-y-6">
-            <h2 className="font-serif text-2xl font-medium text-[#161A17]">Orders Archive</h2>
+            <h2 className="font-serif text-2xl font-medium text-[#161A17]">Your orders</h2>
 
+            {ordersLoading ? (
+              <p className="text-sm text-[#676E6A] py-10 text-center">Loading your orders…</p>
+            ) : orders.length === 0 ? (
+              <div className="py-16 px-8 text-center rounded-[1.5rem] border border-dashed border-[#E2E6E3] bg-[#F3EFE8]/40 space-y-4">
+                <Package className="w-6 h-6 text-[#C9A227] mx-auto" />
+                <h3 className="font-serif text-lg font-medium text-[#161A17]">No orders yet</h3>
+                <p className="text-sm text-[#676E6A] max-w-sm mx-auto leading-relaxed">
+                  Orders you place while signed in will appear here.
+                </p>
+                <Link href="/shop" className="inline-block pt-1">
+                  <Button variant="botanical" size="md">Start shopping</Button>
+                </Link>
+              </div>
+            ) : (
             <div className="space-y-6">
-              {MOCK_ORDERS.map((order) => (
+              {orders.map((order) => (
                 <div key={order.id} className="p-8 rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-6">
                   <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#E2E6E3]">
                     <div>
                       <span className="font-serif text-lg font-bold text-[#161A17]">{order.reference}</span>
-                      <span className="text-xs text-[#676E6A] font-sans block">{order.date}</span>
+                      <span className="text-xs text-[#676E6A] font-sans block">
+                        {new Date(order.date).toLocaleDateString("en-NG", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -302,19 +294,22 @@ export function AccountClient() {
                     ))}
                   </div>
 
-                  {/* Tracking Footer */}
                   <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#E2E6E3] text-xs font-sans">
                     <span className="text-[#676E6A] flex items-center gap-1.5">
-                      <Truck className="w-4 h-4 text-[#C9A227]" /> {order.courier} — Tracking Code: <strong className="text-[#161A17]">{order.trackingNumber}</strong>
+                      <Truck className="w-4 h-4 text-[#C9A227]" />
+                      Questions about this order? Quote {order.reference}.
                     </span>
-
-                    <button className="px-4 py-2 rounded-[0.5rem] border border-[#E2E6E3] bg-[#FAF8F5] text-[10px] uppercase font-bold tracking-wider hover:bg-[#F3EFE8] transition-colors flex items-center gap-1.5 cursor-pointer">
-                      Track Package <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
+                    <Link
+                      href="/contact"
+                      className="px-4 py-2 rounded-[0.5rem] border border-[#E2E6E3] bg-[#FAF8F5] text-[10px] uppercase font-bold tracking-wider hover:bg-[#F3EFE8] transition-colors flex items-center gap-1.5"
+                    >
+                      Contact us <ExternalLink className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
+            )}
           </div>
         )}
 
@@ -330,62 +325,36 @@ export function AccountClient() {
         {/* SAVED DESTINATIONS TAB */}
         {activeTab === "addresses" && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="font-serif text-2xl font-medium text-[#161A17]">Saved Shipping Destinations</h2>
-              <Button variant="botanical" size="sm" className="text-xs">
-                <Plus className="w-3.5 h-3.5 mr-1.5" /> Add New Address
-              </Button>
-            </div>
+            <h2 className="font-serif text-2xl font-medium text-[#161A17]">Delivery addresses</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {addresses.map((addr) => (
-                <div key={addr.id} className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-4 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-serif font-bold text-base text-[#161A17]">{addr.label}</span>
-                      {addr.isDefault && <Badge variant="gold">PRIMARY DESTINATION</Badge>}
-                    </div>
-
-                    <div className="text-xs font-sans text-[#676E6A] space-y-1 pt-2">
-                      <p className="font-semibold text-[#161A17]">{addr.name}</p>
-                      <p>{addr.street}</p>
-                      <p>{addr.city}, {addr.state}, {addr.country}</p>
-                      <p>{addr.phone}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-4 border-t border-[#E2E6E3]">
-                    <button className="text-xs text-[#1C3322] font-semibold flex items-center gap-1 hover:underline cursor-pointer">
-                      <Edit2 className="w-3.5 h-3.5" /> Edit
-                    </button>
-                    {!addr.isDefault && (
-                      <button className="text-xs text-red-600 font-semibold flex items-center gap-1 hover:underline cursor-pointer">
-                        <Trash2 className="w-3.5 h-3.5" /> Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+            <div className="py-16 px-8 text-center rounded-[1.5rem] border border-dashed border-[#E2E6E3] bg-[#F3EFE8]/40 space-y-4">
+              <MapPin className="w-6 h-6 text-[#C9A227] mx-auto" />
+              <h3 className="font-serif text-lg font-medium text-[#161A17]">
+                No saved addresses
+              </h3>
+              <p className="text-sm text-[#676E6A] max-w-sm mx-auto leading-relaxed">
+                We do not store an address book yet — you enter your delivery address at
+                checkout each time. If you would like saved addresses, tell us and we
+                will add it.
+              </p>
+              <Link href="/contact" className="inline-block pt-1">
+                <Button variant="outline" size="md">Send feedback</Button>
+              </Link>
             </div>
           </div>
         )}
 
         {/* REWARDS TAB */}
         {activeTab === "rewards" && (
-          <div className="p-8 rounded-[1.5rem] bg-[#161A17] text-[#FAF8F5] border border-gold-hairline shadow-ambient-lg space-y-6">
-            <Badge variant="gold">CIRCULAR GLASS REWARDS</Badge>
-            <h2 className="font-serif text-3xl font-medium text-[#FAF8F5]">Amber Glass Return Program</h2>
-            <p className="text-xs md:text-sm font-sans text-[#FAF8F5]/80 leading-relaxed max-w-xl">
-              Return 5 empty amber glass bottles to any Sana Amnis sanctuary drop-off point in Lagos or Abuja to unlock a complimentary 250ml Nectar voucher.
+          <div className="p-8 md:p-10 rounded-[1.5rem] bg-[#161A17] text-[#FAF8F5] border border-gold-hairline shadow-ambient-lg space-y-5">
+            <Badge variant="gold">Coming soon</Badge>
+            <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#FAF8F5]">
+              A rewards programme is on the way
+            </h2>
+            <p className="text-sm text-[#FAF8F5]/75 leading-relaxed max-w-xl">
+              We are putting together a scheme that rewards repeat orders and returned
+              packaging. Join the mailing list and we will tell you the moment it opens.
             </p>
-
-            <div className="p-6 rounded-[1rem] bg-[#FAF8F5]/10 border border-white/10 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A227]">Your Balance</span>
-                <span className="font-serif text-3xl font-bold text-[#FAF8F5] block">450 Points</span>
-              </div>
-              <Button variant="gold" size="md">Redeem Voucher</Button>
-            </div>
           </div>
         )}
 
