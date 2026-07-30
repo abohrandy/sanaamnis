@@ -1,100 +1,88 @@
 import React from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
-import { ArrowRight, Clock, Heart } from "lucide-react";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { ArrowRight, Clock, Users } from "lucide-react";
+import { RECIPES } from "@/lib/content";
 
-interface Recipe {
-  title: string;
-  slug: string;
-  excerpt: string;
-  duration: string;
-  difficulty: string;
-  imageUrl: string;
-}
-
-const MOCK_RECIPES: Recipe[] = [
-  {
-    title: "The Botanical Hair Moisture Wrap",
-    slug: "botanical-hair-wrap",
-    excerpt: "Infuse dry scalp locks with raw virgin coconut fats combined with fresh lavender blossoms.",
-    duration: "45 Mins",
-    difficulty: "Easy",
-    imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600",
-  },
-  {
-    title: "Organic Coconut and Ginger Tonic",
-    slug: "coconut-ginger-tonic",
-    excerpt: "Sip raw volcanic coconut juices cold-pressed with immunity boosting ginger extracts.",
-    duration: "10 Mins",
-    difficulty: "Simple",
-    imageUrl: "https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?q=80&w=600",
-  },
-];
+export const metadata: Metadata = {
+  title: "Recipes",
+  description:
+    "Simple things to cook with coconut milk powder, coconut flour and cold-pressed coconut oil — plus a hair treatment that actually works.",
+  alternates: { canonical: "/recipes" },
+};
 
 export default function RecipesPage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
       <Header />
 
-      <main className="flex-grow max-w-7xl mx-auto px-6 py-20 w-full space-y-16">
-        {/* Header */}
-        <div className="max-w-2xl space-y-4">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
-            Botanical Rituals
-          </span>
-          <h1 className="font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
-            Sana Amnis Recipes
-          </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Curated wellness instructions blending extra virgin coconut ingredients for glowing hair health, diet enhancement, and body repair.
-          </p>
-        </div>
+      <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-12 md:py-16 space-y-12">
+        <Breadcrumbs items={[{ label: "Recipes" }]} />
 
-        {/* Recipes Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {MOCK_RECIPES.map((r) => (
-            <div
-              key={r.slug}
-              className="group bg-card rounded-2xl overflow-hidden hover:shadow-[0_10px_40px_rgba(53,94,59,0.03)] transition-all duration-300"
+        <header className="max-w-2xl space-y-4">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-bold">
+            Recipes
+          </span>
+          <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17] leading-[1.12]">
+            Things worth making
+          </h1>
+          <p className="text-sm md:text-base text-[#676E6A] leading-relaxed">
+            A handful of recipes that use what we sell, written properly — with the
+            ratios that matter and the mistakes worth avoiding.
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          {RECIPES.map((recipe, i) => (
+            <article
+              key={recipe.slug}
+              className="group relative flex flex-col rounded-[1.25rem] border border-[#E2E6E3] overflow-hidden bg-[#FAF8F5] hover:shadow-ambient-md hover-lift-luxury transition-all duration-500"
             >
-              <div className="relative aspect-[16/9] bg-[#F3EFE8] overflow-hidden">
+              <div className="relative aspect-[4/3] bg-[#F3EFE8] overflow-hidden">
                 <Image
-                  src={r.imageUrl}
+                  src={recipe.image}
                   alt=""
                   fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority={i < 2}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <span className="absolute top-4 left-4 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-[9px] uppercase tracking-widest text-primary font-bold">
-                  {r.difficulty}
-                </span>
               </div>
 
-              <div className="p-8 space-y-4">
-                <div className="flex gap-4 text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {r.duration}
+              <div className="p-5 md:p-6 flex flex-col flex-1">
+                <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.14em] text-[#676E6A] font-semibold mb-2">
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="w-3 h-3" aria-hidden="true" /> {recipe.duration}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Users className="w-3 h-3" aria-hidden="true" /> {recipe.serves}
                   </span>
                 </div>
 
-                <h3 className="font-serif text-2xl font-medium text-foreground">
-                  {r.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {r.excerpt}
+                <h2 className="font-serif text-lg font-medium text-[#161A17] leading-snug mb-1.5">
+                  <Link
+                    href={`/recipes/${recipe.slug}`}
+                    className="transition-colors hover:text-[#1C3322]"
+                  >
+                    <span className="absolute inset-0 z-10" aria-hidden="true" />
+                    {recipe.title}
+                  </Link>
+                </h2>
+
+                <p className="text-xs text-[#676E6A] leading-relaxed line-clamp-3 mb-4">
+                  {recipe.excerpt}
                 </p>
-                <Link
-                  href={`/recipes/${r.slug}`}
-                  className="inline-flex items-center text-[10px] uppercase tracking-widest text-primary font-bold gap-2 group-hover:text-accent transition-colors duration-300 pt-2"
-                >
-                  View Steps
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
+
+                <span className="mt-auto pt-4 border-t border-[#E2E6E3]/70 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#1C3322] group-hover:text-[#C9A227] transition-colors">
+                  Read recipe
+                  <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </main>

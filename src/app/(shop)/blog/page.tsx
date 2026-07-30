@@ -1,67 +1,98 @@
 import React from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ArrowRight, Calendar } from "lucide-react";
+import { ARTICLES, formatDate } from "@/lib/content";
 
-interface Post {
-  title: string;
-  slug: string;
-  excerpt: string;
-  date: string;
-  category: string;
-  imageUrl: string;
-}
-
-const MOCK_POSTS: Post[] = [
-  {
-    title: "The Art of Slow Botanical Extraction",
-    slug: "slow-botanical-extraction",
-    excerpt: "Why cold processing preserves essential coconut fatty chains better than quick heat treatments.",
-    date: "June 24, 2026",
-    category: "Craftsmanship",
-    imageUrl: "https://images.unsplash.com/photo-1540340561271-9d29158bf3ee?q=80&w=600",
-  },
-  {
-    title: "Organic Coconut Water: Volcanic Soil Hydration",
-    slug: "volcanic-soil-hydration",
-    excerpt: "Sourcing electrolyte liquids from organic palm trees rooted in mineral-dense soils.",
-    date: "May 18, 2026",
-    category: "Heritage",
-    imageUrl: "https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?q=80&w=600",
-  },
-];
+export const metadata: Metadata = {
+  title: "Journal",
+  description:
+    "Practical guides to coconut oil, flour and water — how they behave, how to store them, and where our coconuts come from.",
+  alternates: { canonical: "/blog" },
+};
 
 export default function BlogPage() {
+  const [lead, ...rest] = ARTICLES;
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
       <Header />
 
-      <main className="flex-grow max-w-7xl mx-auto px-6 py-20 w-full space-y-16">
-        {/* Header */}
-        <div className="max-w-2xl space-y-4">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-primary font-bold">
-            Amnis Journal
-          </span>
-          <h1 className="font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
-            Botanical Chronicles
-          </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Read expert research on organic skincare formulations, dietary wellness, and heritage sourcing strategies.
-          </p>
-        </div>
+      <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-12 md:py-16 space-y-14">
+        <Breadcrumbs items={[{ label: "Journal" }]} />
 
-        {/* Blog grid */}
-        <div className="grid md:grid-cols-2 gap-12">
-          {MOCK_POSTS.map((p) => (
-            <article
-              key={p.slug}
-              className="group space-y-6"
+        <header className="max-w-2xl space-y-4">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-bold">
+            Journal
+          </span>
+          <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17] leading-[1.12]">
+            Notes on what we make
+          </h1>
+          <p className="text-sm md:text-base text-[#676E6A] leading-relaxed">
+            Straightforward guides — how our oils differ, why coconut flour needs more
+            liquid than you expect, and how we source.
+          </p>
+        </header>
+
+        {lead && (
+          <article className="group grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pb-14 border-b border-[#E2E6E3]">
+            <Link
+              href={`/blog/${lead.slug}`}
+              className="lg:col-span-7 relative aspect-[16/10] rounded-[1.5rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3]"
+              tabIndex={-1}
+              aria-hidden="true"
             >
-              <div className="relative aspect-[16/10] bg-[#F3EFE8] rounded-2xl overflow-hidden border border-[#E2E6E3]">
+              <Image
+                src={lead.image}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 58vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+              />
+            </Link>
+
+            <div className="lg:col-span-5 space-y-4">
+              <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.16em] text-[#676E6A] font-bold">
+                <span className="text-[#C9A227]">{lead.category}</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3" aria-hidden="true" />
+                  {formatDate(lead.date)}
+                </span>
+              </div>
+
+              <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#161A17] leading-snug">
+                <Link
+                  href={`/blog/${lead.slug}`}
+                  className="transition-colors hover:text-[#1C3322]"
+                >
+                  {lead.title}
+                </Link>
+              </h2>
+
+              <p className="text-sm text-[#676E6A] leading-relaxed">{lead.excerpt}</p>
+
+              <Link
+                href={`/blog/${lead.slug}`}
+                className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#1C3322] hover:text-[#C9A227] transition-colors pt-1"
+              >
+                Read article
+                <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </article>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          {rest.map((post) => (
+            <article key={post.slug} className="group relative space-y-4">
+              <div className="relative aspect-[16/10] rounded-[1.25rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3]">
                 <Image
-                  src={p.imageUrl}
+                  src={post.image}
                   alt=""
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -69,31 +100,21 @@ export default function BlogPage() {
                 />
               </div>
 
-              <div className="space-y-3">
-                <div className="flex gap-4 items-center text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
-                  <span className="text-primary">{p.category}</span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {p.date}
-                  </span>
-                </div>
-
-                <h3 className="font-serif text-2xl font-semibold text-foreground group-hover:text-primary transition-colors">
-                  <Link href={`/blog/${p.slug}`}>{p.title}</Link>
-                </h3>
-
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {p.excerpt}
-                </p>
-
-                <Link
-                  href={`/blog/${p.slug}`}
-                  className="inline-flex items-center text-[10px] uppercase tracking-widest text-primary font-bold gap-2 group-hover:text-accent transition-colors duration-300 pt-2"
-                >
-                  Read Editorial
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
+              <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.16em] text-[#676E6A] font-bold">
+                <span className="text-[#C9A227]">{post.category}</span>
+                <span>{post.readingMinutes} min read</span>
               </div>
+
+              <h2 className="font-serif text-xl font-medium text-[#161A17] leading-snug">
+                <Link href={`/blog/${post.slug}`} className="transition-colors hover:text-[#1C3322]">
+                  <span className="absolute inset-0 z-10" aria-hidden="true" />
+                  {post.title}
+                </Link>
+              </h2>
+
+              <p className="text-xs text-[#676E6A] leading-relaxed line-clamp-3">
+                {post.excerpt}
+              </p>
             </article>
           ))}
         </div>

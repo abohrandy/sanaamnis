@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { CATALOG, CATEGORIES } from "@/lib/catalog";
+import { RECIPES, ARTICLES } from "@/lib/content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com";
 
@@ -40,6 +41,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.8,
+    })),
+    ...RECIPES.map((recipe) => ({
+      url: `${BASE_URL}/recipes/${recipe.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
+    ...ARTICLES.map((article) => ({
+      url: `${BASE_URL}/blog/${article.slug}`,
+      lastModified: new Date(article.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
     })),
   ];
 }

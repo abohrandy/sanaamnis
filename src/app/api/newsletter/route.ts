@@ -7,8 +7,13 @@ export const dynamic = "force-dynamic";
 
 const subscribeSchema = z.object({
   email: z.string().email().max(254),
-  /** Honeypot: a real person never fills a field they cannot see. */
-  company: z.string().max(0).optional(),
+  /**
+   * Honeypot: a real person never fills a field they cannot see.
+   * Deliberately unconstrained — `max(0)` made Zod reject a filled-in honeypot
+   * before the handler below ever ran, so a bot got a validation error instead
+   * of the silent fake-success that is supposed to give it away.
+   */
+  company: z.string().optional(),
 });
 
 export async function POST(request: Request) {

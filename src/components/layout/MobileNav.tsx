@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Search, ShoppingBag, Heart, User, ChevronDown, Sparkles, BookOpen, ChefHat, Leaf } from "lucide-react";
+import { X, Search, ShoppingBag, Heart, User, ChevronDown, BookOpen, ChefHat, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CATEGORIES } from "@/lib/catalog";
 
 export interface MobileNavProps {
   isOpen: boolean;
@@ -146,14 +147,18 @@ export function MobileNav({
                       className="pl-4 pt-3 space-y-2 text-xs text-[#676E6A] font-normal lowercase"
                     >
                       <Link href="/shop" onClick={onClose} className="block py-1 capitalize hover:text-[#1C3322]">
-                        All Organic Oils
+                        All products
                       </Link>
-                      <Link href="/collections" onClick={onClose} className="block py-1 capitalize hover:text-[#1C3322]">
-                        Cold-Pressed Nectars
-                      </Link>
-                      <Link href="/collections" onClick={onClose} className="block py-1 capitalize hover:text-[#1C3322]">
-                        Artisanal Butters
-                      </Link>
+                      {Object.values(CATEGORIES).map((category) => (
+                        <Link
+                          key={category.slug}
+                          href={`/shop?category=${category.slug}`}
+                          onClick={onClose}
+                          className="block py-1 capitalize hover:text-[#1C3322]"
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
                     </motion.div>
                   )}
                 </AnimatePresence>

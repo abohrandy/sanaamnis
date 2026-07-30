@@ -1,192 +1,182 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/lib/auth-client";
-import { LogIn, Loader2, ShieldCheck, UserPlus } from "lucide-react";
-import Link from "next/link";
+import { LogIn, Loader2, UserPlus, ArrowLeft } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  // Send the customer back to the page they came from (e.g. checkout) once
+  // signed in, rather than always landing on /account.
+  const redirectTo = searchParams.get("redirect") || "/account";
+
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
-    setSuccessMessage("");
 
     try {
+      // Both flows previously redirected to /admin — a customer who just made an
+      // account was sent straight into a page the middleware then blocked with
+      // "Forbidden: Administrative Credentials Required".
       if (mode === "signin") {
-        const res = await signIn.email({
-          email,
-          password,
-          callbackURL: "/admin", // Redirecting to admin on successful auth
-        });
-        
+        const res = await signIn.email({ email, password, callbackURL: redirectTo });
         if (res?.error) {
-          setError(res.error.message || "Failed to sign in. Please verify your credentials.");
+          setError(res.error.message || "Could not sign in. Check your email and password.");
           setIsSubmitting(false);
           return;
         }
-
-        window.location.href = "/admin";
+        window.location.href = redirectTo;
       } else {
-        const res = await signUp.email({
-          email,
-          password,
-          name,
-          callbackURL: "/admin",
-        });
-
+        const res = await signUp.email({ email, password, name, callbackURL: redirectTo });
         if (res?.error) {
-          setError(res.error.message || "Failed to create account. Please verify your inputs.");
+          setError(res.error.message || "Could not create your account.");
           setIsSubmitting(false);
           return;
         }
-
-        setSuccessMessage("Account created successfully! Redirecting...");
-        // Explicit client-side redirect fallback
-        window.location.href = "/admin";
+        window.location.href = redirectTo;
       }
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Authentication process failed. Please verify inputs.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0f0d] flex items-center justify-center px-6 py-20">
-      <div className="max-w-md w-full bg-[#FAF9F6] border border-neutral-200/60 p-8 shadow-[0_15px_50px_rgba(53,94,59,0.15)] space-y-8 rounded-2xl">
-        {/* Header with official Long Coconut Logo */}
-        <div className="text-center space-y-2">
+    <div className="min-h-screen bg-[#1C3322] flex items-center justify-center px-6 py-16">
+      <div className="max-w-md w-full bg-[#FAF8F5] border border-[#E2E6E3] p-8 md:p-10 shadow-ambient-lg space-y-8 rounded-[1.5rem]">
+        <div className="text-center space-y-3">
           <Image
             src="/logo_long.png"
             alt="Sana Amnis"
             width={240}
             height={56}
             priority
-            className="mx-auto h-12 w-auto object-contain mb-2"
+            className="mx-auto h-11 w-auto object-contain"
           />
-          <p className="text-xs text-[#6B7280] leading-relaxed font-sans">
-            {mode === "signin" 
-              ? "Please authenticate to access editorial tools and inventories." 
-              : "Register your secure account credentials to join the network."}
+          <p className="text-sm text-[#676E6A] leading-relaxed">
+            {mode === "signin"
+              ? "Sign in to see your orders and saved items."
+              : "Create an account to track orders and save products."}
           </p>
         </div>
 
-        {/* Tab Selector */}
-        <div className="flex border-b border-neutral-200">
-          <button
-            onClick={() => { setMode("signin"); setError(""); setSuccessMessage(""); }}
-            className={`flex-1 pb-3 text-xs uppercase tracking-widest font-bold transition-all ${
-              mode === "signin"
-                ? "border-b-2 border-[#355E3B] text-[#355E3B]"
-                : "text-neutral-400 hover:text-neutral-600"
-            }`}
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => { setMode("signup"); setError(""); setSuccessMessage(""); }}
-            className={`flex-1 pb-3 text-xs uppercase tracking-widest font-bold transition-all ${
-              mode === "signup"
-                ? "border-b-2 border-[#355E3B] text-[#355E3B]"
-                : "text-neutral-400 hover:text-neutral-600"
-            }`}
-          >
-            Register / Sign Up
-          </button>
+        <div className="flex border-b border-[#E2E6E3]" role="tablist">
+          {(["signin", "signup"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={mode === m}
+              onClick={() => {
+                setMode(m);
+                setError("");
+              }}
+              className={`flex-1 pb-3 text-[11px] uppercase tracking-[0.16em] font-bold transition-colors cursor-pointer ${
+                mode === m
+                  ? "border-b-2 border-[#1C3322] text-[#1C3322]"
+                  : "text-[#676E6A] hover:text-[#161A17]"
+              }`}
+            >
+              {m === "signin" ? "Sign in" : "Create account"}
+            </button>
+          ))}
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs font-semibold uppercase tracking-wider">
+          <p
+            role="alert"
+            className="p-3.5 rounded-[0.5rem] bg-[#8C531B]/10 border border-[#8C531B]/25 text-[#8C531B] text-xs font-semibold"
+          >
             {error}
-          </div>
+          </p>
         )}
 
-        {successMessage && (
-          <div className="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 text-xs font-semibold uppercase tracking-wider">
-            {successMessage}
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {mode === "signup" && (
             <Input
-              label="Full Name"
+              label="Full name"
               type="text"
               required
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Randy A."
+              placeholder="Your name"
             />
           )}
 
           <Input
-            label="Email Address"
+            label="Email address"
             type="email"
             required
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="abohrandy@gmail.com"
+            placeholder="you@example.com"
           />
           <Input
-            label="Security Password"
+            label="Password"
             type="password"
             required
+            autoComplete={mode === "signin" ? "current-password" : "new-password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
           />
 
           <Button
+            variant="botanical"
+            size="lg"
             type="submit"
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#355E3B] hover:bg-[#274f2e] text-white py-3 text-xs uppercase tracking-widest font-bold"
+            className="w-full flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {mode === "signin" ? "Verifying Credentials..." : "Creating Account..."}
+                {mode === "signin" ? "Signing in…" : "Creating account…"}
+              </>
+            ) : mode === "signin" ? (
+              <>
+                <LogIn className="w-4 h-4" /> Sign in
               </>
             ) : (
               <>
-                {mode === "signin" ? (
-                  <>
-                    <LogIn className="w-4 h-4" />
-                    Sign In
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4" />
-                    Sign Up
-                  </>
-                )}
+                <UserPlus className="w-4 h-4" /> Create account
               </>
             )}
           </Button>
         </form>
 
-        {/* Disclaimer / Redirect links */}
-        <div className="text-center pt-4 border-t border-neutral-200/60 flex justify-between items-center text-[10px] uppercase tracking-widest text-[#6B7280] font-bold font-sans">
-          <Link href="/" className="hover:text-[#355E3B] transition-colors flex items-center gap-1">
-            ← Storefront
+        <div className="text-center pt-2">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-[#676E6A] hover:text-[#1C3322] font-semibold transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to shop
           </Link>
-          <span className="flex items-center gap-1 text-[#355E3B]">
-            <ShieldCheck className="w-3.5 h-3.5" /> RBAC Enabled
-          </span>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

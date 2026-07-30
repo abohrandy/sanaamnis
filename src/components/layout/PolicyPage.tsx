@@ -18,6 +18,8 @@ export interface PolicyPageProps {
   intro: string;
   sections: PolicySection[];
   lastUpdated?: string;
+  /** Rendered after the sections, before the "last updated" line — e.g. related links. */
+  children?: React.ReactNode;
 }
 
 /**
@@ -30,6 +32,7 @@ export function PolicyPage({
   intro,
   sections,
   lastUpdated,
+  children,
 }: PolicyPageProps) {
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
@@ -81,6 +84,8 @@ export function PolicyPage({
             </section>
           ))}
         </div>
+
+        {children}
 
         {lastUpdated && (
           <p className="pt-8 border-t border-[#E2E6E3] text-[10px] uppercase tracking-[0.2em] text-[#676E6A] font-semibold">

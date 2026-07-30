@@ -19,7 +19,9 @@ export function CollectionBanner({
   subtitle = "100% COLD-PRESSED ORGANIC FORMULATIONS",
   description = "Explore our unrefined organic coconut elixirs, cold-pressed nectars, and artisanal body formulations harvested directly from Nigeria's coastal palm groves.",
   itemCount,
-  imageUrl = "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1600",
+  // The shop page never passes an image, so this default is what customers
+  // actually see — it was a generic Unsplash stock photo unrelated to the brand.
+  imageUrl = "/products/range-full-dark.jpg",
 }: CollectionBannerProps) {
   return (
     <div className="relative rounded-[2rem] overflow-hidden bg-[#161A17] text-[#FAF8F5] mb-12 border border-gold-hairline shadow-ambient-lg min-h-[360px] flex items-center">

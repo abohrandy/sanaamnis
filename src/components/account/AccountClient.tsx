@@ -415,7 +415,7 @@ export function AccountClient() {
               <div className="flex items-center justify-between pb-4 border-b border-[#E2E6E3]">
                 <div>
                   <h4 className="font-serif text-base font-medium text-[#161A17]">Fresh Harvest Drop Announcements</h4>
-                  <p className="text-xs text-[#676E6A]">Get priority notifications when new cold-pressed virgin batches arrive from Badagry.</p>
+                  <p className="text-xs text-[#676E6A]">Get an email the moment a new batch or product goes live.</p>
                 </div>
                 <input
                   type="checkbox"
