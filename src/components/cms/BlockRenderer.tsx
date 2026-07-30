@@ -100,7 +100,7 @@ export function FeaturedProductsBlock({ properties }: BlockProps) {
             {title || "Featured Additions"}
           </h2>
         </div>
-        <Link href="/catalog" className="text-sm font-semibold hover:text-primary transition-colors flex items-center gap-2 mt-4 md:mt-0">
+        <Link href="/shop" className="text-sm font-semibold hover:text-primary transition-colors flex items-center gap-2 mt-4 md:mt-0">
           Browse Catalog <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

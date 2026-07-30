@@ -1,96 +1,127 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/db";
-import { orders, transactions } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { orders, orderItems, transactions, productVariants } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 import { sendEmail } from "@/lib/resend";
+import { formatNaira } from "@/lib/catalog";
+
+export const dynamic = "force-dynamic";
+
+/** Constant-time comparison so the signature check cannot be probed by timing. */
+function signatureMatches(expected: string, received: string | null): boolean {
+  if (!received) return false;
+  const a = Buffer.from(expected, "utf8");
+  const b = Buffer.from(received, "utf8");
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
 
 export async function POST(request: Request) {
   try {
     const payload = await request.text();
     const signature = request.headers.get("x-paystack-signature");
-    const secret = process.env.PAYSTACK_SECRET_KEY || "sk_test_mockkey";
+    const secret = process.env.PAYSTACK_SECRET_KEY;
 
-    if (!signature && process.env.NODE_ENV === "production") {
-      return NextResponse.json({ error: "Missing verification signature" }, { status: 400 });
+    if (!secret) {
+      console.error("[paystack-webhook] PAYSTACK_SECRET_KEY is not configured.");
+      return NextResponse.json({ error: "Not configured" }, { status: 500 });
     }
 
-    // Verify signature using HMAC SHA512
-    const hash = crypto
-      .createHmac("sha512", secret)
-      .update(payload)
-      .digest("hex");
-
-    if (hash !== signature && process.env.NODE_ENV === "production") {
-      return NextResponse.json({ error: "Signature verification failed" }, { status: 400 });
+    const expected = crypto.createHmac("sha512", secret).update(payload).digest("hex");
+    if (!signatureMatches(expected, signature)) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const event = JSON.parse(payload);
+    if (event.event !== "charge.success") {
+      return NextResponse.json({ status: "ignored" });
+    }
 
-    if (event.event === "charge.success") {
-      const { reference, customer, metadata, amount } = event.data;
-      const orderNumber = metadata?.orderNumber || reference;
+    const { reference, customer, metadata, amount } = event.data;
+    const orderNumber = metadata?.orderNumber || reference;
 
-      // 1. Idempotency Check: Verify if this transaction was already processed
-      const existingTx = await db.query.transactions.findFirst({
-        where: eq(transactions.reference, reference),
+    // Paystack retries on non-2xx, so this must be safe to receive twice.
+    const existingTx = await db.query.transactions.findFirst({
+      where: eq(transactions.reference, reference),
+    });
+    if (existingTx) {
+      return NextResponse.json({ status: "success", message: "Already processed." });
+    }
+
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.orderNumber, orderNumber),
+    });
+    if (!order) {
+      console.error(`[paystack-webhook] no order for ${orderNumber}`);
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    const paidNaira = amount / 100;
+    const expectedNaira = Number(order.totalAmount);
+
+    // Flag rather than reject: the payment is real and already taken, so it must be
+    // recorded, but a mismatch needs a human to look at it.
+    const amountMismatch = Math.abs(paidNaira - expectedNaira) > 0.01;
+    if (amountMismatch) {
+      console.error(
+        `[paystack-webhook] amount mismatch on ${orderNumber}: paid ${paidNaira}, expected ${expectedNaira}`
+      );
+    }
+
+    await db.transaction(async (tx) => {
+      await tx.insert(transactions).values({
+        orderId: order.id,
+        gateway: "paystack",
+        reference,
+        amount: paidNaira.toFixed(2),
+        status: "success",
+        rawResponse: event.data,
       });
 
-      if (existingTx) {
-        return NextResponse.json({ status: "success", message: "Transaction already processed." });
-      }
+      await tx
+        .update(orders)
+        .set({ status: amountMismatch ? "needs_review" : "paid" })
+        .where(eq(orders.id, order.id));
 
-      // 2. Fetch the corresponding Order
-      const order = await db.query.orders.findFirst({
-        where: eq(orders.orderNumber, orderNumber),
+      // Stock comes down when money actually arrives, not when a bag is filled.
+      const lines = await tx.query.orderItems.findMany({
+        where: eq(orderItems.orderId, order.id),
       });
-
-      if (!order) {
-        return NextResponse.json({ error: "Order not found" }, { status: 404 });
-      }
-
-      const orderAmountInNaira = (amount / 100).toFixed(2);
-
-      // 3. Update DB state atomically using transaction
-      await db.transaction(async (tx) => {
-        // Log transaction details
-        await tx.insert(transactions).values({
-          orderId: order.id,
-          gateway: "paystack",
-          reference: reference,
-          amount: orderAmountInNaira,
-          status: "success",
-          rawResponse: event.data,
-        });
-
-        // Set order status to paid
+      for (const line of lines) {
         await tx
-          .update(orders)
-          .set({ status: "paid" })
-          .where(eq(orders.id, order.id));
-      });
+          .update(productVariants)
+          .set({ stock: sql`GREATEST(0, ${productVariants.stock} - ${line.quantity})` })
+          .where(eq(productVariants.id, line.variantId));
+      }
+    });
 
-      // 4. Send Confirmation Email via Resend
+    // A failed email must not fail the webhook — Paystack would retry a settled payment.
+    try {
       await sendEmail({
         to: customer.email,
-        subject: `Order Confirmation - ${orderNumber}`,
+        subject: `Order confirmed — ${orderNumber}`,
         html: `
-          <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea;">
-            <h2 style="font-family: serif; color: #1d4626;">SANA AMNIS</h2>
-            <hr style="border: 0; border-top: 1px solid #eaeaea;" />
-            <p>Hello,</p>
-            <p>We are pleased to confirm your payment of <strong>₦${parseFloat(orderAmountInNaira).toLocaleString()}</strong> for order <strong>${orderNumber}</strong>.</p>
-            <p>Our packaging department is already inspecting and styling your garments to prepare for shipment.</p>
-            <br />
-            <p>Client Services Division,<br />Sana Amnis</p>
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 28px; max-width: 600px; margin: 0 auto; background: #FAF8F5; color: #161A17;">
+            <h2 style="font-family: Georgia, serif; color: #1C3322; margin: 0 0 6px;">Sana Amnis</h2>
+            <p style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #C9A227; margin: 0 0 20px;">Order confirmed</p>
+            <hr style="border: 0; border-top: 1px solid #E2E6E3;" />
+            <p>Thank you — we have received your payment of <strong>${formatNaira(paidNaira)}</strong> for order <strong>${orderNumber}</strong>.</p>
+            <p>We are packing your order now. Lagos deliveries usually arrive within 24–48 hours; elsewhere in Nigeria takes 3–5 working days.</p>
+            <p style="margin-top: 24px; font-size: 13px; color: #676E6A;">
+              Questions? Reply to this email or write to concierge@sanaamnis.com.
+            </p>
+            <p style="margin-top: 20px;">Sana Amnis</p>
           </div>
         `,
       });
+    } catch (emailError) {
+      console.error(`[paystack-webhook] confirmation email failed for ${orderNumber}:`, emailError);
     }
 
     return NextResponse.json({ status: "success" });
-  } catch (error: any) {
-    console.error("Webhook processing failed:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    console.error("[paystack-webhook] processing failed:", error);
+    return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 }

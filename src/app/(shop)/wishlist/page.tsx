@@ -134,7 +134,7 @@ export default function WishlistPage() {
               Your wishlist contains no saved organic items.
             </p>
             <Link
-              href="/catalog"
+              href="/shop"
               className="inline-flex items-center py-4 px-6 bg-primary text-white text-[10px] uppercase tracking-widest font-bold gap-2 hover:bg-secondary transition-all rounded-xl"
             >
               Browse Catalog

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
@@ -26,7 +26,10 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ProductCard } from "@/components/ds/cards/product-card";
+import { WishlistGrid } from "@/components/shop/WishlistGrid";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { useHydrated } from "@/hooks/useHydratedStore";
+import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 
 export type AccountTab =
@@ -85,25 +88,6 @@ const MOCK_ORDERS = [
   },
 ];
 
-const MOCK_WISHLIST = [
-  {
-    id: "4",
-    title: "Nourishing Coconut Body Butter",
-    slug: "coconut-body-butter",
-    category: "Premium Skincare",
-    price: 18000,
-    imageUrl: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000",
-  },
-  {
-    id: "5",
-    title: "Restorative Coconut Hair Mask",
-    slug: "restorative-coconut-hair-mask",
-    category: "Hair & Body",
-    price: 14000,
-    imageUrl: "https://drive.google.com/thumbnail?id=1--CLF51noixdnvV8HhLmosvtP75RDlRE&sz=w1000",
-  },
-];
-
 const MOCK_ADDRESSES = [
   {
     id: "addr-1",
@@ -130,11 +114,22 @@ const MOCK_ADDRESSES = [
 ];
 
 export function AccountClient() {
+  const { data: session } = useSession();
+  const hydrated = useHydrated();
+  const wishlistCount = useWishlistStore((s) => (hydrated ? s.items.length : 0));
+
   const [activeTab, setActiveTab] = useState<AccountTab>("overview");
   const [addresses, setAddresses] = useState(MOCK_ADDRESSES);
-  const [profileName, setProfileName] = useState("Chika Obi");
-  const [profileEmail, setProfileEmail] = useState("chika.obi@gmail.com");
-  const [profilePhone, setProfilePhone] = useState("+234 803 123 4567");
+  // Seeded from the signed-in session rather than a hardcoded persona.
+  const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+
+  useEffect(() => {
+    if (!session?.user) return;
+    setProfileName((current) => current || session.user.name || "");
+    setProfileEmail((current) => current || session.user.email || "");
+  }, [session]);
 
   // Notification toggles
   const [emailAlerts, setEmailAlerts] = useState(true);
@@ -144,7 +139,7 @@ export function AccountClient() {
   const TABS = [
     { id: "overview", label: "Sanctuary Overview", icon: User },
     { id: "orders", label: "Orders Archive", icon: ShoppingBag, badge: MOCK_ORDERS.length },
-    { id: "wishlist", label: "Saved Formulations", icon: Heart, badge: MOCK_WISHLIST.length },
+    { id: "wishlist", label: "Saved Formulations", icon: Heart, badge: wishlistCount },
     { id: "addresses", label: "Saved Destinations", icon: MapPin },
     { id: "reviews", label: "My Critiques", icon: MessageSquare },
     { id: "rewards", label: "Glass Circle Rewards", icon: Award },
@@ -230,7 +225,7 @@ export function AccountClient() {
 
               <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-2">
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#676E6A]">Saved Formulations</span>
-                <span className="font-serif text-3xl font-bold text-[#1C3322] block">{MOCK_WISHLIST.length}</span>
+                <span className="font-serif text-3xl font-bold text-[#1C3322] block">{wishlistCount}</span>
                 <button onClick={() => setActiveTab("wishlist")} className="text-[10px] text-[#C9A227] font-bold uppercase tracking-wider hover:underline">
                   View Wishlist →
                 </button>
@@ -326,22 +321,9 @@ export function AccountClient() {
         {/* WISHLIST TAB */}
         {activeTab === "wishlist" && (
           <div className="space-y-6">
-            <h2 className="font-serif text-2xl font-medium text-[#161A17]">Saved Formulations</h2>
+            <h2 className="font-serif text-2xl font-medium text-[#161A17]">Saved items</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {MOCK_WISHLIST.map((item) => (
-                <ProductCard
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  slug={item.slug}
-                  category={item.category}
-                  price={item.price}
-                  imageUrl={item.imageUrl}
-                  isWishlisted
-                />
-              ))}
-            </div>
+            <WishlistGrid columns={2} />
           </div>
         )}
 

@@ -23,36 +23,50 @@ export const viewport: Viewport = {
   themeColor: "#1C3322",
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com";
+const SITE_DESCRIPTION =
+  "Coconut water, milk, cold-pressed oils, flour and flakes — pressed and bottled in Nigeria from coconuts grown along the Lagos and Ogun coast.";
+// Hosted with the site rather than hotlinked from Google Drive, which rate-limits
+// and cannot be relied on by social crawlers.
+const SOCIAL_IMAGE = "/products/range-full-dark.jpg";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sanaamnis.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sana Amnis | Cold-Pressed Organic Coconut Elixirs & Luxury Lifestyle",
-    template: "%s | Sana Amnis Sanctuary",
+    default: "Sana Amnis | Nigerian Coconut Water, Milk & Cold-Pressed Oil",
+    template: "%s | Sana Amnis",
   },
-  description: "Sana Amnis formulates 100% pure cold-pressed extra virgin coconut oil, bioactive coconut water, and bio-active lipid body care harvested from organic coastal groves.",
-  keywords: ["cold pressed coconut oil", "organic coconut water", "luxury skincare", "single origin badagry", "lauric acid", "mct oil nigeria"],
-  authors: [{ name: "Sana Amnis Botanical Laboratories" }],
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "coconut water nigeria",
+    "cold pressed coconut oil",
+    "coconut milk powder",
+    "coconut flour",
+    "coconut oil lagos",
+    "sana amnis",
+  ],
+  authors: [{ name: "Sana Amnis" }],
   openGraph: {
-    title: "Sana Amnis | Cold-Pressed Organic Coconut Elixirs & Luxury Lifestyle",
-    description: "Cold-pressed extra virgin coconut oil and bioactive hydration harvested from organic Nigerian groves.",
-    url: "https://sanaamnis.com",
+    title: "Sana Amnis | Nigerian Coconut Water, Milk & Cold-Pressed Oil",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
     siteName: "Sana Amnis",
     images: [
       {
-        url: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1200",
-        width: 1200,
-        height: 630,
-        alt: "Sana Amnis Extra Virgin Coconut Oil",
+        url: SOCIAL_IMAGE,
+        width: 2000,
+        height: 1331,
+        alt: "The Sana Amnis range of coconut products",
       },
     ],
-    locale: "en_US",
+    locale: "en_NG",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sana Amnis | Cold-Pressed Organic Coconut Elixirs",
-    description: "Cold-pressed extra virgin coconut oil and bioactive hydration harvested from organic Nigerian groves.",
-    images: ["https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1200"],
+    title: "Sana Amnis | Nigerian Coconut Water, Milk & Cold-Pressed Oil",
+    description: SITE_DESCRIPTION,
+    images: [SOCIAL_IMAGE],
   },
   robots: {
     index: true,

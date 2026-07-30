@@ -21,7 +21,8 @@ import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ProductCard } from "@/components/ds/cards/product-card";
+import { WishlistGrid } from "@/components/shop/WishlistGrid";
+import { useWishlistStore } from "@/store/wishlistStore";
 
 const FREE_SHIPPING_THRESHOLD = 50000;
 
@@ -46,19 +47,7 @@ export default function CartPage() {
   // Delivery estimator state
   const [selectedCity, setSelectedCity] = useState<"lagos" | "abuja" | "ph">("lagos");
 
-  // Recently viewed state
-  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
-
-  useEffect(() => {
-    const storedRaw = localStorage.getItem("sana_amnis_recently_viewed");
-    if (storedRaw) {
-      try {
-        setRecentlyViewed(JSON.parse(storedRaw).slice(0, 4));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, []);
+  const savedCount = useWishlistStore((s) => (hydrated ? s.items.length : 0));
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -338,25 +327,13 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* Recently Viewed Formulations */}
-        {recentlyViewed.length > 0 && (
+        {/* Saved for later — real wishlist rather than a localStorage guess. */}
+        {savedCount > 0 && (
           <div className="pt-16 border-t border-[#E2E6E3] space-y-6">
             <h3 className="font-serif text-2xl font-medium text-[#161A17]">
-              Recently Viewed Formulations
+              Saved for later
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {recentlyViewed.map((item) => (
-                <ProductCard
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  slug={item.slug}
-                  category={item.category || "Organic Wellness"}
-                  price={Number(item.price)}
-                  imageUrl={item.imageUrl}
-                />
-              ))}
-            </div>
+            <WishlistGrid columns={4} />
           </div>
         )}
       </main>

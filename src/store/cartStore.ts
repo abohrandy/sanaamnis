@@ -69,6 +69,23 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "sana-amnis-cart-storage",
+      // v2: variant ids became real UUIDs matching product_variants.id. Carts saved
+      // before that hold placeholder ids like "v1-250" which no longer resolve to a
+      // product, so they are dropped rather than failing silently at checkout.
+      version: 2,
+      migrate: (persisted, version) => {
+        const state = persisted as Partial<CartState> | undefined;
+        if (!state?.items) return persisted as CartState;
+        if (version < 2) {
+          return {
+            ...state,
+            items: state.items.filter((i) => UUID_RE.test(i.variantId)),
+          } as CartState;
+        }
+        return state as CartState;
+      },
     }
   )
 );
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

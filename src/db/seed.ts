@@ -1,221 +1,185 @@
+/**
+ * Seeds reference data into Postgres from src/lib/catalog.ts.
+ *
+ * The catalog is the single source of truth: this script only copies it into the
+ * database. Because catalog ids are deterministic, re-running the seed updates
+ * existing rows in place rather than creating duplicates, and never invalidates a
+ * variant id that a customer already has sitting in their cart.
+ *
+ * Usage: DATABASE_URL=... npm run db:seed
+ * Safe to run repeatedly. Run migrations first (npm run db:migrate).
+ */
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { eq, inArray } from "drizzle-orm";
 import * as schema from "./schema";
-import { eq } from "drizzle-orm";
+import { CATALOG, CATEGORIES } from "../lib/catalog";
+
+const ADMIN_EMAILS = (process.env.SEED_ADMIN_EMAILS || "abohrandy@gmail.com,me@randyaboh.com")
+  .split(",")
+  .map((e) => e.trim())
+  .filter(Boolean);
 
 async function main() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
-    console.error("DATABASE_URL is missing. Skipping database seeding.");
-    return;
+    console.error("[seed] DATABASE_URL is not set.");
+    process.exit(1);
   }
 
-  console.log("Connecting to database for seeding...");
-  const pool = new Pool({ connectionString: databaseUrl });
+  const pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15_000,
+  });
   const db = drizzle(pool, { schema });
 
   try {
-    console.log("Initializing database seed...");
-
-    // 1. Roles & Permissions
-    console.log("Seeding Roles and Permissions...");
-    const [adminRole] = await db
+    // --- Roles & permissions -------------------------------------------------
+    console.log("[seed] roles and permissions");
+    await db
       .insert(schema.roles)
-      .values({
-        name: "admin",
-        description: "Concierge executive dashboard admin.",
-      })
-      .onConflictDoNothing()
-      .returning();
+      .values([
+        { name: "admin", description: "Full administrative access." },
+        { name: "editor", description: "Can edit catalog and content." },
+        { name: "customer", description: "Registered shopper." },
+      ])
+      .onConflictDoNothing({ target: schema.roles.name });
 
-    const [customerRole] = await db
-      .insert(schema.roles)
-      .values({
-        name: "customer",
-        description: "Registered shopper.",
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    const seededPermissions = await db
+    await db
       .insert(schema.permissions)
       .values([
         { action: "manage:all", description: "Superuser action" },
         { action: "edit:content", description: "Modify CMS blocks" },
+        { action: "edit:catalog", description: "Modify products and pricing" },
       ])
-      .onConflictDoNothing()
-      .returning();
+      .onConflictDoNothing({ target: schema.permissions.action });
 
-    if (seededPermissions.length > 0 && adminRole) {
+    const adminRole = await db.query.roles.findFirst({ where: eq(schema.roles.name, "admin") });
+    const allPermissions = await db.query.permissions.findMany();
+    if (adminRole && allPermissions.length > 0) {
       await db
         .insert(schema.rolePermissions)
-        .values(
-          seededPermissions.map((p) => ({
-            roleId: adminRole.id,
-            permissionId: p.id,
-          }))
-        )
+        .values(allPermissions.map((p) => ({ roleId: adminRole.id, permissionId: p.id })))
         .onConflictDoNothing();
     }
 
-    // 2. Categories
-    console.log("Seeding Coconut Categories...");
-    const [organicWellness] = await db
-      .insert(schema.categories)
-      .values({
-        name: "Organic Wellness",
-        slug: "organic-wellness",
-        imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    const [premiumSkincare] = await db
-      .insert(schema.categories)
-      .values({
-        name: "Premium Skincare",
-        slug: "premium-skincare",
-        imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    const wellnessCatId = organicWellness?.id || "00000000-0000-0000-0000-000000000001";
-    const skincareCatId = premiumSkincare?.id || "00000000-0000-0000-0000-000000000002";
-
-    // 3. Products
-    console.log("Seeding Coconut Products and Variants...");
-    
-    // Product 1: Sana Amnis Coconut Water
-    const [waterProduct] = await db
-      .insert(schema.products)
-      .values({
-        title: "Sana Amnis Coconut Water",
-        slug: "sana-amnis-coconut-water",
-        description: "100% natural, refreshing coconut water packed with electrolytes, sustainably sourced from local Nigerian farms. No added sugar, no preservatives.",
-        categoryId: wellnessCatId,
-        isActive: true,
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    if (waterProduct) {
+    // --- Categories ----------------------------------------------------------
+    const categories = Object.values(CATEGORIES);
+    console.log(`[seed] ${categories.length} categories`);
+    for (const category of categories) {
       await db
-        .insert(schema.productVariants)
-        .values([
-          {
-            productId: waterProduct.id,
-            sku: "SA-COCO-WTR-250",
-            name: "250ml Pouch",
-            price: "1500.00",
-            stock: 150,
-            imageUrl: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w1000",
-          },
-          {
-            productId: waterProduct.id,
-            sku: "SA-COCO-WTR-500",
-            name: "500ml Bottle",
-            price: "3000.00",
-            stock: 120,
-            imageUrl: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000",
-          },
-        ])
-        .onConflictDoNothing();
+        .insert(schema.categories)
+        .values({ id: category.id, name: category.name, slug: category.slug })
+        .onConflictDoUpdate({
+          target: schema.categories.id,
+          set: { name: category.name, slug: category.slug },
+        });
     }
 
-    // Product 2: Extra Virgin Coconut Oil
-    const [oilProduct] = await db
-      .insert(schema.products)
-      .values({
-        title: "Extra Virgin Coconut Oil",
-        slug: "extra-virgin-coconut-oil",
-        description: "Cold-pressed from fresh organic coconuts in Nigeria, retaining all nutritional benefits and a delicate aroma.",
-        categoryId: wellnessCatId,
-        isActive: true,
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    if (oilProduct) {
+    // --- Products & variants -------------------------------------------------
+    console.log(`[seed] ${CATALOG.length} products`);
+    for (const product of CATALOG) {
       await db
-        .insert(schema.productVariants)
-        .values([
-          {
-            productId: oilProduct.id,
-            sku: "SA-COCO-OIL-250",
-            name: "250ml Glass Jar",
-            price: "15000.00",
-            stock: 50,
-            imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
+        .insert(schema.products)
+        .values({
+          id: product.id,
+          title: product.title,
+          slug: product.slug,
+          description: product.description,
+          categoryId: CATEGORIES[product.categorySlug].id,
+          isActive: true,
+        })
+        .onConflictDoUpdate({
+          target: schema.products.id,
+          set: {
+            title: product.title,
+            slug: product.slug,
+            description: product.description,
+            categoryId: CATEGORIES[product.categorySlug].id,
+            isActive: true,
           },
-        ])
-        .onConflictDoNothing();
+        });
+
+      for (const variant of product.variants) {
+        await db
+          .insert(schema.productVariants)
+          .values({
+            id: variant.id,
+            productId: product.id,
+            sku: variant.sku,
+            name: variant.name,
+            price: variant.price.toFixed(2),
+            stock: variant.stock,
+            imageUrl: variant.imageUrl || product.images[0],
+          })
+          .onConflictDoUpdate({
+            target: schema.productVariants.id,
+            set: {
+              productId: product.id,
+              sku: variant.sku,
+              name: variant.name,
+              price: variant.price.toFixed(2),
+              imageUrl: variant.imageUrl || product.images[0],
+            },
+          });
+      }
     }
 
-    // Product 3: Coconut Body Butter
-    const [butterProduct] = await db
-      .insert(schema.products)
-      .values({
-        title: "Nourishing Coconut Body Butter",
-        slug: "coconut-body-butter",
-        description: "Ultra-hydrating body moisturizer made with cold-pressed coconut butter and whipped natural oils.",
-        categoryId: skincareCatId,
-        isActive: true,
-      })
-      .onConflictDoNothing()
-      .returning();
-
-    if (butterProduct) {
+    // Retire anything in the database that the catalog no longer lists. Kept as a
+    // soft delete because order_items references variants with ON DELETE RESTRICT,
+    // so historic orders must stay readable.
+    const catalogIds = CATALOG.map((p) => p.id);
+    const stale = await db.query.products.findMany({
+      where: (products, { notInArray }) => notInArray(products.id, catalogIds),
+    });
+    if (stale.length > 0) {
       await db
-        .insert(schema.productVariants)
-        .values([
-          {
-            productId: butterProduct.id,
-            sku: "SA-COCO-BTR-200",
-            name: "200ml Premium Jar",
-            price: "18000.00",
-            stock: 40,
-            imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
-          },
-        ])
-        .onConflictDoNothing();
+        .update(schema.products)
+        .set({ isActive: false })
+        .where(inArray(schema.products.id, stale.map((p) => p.id)));
+      console.log(`[seed] deactivated ${stale.length} product(s) no longer in the catalog`);
     }
 
-    // 4. Coupons
-    console.log("Seeding Vouchers...");
+    // --- Store settings ------------------------------------------------------
+    console.log("[seed] settings and coupons");
     await db
       .insert(schema.coupons)
       .values([
-        {
-          code: "AMNISVIP",
-          discountValue: "20.00",
-          discountType: "percentage",
-          isActive: true,
-        },
+        { code: "AMNISVIP", discountValue: "20.00", discountType: "percentage", isActive: true },
       ])
-      .onConflictDoNothing();
+      .onConflictDoNothing({ target: schema.coupons.code });
 
-    // 5. Site Settings
-    console.log("Seeding Corporate Site Settings...");
-    await db
-      .insert(schema.settings)
-      .values([
-        { id: "site-name", value: "Sana Amnis" },
-        { id: "contact-email", value: "concierge@sanaamnis.com" },
-        { id: "contact-phone", value: "+234 812 345 6789" },
-      ])
-      .onConflictDoNothing();
+    for (const [id, value] of Object.entries({
+      "site-name": "Sana Amnis",
+      "contact-email": "concierge@sanaamnis.com",
+      "contact-phone": "+234 812 345 6789",
+    })) {
+      await db
+        .insert(schema.settings)
+        .values({ id, value })
+        .onConflictDoUpdate({ target: schema.settings.id, set: { value } });
+    }
 
-    // 6. Promote executive user to admin role
-    console.log("Promoting executive user to admin...");
-    await db
-      .update(schema.user)
-      .set({ role: "admin" })
-      .where(eq(schema.user.email, "abohrandy@gmail.com"));
+    // --- Admin bootstrap -----------------------------------------------------
+    if (ADMIN_EMAILS.length > 0) {
+      const promoted = await db
+        .update(schema.user)
+        .set({ role: "admin" })
+        .where(inArray(schema.user.email, ADMIN_EMAILS))
+        .returning({ email: schema.user.email });
+      console.log(
+        promoted.length > 0
+          ? `[seed] promoted to admin: ${promoted.map((u) => u.email).join(", ")}`
+          : "[seed] no registered users matched SEED_ADMIN_EMAILS"
+      );
+    }
 
-    console.log("Database seeded successfully!");
+    const variantCount = CATALOG.reduce((n, p) => n + p.variants.length, 0);
+    console.log(`[seed] done — ${CATALOG.length} products, ${variantCount} variants`);
   } catch (error) {
-    console.error("Database seeding failed:", error);
+    console.error("[seed] failed:", error);
+    process.exitCode = 1;
   } finally {
     await pool.end();
   }

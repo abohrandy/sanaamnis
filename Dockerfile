@@ -38,6 +38,11 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Schema migrations, applied at container start. The standalone bundle traces `pg`,
+# which is all scripts/migrate.mjs needs.
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate.mjs ./scripts/migrate.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/src/db/migrations ./src/db/migrations
+
 USER nextjs
 
 EXPOSE 3000
@@ -45,4 +50,6 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# Migrate before serving so the app never starts against a schema it cannot use.
+# A failed migration exits non-zero and Railway's restart policy surfaces it.
+CMD ["sh", "-c", "node scripts/migrate.mjs && node server.js"]

@@ -1,94 +1,36 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
 import { sql } from "drizzle-orm";
+import { db } from "@/db";
 
+export const dynamic = "force-dynamic";
+
+/**
+ * Liveness probe for Railway. Read-only by design.
+ *
+ * This endpoint previously ran CREATE TABLE / ALTER TABLE on every unauthenticated
+ * request and executed `UPDATE "user" SET role='admin', email_verified=true` for two
+ * hardcoded addresses — a public endpoint that granted privileges and force-verified
+ * emails, and one that let anyone trigger repeated DDL locks.
+ *
+ * Schema creation now belongs to scripts/migrate.mjs, which runs once at container
+ * start. Granting admin belongs to the seed.
+ */
 export async function GET() {
   try {
-    // Perform simple query to verify database connection healthiness
     await db.execute(sql`SELECT 1`);
-
-    // Safe idempotent table creation for Better Auth
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "user" (
-        "id" text PRIMARY KEY NOT NULL,
-        "name" text NOT NULL,
-        "email" text NOT NULL UNIQUE,
-        "email_verified" boolean NOT NULL,
-        "image" text,
-        "role" text DEFAULT 'customer',
-        "created_at" timestamp NOT NULL,
-        "updated_at" timestamp NOT NULL
-      );
-    `);
-
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "session" (
-        "id" text PRIMARY KEY NOT NULL,
-        "expires_at" timestamp NOT NULL,
-        "token" text UNIQUE NOT NULL,
-        "created_at" timestamp NOT NULL,
-        "updated_at" timestamp NOT NULL,
-        "ip_address" text,
-        "user_agent" text,
-        "user_id" text NOT NULL
-      );
-    `);
-
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "account" (
-        "id" text PRIMARY KEY NOT NULL,
-        "account_id" text NOT NULL,
-        "provider_id" text NOT NULL,
-        "user_id" text NOT NULL,
-        "access_token" text,
-        "refresh_token" text,
-        "id_token" text,
-        "access_token_expires_at" timestamp,
-        "refresh_token_expires_at" timestamp,
-        "scope" text,
-        "password" text,
-        "created_at" timestamp NOT NULL,
-        "updated_at" timestamp NOT NULL
-      );
-    `);
-
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "verification" (
-        "id" text PRIMARY KEY NOT NULL,
-        "identifier" text NOT NULL,
-        "value" text NOT NULL,
-        "expires_at" timestamp NOT NULL,
-        "created_at" timestamp,
-        "updated_at" timestamp
-      );
-    `);
-
-    // Ensure role column exists in user table (safe idempotent migration)
-    await db.execute(
-      sql`ALTER TABLE "user" ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'customer'`
-    );
-
-    // Auto-promote executive admin user if registered
-    await db.execute(
-      sql`UPDATE "user" SET role = 'admin', email_verified = true WHERE email IN ('abohrandy@gmail.com', 'me@randyaboh.com')`
-    );
-    
-    return NextResponse.json(
-      {
-        status: "healthy",
-        timestamp: new Date().toISOString(),
-        database: "connected",
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      status: "healthy",
+      database: "connected",
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
-    return NextResponse.json(
-      {
-        status: "degraded",
-        timestamp: new Date().toISOString(),
-        database: "disconnected",
-      },
-      { status: 200 }
-    );
+    console.error("[health] database check failed:", error);
+    // Still 200 so a database blip does not make Railway kill a serving container;
+    // the body carries the real state for monitoring.
+    return NextResponse.json({
+      status: "degraded",
+      database: "disconnected",
+      timestamp: new Date().toISOString(),
+    });
   }
 }

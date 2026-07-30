@@ -434,6 +434,13 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));
 
+// user.reviews and products.reviews declared the "many" side but the inverse was
+// missing, so `with: { user: true }` on a reviews query could not resolve.
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  user: one(user, { fields: [reviews.userId], references: [user.id] }),
+  product: one(products, { fields: [reviews.productId], references: [products.id] }),
+}));
+
 export const collectionsRelations = relations(collections, ({ many }) => ({
   collectionProducts: many(collectionProducts),
 }));

@@ -1,84 +1,156 @@
 import React from "react";
 import Link from "next/link";
-import { Sparkles, ShieldCheck, Leaf } from "lucide-react";
+import Image from "next/image";
+import { Leaf, ShieldCheck, Mail, MapPin } from "lucide-react";
+import { CATEGORIES } from "@/lib/catalog";
+
+const SHOP_LINKS = [
+  { href: "/shop", label: "All products" },
+  ...Object.values(CATEGORIES).map((c) => ({
+    href: `/shop?category=${c.slug}`,
+    label: c.name,
+  })),
+];
+
+const CARE_LINKS = [
+  { href: "/contact", label: "Contact us" },
+  { href: "/shipping", label: "Delivery" },
+  { href: "/returns", label: "Returns" },
+  { href: "/faq", label: "FAQs" },
+];
+
+const ABOUT_LINKS = [
+  { href: "/about", label: "Our story" },
+  { href: "/sustainability", label: "Sustainability" },
+  { href: "/recipes", label: "Recipes" },
+  { href: "/blog", label: "Journal" },
+];
 
 export default function Footer() {
   return (
     <footer className="mt-auto bg-[#161A17] text-[#FAF8F5] border-t border-gold-hairline">
-      <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-12 gap-12">
-        {/* Brand & Ethos */}
-        <div className="col-span-1 md:col-span-4 space-y-6">
-          <Link href="/" className="block">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+      <div className="max-w-7xl mx-auto px-6 py-16 md:py-20 grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-12">
+        <div className="col-span-2 md:col-span-4 space-y-6">
+          <Link href="/" className="block w-fit" aria-label="Sana Amnis home">
+            <Image
               src="/logo_long.png"
-              alt="Sana Amnis Sanctuary"
-              className="h-12 w-auto object-contain brightness-0 invert"
+              alt="Sana Amnis"
+              width={220}
+              height={48}
+              className="h-11 w-auto object-contain brightness-0 invert"
             />
           </Link>
-          <p className="text-xs leading-relaxed text-[#FAF8F5]/70 font-sans max-w-sm">
-            Elevating daily wellness rituals with cold-pressed organic elixirs, sustainably harvested from pristine Nigerian groves.
+
+          <p className="text-xs leading-relaxed text-[#FAF8F5]/70 max-w-sm">
+            Coconut water, milk, cold-pressed oils and kitchen staples, made in Nigeria
+            from coconuts grown along the Lagos and Ogun coast.
           </p>
 
-          <div className="flex items-center gap-4 text-[10px] font-sans uppercase tracking-[0.2em] text-[#C9A227] pt-2">
-            <span className="flex items-center gap-1.5"><Leaf className="w-3.5 h-3.5" /> 100% Pure Organic</span>
-            <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> Sustainably Sourced</span>
-          </div>
-        </div>
-
-        {/* Explore Links */}
-        <div className="col-span-1 md:col-span-2 space-y-4">
-          <h4 className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold font-sans">
-            Selection
-          </h4>
-          <ul className="space-y-3 text-xs font-sans text-[#FAF8F5]/80">
-            <li><Link href="/shop" className="hover:text-[#C9A227] transition-colors">All Formulations</Link></li>
-            <li><Link href="/collections" className="hover:text-[#C9A227] transition-colors">Curated Collections</Link></li>
-            <li><Link href="/recipes" className="hover:text-[#C9A227] transition-colors">Botanical Guides</Link></li>
-            <li><Link href="/about" className="hover:text-[#C9A227] transition-colors">Our Ethos</Link></li>
+          <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] uppercase tracking-[0.18em] text-[#C9A227] pt-1">
+            <li className="flex items-center gap-1.5">
+              <Leaf className="w-3.5 h-3.5" aria-hidden="true" /> No preservatives
+            </li>
+            <li className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" /> Sourced direct
+            </li>
           </ul>
         </div>
 
-        {/* Client Care */}
-        <div className="col-span-1 md:col-span-2 space-y-4">
-          <h4 className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold font-sans">
-            Client Care
-          </h4>
-          <ul className="space-y-3 text-xs font-sans text-[#FAF8F5]/80">
-            <li><Link href="/contact" className="hover:text-[#C9A227] transition-colors">Concierge</Link></li>
-            <li><Link href="/shipping" className="hover:text-[#C9A227] transition-colors">Shipping Protocol</Link></li>
-            <li><Link href="/returns" className="hover:text-[#C9A227] transition-colors">Returns & Guarantee</Link></li>
-            <li><Link href="/faq" className="hover:text-[#C9A227] transition-colors">Frequently Asked</Link></li>
+        <nav className="col-span-1 md:col-span-2 space-y-4" aria-labelledby="footer-shop">
+          <h2
+            id="footer-shop"
+            className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold"
+          >
+            Shop
+          </h2>
+          <ul className="space-y-3 text-xs text-[#FAF8F5]/80">
+            {SHOP_LINKS.map((link) => (
+              <li key={link.label}>
+                <Link href={link.href} className="hover:text-[#C9A227] transition-colors">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
-        </div>
+        </nav>
 
-        {/* Sourcing & Location */}
-        <div className="col-span-1 md:col-span-4 space-y-4">
-          <h4 className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold font-sans flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Sanctuary Headquarters
-          </h4>
-          <p className="text-xs leading-relaxed text-[#FAF8F5]/70 font-sans">
-            Sana Amnis Estate, Victoria Island, Lagos, Nigeria.  
-            Direct Enquiries: concierge@sanaamnis.com
+        <nav className="col-span-1 md:col-span-2 space-y-4" aria-labelledby="footer-care">
+          <h2
+            id="footer-care"
+            className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold"
+          >
+            Help
+          </h2>
+          <ul className="space-y-3 text-xs text-[#FAF8F5]/80">
+            {CARE_LINKS.map((link) => (
+              <li key={link.label}>
+                <Link href={link.href} className="hover:text-[#C9A227] transition-colors">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav className="col-span-1 md:col-span-2 space-y-4" aria-labelledby="footer-about">
+          <h2
+            id="footer-about"
+            className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold"
+          >
+            About
+          </h2>
+          <ul className="space-y-3 text-xs text-[#FAF8F5]/80">
+            {ABOUT_LINKS.map((link) => (
+              <li key={link.label}>
+                <Link href={link.href} className="hover:text-[#C9A227] transition-colors">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="col-span-2 space-y-4">
+          <h2 className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold">
+            Get in touch
+          </h2>
+          <address className="not-italic space-y-2.5 text-xs text-[#FAF8F5]/70 leading-relaxed">
+            <p className="flex items-start gap-2">
+              <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
+              Victoria Island, Lagos, Nigeria
+            </p>
+            <p className="flex items-start gap-2">
+              <Mail className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
+              <a
+                href="mailto:concierge@sanaamnis.com"
+                className="hover:text-[#C9A227] transition-colors break-all"
+              >
+                concierge@sanaamnis.com
+              </a>
+            </p>
+          </address>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-[#FAF8F5]/45 pt-1">
+            Secure payment via Paystack
           </p>
-          <div className="pt-2 text-[10px] font-sans uppercase tracking-[0.2em] text-[#FAF8F5]/50">
-            Encrypted Checkout via Paystack
-          </div>
         </div>
       </div>
 
-      {/* Legal Footer Bottom */}
-      <div className="border-t border-[#FAF8F5]/10 py-8 px-6 bg-[#121412]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-[10px] uppercase tracking-[0.2em] text-[#FAF8F5]/50 font-sans">
-          <span>&copy; 2026 SANA AMNIS ORGANIC LIFESTYLE. ALL RIGHTS RESERVED.</span>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="/policies" className="hover:text-[#FAF8F5] transition-colors">Privacy Policy</Link>
-            <Link href="/policies" className="hover:text-[#FAF8F5] transition-colors">Terms of Service</Link>
-            <Link href="/policies" className="hover:text-[#FAF8F5] transition-colors">Ethical Sourcing</Link>
+      <div className="border-t border-[#FAF8F5]/10 py-7 px-6 bg-[#121412]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] uppercase tracking-[0.18em] text-[#FAF8F5]/50">
+          <span>&copy; {new Date().getFullYear()} Sana Amnis. All rights reserved.</span>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <Link href="/policies" className="hover:text-[#FAF8F5] transition-colors">
+              Privacy
+            </Link>
+            <Link href="/policies" className="hover:text-[#FAF8F5] transition-colors">
+              Terms
+            </Link>
+            <Link href="/sustainability" className="hover:text-[#FAF8F5] transition-colors">
+              Sourcing
+            </Link>
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

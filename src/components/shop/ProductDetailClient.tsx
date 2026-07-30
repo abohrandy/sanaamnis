@@ -1,558 +1,434 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Star,
-  Loader2,
-  ShieldCheck,
-  Droplet,
-  Truck,
-  Play,
-  ChevronDown,
-  X,
-} from "lucide-react";
+import { ShieldCheck, Droplet, Truck, ChevronDown, Star, Leaf } from "lucide-react";
 import ProductInteractiveForm from "./ProductInteractiveForm";
 import { ProductHeroGallery } from "./ProductHeroGallery";
 import { StickyPurchaseBar } from "./StickyPurchaseBar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ds/cards/product-card";
-import { RecipeCard } from "@/components/ds/cards/recipe-card";
+import { formatNaira, type CatalogProduct, type CatalogVariant } from "@/lib/catalog";
+import { cn } from "@/lib/utils";
 
-interface Review {
-  name: string;
+export interface ProductReview {
+  id: string;
+  author: string;
   rating: number;
   comment: string;
   date: string;
 }
 
 export interface ProductDetailClientProps {
-  product: {
-    id: string;
-    title: string;
-    slug: string;
-    description: string;
-    category: string;
-    variants: any[];
-  };
+  product: CatalogProduct;
+  categoryName: string;
+  related: CatalogProduct[];
+  reviews?: ProductReview[];
 }
 
-const MOCK_FAQS = [
+const FAQS = [
   {
-    q: "How is Sana Amnis cold-pressed coconut oil different from store brands?",
-    a: "Unlike commercial brands that refine, bleach, and deodorize oil under extreme temperatures (200°C+), Sana Amnis uses a zero-heat hydraulic press kept strictly below body temperature (37°C). This preserves 100% of fatty acid polyphenols and natural lauric moisture.",
+    q: "How is Sana Amnis coconut oil different from what I find in the supermarket?",
+    a: "Most commercial coconut oil is refined, bleached and deodorised at temperatures above 200°C, which strips the natural polyphenols and aroma. Our cold-pressed bottle is extracted on a temperature-controlled hydraulic press held below 37°C, and is never refined or bleached. Our hot-pressed bottle is traditionally extracted for a fuller flavour and a higher smoke point.",
   },
   {
-    q: "What is the shelf life and ideal storage condition?",
-    a: "Our raw unrefined oil has a natural shelf life of 24 months. Store in a cool, dry sanctuary away from direct sunlight. Below 24°C (75°F), the oil naturally solidifies into a silky cream—this is proof of pure unrefined extraction.",
+    q: "How should I store it, and how long does it keep?",
+    a: "Store in a cool, dry cupboard away from direct sunlight. Unopened, our oils keep for 24 months. Below roughly 24°C coconut oil turns solid and white — that is normal and is a sign the oil is unrefined, not a fault. It liquefies again in warm hands.",
   },
   {
-    q: "Can this formulation be used for both culinary and skin wellness?",
-    a: "Yes. Our extra virgin cold-pressed oil is 100% food-grade organic. It is equally potent for bio-active cooking, smoothie elixirs, skin lipid barrier hydration, and hair follicle conditioning.",
+    q: "Is the coconut water from concentrate?",
+    a: "No. It is drawn from young green coconuts and bottled as-is, with no added sugar, no concentrate and no preservatives. Keep it refrigerated once opened and drink within 48 hours.",
+  },
+  {
+    q: "Where do you deliver, and how long does it take?",
+    a: "We deliver nationwide across Nigeria. Lagos orders typically arrive within 24–48 hours; other states take 3–5 working days. Orders above ₦50,000 ship free.",
   },
 ];
 
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [reviewerName, setReviewerName] = useState("");
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"ingredients" | "nutrition" | "usage" | "shipping">("ingredients");
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+const TABS = [
+  { id: "ingredients", label: "Ingredients" },
+  { id: "usage", label: "How to use" },
+  { id: "shipping", label: "Shipping & returns" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
+export default function ProductDetailClient({
+  product,
+  categoryName,
+  related,
+  reviews = [],
+}: ProductDetailClientProps) {
+  const [activeTab, setActiveTab] = useState<TabId>("ingredients");
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [activeVariant, setActiveVariant] = useState<CatalogVariant | undefined>(
+    product.variants.find((v) => v.stock > 0) ?? product.variants[0]
+  );
 
-  const mainFormRef = useRef<HTMLDivElement>(null);
+  const buyPanelRef = useRef<HTMLDivElement>(null);
 
-  // Scroll detection for Sticky Purchase Bar
+  // Reveal the sticky bar once the real buy panel has scrolled out of view.
   useEffect(() => {
-    const handleScroll = () => {
-      if (mainFormRef.current) {
-        const rect = mainFormRef.current.getBoundingClientRect();
-        setShowStickyBar(rect.bottom < 0);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const node = buyPanelRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting && entry.boundingClientRect.top < 0),
+      { threshold: 0 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
   }, []);
 
-  // Load & Save Recently Viewed Items
-  useEffect(() => {
-    const storedRaw = localStorage.getItem("sana_amnis_recently_viewed");
-    let currentList: any[] = [];
-    if (storedRaw) {
-      try {
-        currentList = JSON.parse(storedRaw);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    const filtered = currentList.filter((item) => item.slug !== product.slug);
-    const updated = [
-      {
-        id: product.id,
-        title: product.title,
-        slug: product.slug,
-        price: Number(product.variants?.[0]?.price) || 15000,
-        imageUrl: product.variants?.[0]?.imageUrl || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=400",
-        category: product.category,
-      },
-      ...filtered,
-    ].slice(0, 4);
-
-    setRecentlyViewed(filtered.slice(0, 4));
-    localStorage.setItem("sana_amnis_recently_viewed", JSON.stringify(updated));
-
-    setReviews([
-      {
-        name: "Amina Yusuf",
-        rating: 5,
-        comment: "Exceptional purity and aroma. My skin barrier and hair moisture improved within a week.",
-        date: "June 26, 2026",
-      },
-      {
-        name: "Emeka Okafor",
-        rating: 5,
-        comment: "Flawless packaging in amber glass. Arrived in Victoria Island in 24 hours.",
-        date: "June 18, 2026",
-      },
-    ]);
-  }, [product]);
-
-  const handleReviewSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reviewerName.trim() || !comment.trim()) return;
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      const newReview: Review = {
-        name: reviewerName,
-        rating,
-        comment,
-        date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
-      };
-      setReviews([newReview, ...reviews]);
-      setReviewerName("");
-      setComment("");
-      setIsSubmitting(false);
-    }, 800);
-  };
-
-  const images = product.variants?.map((v) => v.imageUrl).filter(Boolean) || [];
-  const primaryPrice = Number(product.variants?.[0]?.price) || 15000;
-  const primaryImage = product.variants?.[0]?.imageUrl || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800";
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : null;
 
   return (
-    <div className="space-y-24 py-8 max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 font-sans">
-      {/* 1. Hero Landing Showcase Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* Left Gallery */}
-        <div className="lg:col-span-7">
-          <ProductHeroGallery images={images} title={product.title} />
+    <div className="max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-10 md:py-14 font-sans space-y-24">
+      {/* ---------------------------------------------------------------- Hero */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div className="lg:col-span-7 lg:sticky lg:top-28">
+          <ProductHeroGallery
+            images={product.images}
+            title={product.title}
+            badgeText={product.badge}
+          />
+          {product.photographyPending && (
+            <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-[#676E6A] font-semibold text-center">
+              Studio photography in progress
+            </p>
+          )}
         </div>
 
-        {/* Right Product Form & Specs */}
-        <div className="lg:col-span-5 flex flex-col justify-between" ref={mainFormRef}>
+        <div className="lg:col-span-5" ref={buyPanelRef}>
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <Badge variant="gold">{product.category}</Badge>
-              <div className="flex items-center gap-1 text-xs text-[#C9A227]">
-                <Star className="w-3.5 h-3.5 fill-current" />
-                <span className="font-bold text-[#161A17]">4.9</span>
-                <span className="text-[#676E6A]">({reviews.length} reviews)</span>
-              </div>
+            <div className="flex items-center justify-between gap-4">
+              <Badge variant="gold">{categoryName}</Badge>
+
+              {averageRating !== null && (
+                <a
+                  href="#reviews"
+                  className="flex items-center gap-1.5 text-xs text-[#676E6A] hover:text-[#1C3322] transition-colors"
+                >
+                  <Star className="w-3.5 h-3.5 fill-current text-[#C9A227]" />
+                  <span className="font-bold text-[#161A17]">
+                    {averageRating.toFixed(1)}
+                  </span>
+                  <span>
+                    ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
+                  </span>
+                </a>
+              )}
             </div>
 
-            <h1 className="font-serif text-3xl md:text-5xl font-medium text-[#161A17] leading-tight">
+            <h1 className="font-serif text-3xl md:text-5xl font-medium text-[#161A17] leading-[1.12] tracking-tight">
               {product.title}
             </h1>
 
-            <p className="text-xs md:text-sm text-[#676E6A] font-sans leading-relaxed">
-              {product.description}
+            <p className="text-sm md:text-base text-[#676E6A] font-sans leading-relaxed">
+              {product.tagline}
             </p>
 
-            {/* Guarantees Bar */}
-            <div className="py-4 border-y border-[#E2E6E3] grid grid-cols-3 gap-2 text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#1C3322]">
-              <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C9A227]" /> 100% Organic
+            <div className="py-5 border-y border-[#E2E6E3] grid grid-cols-3 gap-3 text-[10px] uppercase font-sans font-bold tracking-[0.14em] text-[#1C3322]">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#C9A227] shrink-0" /> 100% Natural
               </span>
-              <span className="flex items-center gap-1">
-                <Droplet className="w-3.5 h-3.5 text-[#C9A227]" /> Cold-Pressed
+              <span className="flex items-center gap-1.5">
+                <Droplet className="w-3.5 h-3.5 text-[#C9A227] shrink-0" /> No Additives
               </span>
-              <span className="flex items-center gap-1">
-                <Truck className="w-3.5 h-3.5 text-[#C9A227]" /> Express Dispatch
+              <span className="flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-[#C9A227] shrink-0" /> Fast Dispatch
               </span>
             </div>
 
-            {/* Interactive Buy Form */}
-            <ProductInteractiveForm
-              productId={product.id}
-              productTitle={product.title}
-              categoryName={product.category}
-              variants={product.variants}
-            />
+            <ProductInteractiveForm product={product} onVariantChange={setActiveVariant} />
+
+            <p className="text-[11px] text-[#676E6A] leading-relaxed">
+              Free delivery on orders above {formatNaira(50000)}. Lagos in 24–48 hours,
+              nationwide in 3–5 working days.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* 2. Video & Process Showcase */}
-      <section className="relative rounded-[2rem] bg-[#161A17] text-[#FAF8F5] p-8 md:p-16 overflow-hidden border border-gold-hairline shadow-ambient-lg">
-        <div className="max-w-3xl space-y-4">
-          <Badge variant="gold">HARVESTING FILM</Badge>
-          <h2 className="font-serif text-3xl md:text-4xl font-medium leading-tight">
-            Watch the Badagry Grove Extraction Protocol
+      {/* -------------------------------------------------------- Editorial copy */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+        <div className="lg:col-span-5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227] block mb-3">
+            About this product
+          </span>
+          <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#1C3322] leading-snug">
+            Made from coconuts, and nothing you would not recognise.
           </h2>
-          <p className="text-xs md:text-sm text-[#FAF8F5]/80 font-sans leading-relaxed">
-            See how fresh coconuts are hand-harvested, cold-pressed within 24 hours, and filtered without heat or hexane.
+        </div>
+        <div className="lg:col-span-7">
+          <p className="text-sm md:text-base text-[#161A17]/80 leading-[1.85] font-sans">
+            {product.description}
           </p>
-          <Button
-            variant="alabaster"
-            size="lg"
-            onClick={() => setIsVideoModalOpen(true)}
-            className="inline-flex items-center gap-3 text-xs"
-          >
-            <Play className="w-4 h-4 fill-current text-[#C9A227]" /> Watch Documentary Film (2:15)
-          </Button>
         </div>
       </section>
 
-      {/* 3. Tabbed Editorial Specifications (Ingredients, Nutrition, Usage, Shipping) */}
+      {/* ----------------------------------------------------------- Spec tabs */}
       <section className="space-y-8">
-        <div className="flex border-b border-[#E2E6E3] overflow-x-auto gap-8 text-xs uppercase tracking-[0.2em] font-sans font-semibold">
-          {[
-            { id: "ingredients", label: "Botanical Ingredients" },
-            { id: "nutrition", label: "Nutrition & Lipid Assay" },
-            { id: "usage", label: "How To Use" },
-            { id: "shipping", label: "Shipping & Circular Returns" },
-          ].map((tab) => (
+        <div
+          role="tablist"
+          aria-label="Product details"
+          className="flex border-b border-[#E2E6E3] overflow-x-auto gap-8 text-[11px] uppercase tracking-[0.18em] font-sans font-bold"
+        >
+          {TABS.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-4 border-b-2 transition-colors shrink-0 cursor-pointer ${
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              aria-controls={`panel-${tab.id}`}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "pb-4 border-b-2 transition-colors shrink-0 cursor-pointer",
                 activeTab === tab.id
                   ? "border-[#1C3322] text-[#1C3322]"
                   : "border-transparent text-[#676E6A] hover:text-[#161A17]"
-              }`}
+              )}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        <div className="p-8 rounded-[1.5rem] bg-[#FAF8F5] glass-alabaster border border-[#E2E6E3] min-h-[220px]">
+        <div
+          role="tabpanel"
+          id={`panel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+          className="p-6 md:p-8 rounded-[1.5rem] glass-alabaster border border-[#E2E6E3] min-h-[200px]"
+        >
           {activeTab === "ingredients" && (
             <div className="space-y-4 max-w-3xl">
-              <h3 className="font-serif text-xl font-medium text-[#161A17]">100% Raw Unrefined Ingredients</h3>
-              <p className="text-xs md:text-sm text-[#676E6A] font-sans leading-relaxed">
-                Contains only 100% Certified Organic Cold-Pressed Virgin Coconut Oil (Cocos Nucifera). Free from synthetic fragrances, preservatives, parabens, sulfates, and hexane.
+              <h3 className="font-serif text-xl font-medium text-[#161A17]">
+                What is inside
+              </h3>
+              <p className="text-sm text-[#676E6A] leading-relaxed">
+                {product.title} contains coconut and nothing else beyond what the label
+                states. Free from synthetic fragrance, parabens, sulphates and hexane.
+                Never bleached, never deodorised.
               </p>
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Badge variant="botanical">Single-Origin Badagry</Badge>
-                <Badge variant="gold">Zero Hexane</Badge>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Badge variant="botanical">Single-Origin Nigeria</Badge>
+                <Badge variant="gold">No Hexane</Badge>
                 <Badge variant="alabaster">Non-GMO</Badge>
               </div>
             </div>
           )}
 
-          {activeTab === "nutrition" && (
-            <div className="space-y-4 max-w-2xl">
-              <h3 className="font-serif text-xl font-medium text-[#161A17]">Lipid & Fatty Acid Profile (Per 100g)</h3>
-              <table className="w-full text-xs font-sans text-[#161A17] border-collapse">
-                <tbody>
-                  <tr className="border-b border-[#E2E6E3] py-2">
-                    <td className="py-2.5 font-bold">Lauric Acid (C12)</td>
-                    <td className="py-2.5 text-right font-serif font-bold text-[#1C3322]">52.4%</td>
-                  </tr>
-                  <tr className="border-b border-[#E2E6E3] py-2">
-                    <td className="py-2.5 font-bold">Caprylic Acid (C8)</td>
-                    <td className="py-2.5 text-right font-serif font-bold text-[#1C3322]">8.1%</td>
-                  </tr>
-                  <tr className="border-b border-[#E2E6E3] py-2">
-                    <td className="py-2.5 font-bold">Capric Acid (C10)</td>
-                    <td className="py-2.5 text-right font-serif font-bold text-[#1C3322]">6.2%</td>
-                  </tr>
-                  <tr className="py-2">
-                    <td className="py-2.5 font-bold">Natural Vitamin E (Tocopherol)</td>
-                    <td className="py-2.5 text-right font-serif font-bold text-[#1C3322]">12.5 mg</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
-
           {activeTab === "usage" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-4 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3]">
-                <span className="font-serif text-lg text-[#C9A227] font-bold block mb-1">01. Skin Lipid Hydration</span>
-                <p className="text-xs text-[#676E6A] font-sans leading-relaxed">
-                  Warm a small pea-sized amount between clean palms and gently press onto damp face or body after showering.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3]">
-                <span className="font-serif text-lg text-[#C9A227] font-bold block mb-1">02. Follicle Conditioning</span>
-                <p className="text-xs text-[#676E6A] font-sans leading-relaxed">
-                  Apply liberally to scalp and damp hair ends 30 minutes before washing as an intensive pre-shampoo mask.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3]">
-                <span className="font-serif text-lg text-[#C9A227] font-bold block mb-1">03. Bio-Active Culinary</span>
-                <p className="text-xs text-[#676E6A] font-sans leading-relaxed">
-                  Add one teaspoon to morning coffee or smoothies for sustained MCT brain energy and metabolic support.
-                </p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[
+                {
+                  n: "01",
+                  t: "In the kitchen",
+                  d: "Cook, bake and fry with it, or stir a spoonful into coffee, smoothies and porridge.",
+                },
+                {
+                  n: "02",
+                  t: "On skin",
+                  d: "Warm a little between clean palms and press onto damp skin straight after a shower.",
+                },
+                {
+                  n: "03",
+                  t: "Through hair",
+                  d: "Work through scalp and damp ends 30 minutes before washing as a pre-shampoo treatment.",
+                },
+              ].map((step) => (
+                <div
+                  key={step.n}
+                  className="p-5 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3]"
+                >
+                  <span className="font-serif text-lg text-[#C9A227] font-bold block mb-1.5">
+                    {step.n}. {step.t}
+                  </span>
+                  <p className="text-xs text-[#676E6A] leading-relaxed">{step.d}</p>
+                </div>
+              ))}
             </div>
           )}
 
           {activeTab === "shipping" && (
-            <div className="space-y-4 max-w-3xl">
-              <h3 className="font-serif text-xl font-medium text-[#161A17]">Shipping & Circular Glass Policy</h3>
-              <p className="text-xs md:text-sm text-[#676E6A] font-sans leading-relaxed">
-                All orders are dispatched in eco-friendly protective packaging. Orders over ₦50,000 qualify for complimentary express courier shipping across Lagos, Abuja, and Port Harcourt.
+            <div className="space-y-5 max-w-3xl">
+              <h3 className="font-serif text-xl font-medium text-[#161A17]">
+                Shipping and returns
+              </h3>
+              <p className="text-sm text-[#676E6A] leading-relaxed">
+                Orders are dispatched in protective, recyclable packaging. Lagos deliveries
+                arrive within 24–48 hours and the rest of Nigeria within 3–5 working days.
+                Orders above {formatNaira(50000)} ship free.
               </p>
-              <div className="p-4 rounded-[1rem] bg-[#1C3322] text-[#FAF8F5] text-xs font-sans flex items-center justify-between">
-                <span>Return 5 empty amber bottles for a 250ml Nectar voucher.</span>
-                <Badge variant="gold">CIRCULAR GUARANTEE</Badge>
-              </div>
+              <p className="text-sm text-[#676E6A] leading-relaxed">
+                Unopened items can be returned within 14 days of delivery for a full refund.
+                For food-safety reasons we cannot accept returns of opened consumables unless
+                the product is faulty — see our{" "}
+                <Link href="/returns" className="underline underline-offset-4 hover:text-[#1C3322]">
+                  returns policy
+                </Link>
+                .
+              </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* 4. Cross-Linked Recipe Pairings */}
-      <section className="space-y-6 pt-12 border-t border-[#E2E6E3]">
-        <div className="flex justify-between items-end">
-          <div>
-            <Badge variant="gold">BOTANICAL PAIRINGS</Badge>
-            <h3 className="font-serif text-2xl md:text-3xl font-medium text-[#161A17] mt-1">
-              Recipes Formulated With This Oil
-            </h3>
-          </div>
-          <Link href="/recipes" className="text-xs font-sans font-bold uppercase tracking-[0.2em] text-[#1C3322] hover:text-[#C9A227] transition-colors">
-            Explore All Guides →
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <RecipeCard
-            id="r1"
-            title="Golden Turmeric & Raw Coconut Elixir"
-            slug="golden-turmeric-coconut-elixir"
-            prepTime="10 Mins"
-            difficulty="Easy"
-            ingredientsCount={5}
-            description="Anti-inflammatory morning tonic infused with cold-pressed virgin oil, raw ginger, and organic black pepper."
-            imageUrl="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600"
-          />
-
-          <RecipeCard
-            id="r2"
-            title="Overnight Hair Follicle Nourishing Treatment"
-            slug="overnight-hair-nourishing-treatment"
-            prepTime="15 Mins"
-            difficulty="Artisanal"
-            ingredientsCount={3}
-            description="Intensive scalp therapy pairing unrefined coconut lipids with organic rosemary and lavender essential oils."
-            imageUrl="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=600"
-          />
-        </div>
-      </section>
-
-      {/* 5. FAQ Accordion */}
-      <section className="space-y-6 pt-12 border-t border-[#E2E6E3]">
-        <div className="text-center max-w-xl mx-auto">
-          <Badge variant="gold">SANCTUARY ASSURANCE</Badge>
-          <h3 className="font-serif text-2xl md:text-3xl font-medium text-[#161A17] mt-1">
-            Frequently Asked Questions
-          </h3>
-        </div>
-
-        <div className="max-w-3xl mx-auto space-y-3">
-          {MOCK_FAQS.map((faq, idx) => (
-            <div
-              key={idx}
-              className="rounded-[1rem] border border-[#E2E6E3] bg-[#FAF8F5] glass-alabaster overflow-hidden"
+      {/* -------------------------------------------------------------- Related */}
+      {related.length > 0 && (
+        <section className="space-y-8 pt-4 border-t border-[#E2E6E3]">
+          <div className="flex justify-between items-end gap-4">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227] block mb-1">
+                Goes well with
+              </span>
+              <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#1C3322]">
+                More from {categoryName}
+              </h2>
+            </div>
+            <Link
+              href="/shop"
+              className="text-[11px] font-sans font-bold uppercase tracking-[0.18em] text-[#1C3322] hover:text-[#C9A227] transition-colors shrink-0"
             >
-              <button
-                onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-                className="w-full p-5 text-left font-serif text-base font-medium text-[#161A17] flex items-center justify-between cursor-pointer"
-              >
-                <span>{faq.q}</span>
-                <ChevronDown
-                  className={`w-4 h-4 text-[#C9A227] transition-transform duration-300 ${
-                    openFaqIndex === idx ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+              Shop all →
+            </Link>
+          </div>
 
-              <AnimatePresence>
-                {openFaqIndex === idx && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="px-5 pb-5 text-xs text-[#676E6A] font-sans leading-relaxed"
-                  >
-                    {faq.a}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 6. Reviews Critique Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-12 border-t border-[#E2E6E3]">
-        <div className="lg:col-span-4 space-y-6">
-          <Badge variant="gold">VERIFIED REVIEWS</Badge>
-          <h3 className="font-serif text-2xl font-medium text-[#161A17]">
-            Client Critiques
-          </h3>
-
-          <form onSubmit={handleReviewSubmit} className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] space-y-4 shadow-ambient-sm">
-            <span className="text-[10px] font-sans uppercase font-bold tracking-[0.2em] text-[#161A17]">
-              Submit Critique
-            </span>
-
-            <div>
-              <label className="text-[10px] font-sans uppercase font-semibold text-[#676E6A] block mb-1">
-                Your Name
-              </label>
-              <input
-                type="text"
-                required
-                value={reviewerName}
-                onChange={(e) => setReviewerName(e.target.value)}
-                placeholder="e.g. Amina Yusuf"
-                className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none focus:border-[#1C3322]"
-              />
-            </div>
-
-            <div>
-              <label className="text-[10px] font-sans uppercase font-semibold text-[#676E6A] block mb-1">
-                Rating
-              </label>
-              <select
-                value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
-                className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none focus:border-[#1C3322]"
-              >
-                <option value={5}>5 Stars (Exceptional)</option>
-                <option value={4}>4 Stars (Highly Recommended)</option>
-                <option value={3}>3 Stars (Satisfactory)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-sans uppercase font-semibold text-[#676E6A] block mb-1">
-                Critique Feedback
-              </label>
-              <textarea
-                required
-                rows={3}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your formulation experience..."
-                className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none focus:border-[#1C3322] resize-none"
-              />
-            </div>
-
-            <Button variant="botanical" size="md" type="submit" disabled={isSubmitting} className="w-full py-3">
-              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post Review"}
-            </Button>
-          </form>
-        </div>
-
-        {/* Reviews Cards List */}
-        <div className="lg:col-span-8 space-y-4">
-          {reviews.map((r, i) => (
-            <div key={i} className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-sm space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-serif font-medium text-sm text-[#161A17]">{r.name}</span>
-                <span className="text-[10px] font-sans uppercase tracking-[0.15em] text-[#676E6A]">{r.date}</span>
-              </div>
-              <div className="flex gap-1 text-[#C9A227]">
-                {Array.from({ length: 5 }).map((_, idx) => (
-                  <Star key={idx} className={`w-3.5 h-3.5 ${idx < r.rating ? "fill-current" : "opacity-30"}`} />
-                ))}
-              </div>
-              <p className="text-xs text-[#676E6A] font-sans leading-relaxed pt-1">{r.comment}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 7. Recently Viewed Formulations */}
-      {recentlyViewed.length > 0 && (
-        <section className="space-y-6 pt-12 border-t border-[#E2E6E3]">
-          <h3 className="font-serif text-2xl font-medium text-[#161A17]">
-            Recently Viewed Formulations
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentlyViewed.map((item) => (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+            {related.map((item) => (
               <ProductCard
                 key={item.id}
-                id={item.id}
-                title={item.title}
-                slug={item.slug}
-                category={item.category || "Cold-Pressed"}
-                price={item.price}
-                imageUrl={item.imageUrl}
+                product={item}
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
             ))}
           </div>
         </section>
       )}
 
-      {/* Video Modal */}
-      <AnimatePresence>
-        {isVideoModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsVideoModalOpen(false)}
-            className="fixed inset-0 bg-[#161A17]/85 backdrop-blur-md z-50 flex items-center justify-center p-4 cursor-pointer"
-          >
-            <div className="relative w-full max-w-4xl aspect-video bg-black rounded-[1.5rem] overflow-hidden shadow-ambient-lg border border-gold-hairline">
-              <button
-                onClick={() => setIsVideoModalOpen(false)}
-                className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white text-white hover:text-black rounded-full z-10 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1"
-                title="Badagry Grove Documentary"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ------------------------------------------------------------------ FAQ */}
+      <section className="space-y-8 pt-4 border-t border-[#E2E6E3]">
+        <div className="text-center max-w-xl mx-auto space-y-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227]">
+            Good to know
+          </span>
+          <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#1C3322]">
+            Frequently asked questions
+          </h2>
+        </div>
 
-      {/* Sticky Floating Purchase Bar */}
+        <div className="max-w-3xl mx-auto space-y-3">
+          {FAQS.map((faq, idx) => {
+            const open = openFaq === idx;
+            return (
+              <div
+                key={faq.q}
+                className="rounded-[1rem] border border-[#E2E6E3] bg-[#FAF8F5] overflow-hidden"
+              >
+                <h3>
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(open ? null : idx)}
+                    aria-expanded={open}
+                    aria-controls={`faq-panel-${idx}`}
+                    className="w-full p-5 text-left font-serif text-base font-medium text-[#161A17] flex items-center justify-between gap-4 cursor-pointer hover:bg-[#F3EFE8]/60 transition-colors"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 text-[#C9A227] transition-transform duration-300 shrink-0",
+                        open && "rotate-180"
+                      )}
+                    />
+                  </button>
+                </h3>
+
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      id={`faq-panel-${idx}`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <p className="px-5 pb-5 text-sm text-[#676E6A] leading-relaxed">
+                        {faq.a}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* -------------------------------------------------------------- Reviews */}
+      <section id="reviews" className="space-y-8 pt-4 border-t border-[#E2E6E3] scroll-mt-28">
+        <div className="text-center max-w-xl mx-auto space-y-2">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227]">
+            Verified reviews
+          </span>
+          <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#1C3322]">
+            What customers say
+          </h2>
+        </div>
+
+        {reviews.length === 0 ? (
+          <div className="max-w-lg mx-auto text-center p-10 rounded-[1.5rem] border border-dashed border-[#E2E6E3] bg-[#F3EFE8]/40">
+            <Leaf className="w-6 h-6 text-[#C9A227] mx-auto mb-4" />
+            <p className="text-sm text-[#676E6A] leading-relaxed">
+              No reviews for {product.title} yet. Reviews appear here once verified
+              customers have received their order.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+            {reviews.map((review) => (
+              <figure
+                key={review.id}
+                className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-sm space-y-3"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <figcaption className="font-serif font-medium text-sm text-[#161A17]">
+                    {review.author}
+                  </figcaption>
+                  <time className="text-[10px] font-sans uppercase tracking-[0.14em] text-[#676E6A]">
+                    {review.date}
+                  </time>
+                </div>
+                <div
+                  className="flex gap-1 text-[#C9A227]"
+                  aria-label={`${review.rating} out of 5 stars`}
+                >
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      aria-hidden="true"
+                      className={cn("w-3.5 h-3.5", i < review.rating ? "fill-current" : "opacity-25")}
+                    />
+                  ))}
+                </div>
+                <blockquote className="text-sm text-[#676E6A] leading-relaxed">
+                  {review.comment}
+                </blockquote>
+              </figure>
+            ))}
+          </div>
+        )}
+      </section>
+
       <StickyPurchaseBar
-        title={product.title}
-        price={primaryPrice}
-        imageUrl={primaryImage}
-        onAddToCart={() => {
-          if (mainFormRef.current) {
-            mainFormRef.current.scrollIntoView({ behavior: "smooth" });
-          }
-        }}
+        product={product}
+        variant={activeVariant}
         isVisible={showStickyBar}
       />
     </div>
   );
 }
-

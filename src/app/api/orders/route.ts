@@ -1,154 +1,244 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { eq, inArray } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/db";
 import { orders, orderItems, productVariants } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
 import { initializePaystackPayment } from "@/lib/paystack";
-import { z } from "zod";
+import { computeTotals, type DeliverySpeed } from "@/lib/pricing";
+import { findVariant } from "@/lib/catalog";
+
+export const dynamic = "force-dynamic";
 
 const createOrderSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(2),
-  shippingAddress: z.string().min(5),
-  shippingState: z.string().min(2), // Lagos vs Other regions
-  items: z.array(
-    z.object({
-      variantId: z.string(),
-      quantity: z.number().min(1),
-    })
-  ),
+  name: z.string().min(2).max(120),
+  shippingAddress: z.string().min(5).max(500),
+  shippingState: z.string().min(2).max(80),
+  deliverySpeed: z.enum(["standard", "express"]).default("standard"),
+  items: z
+    .array(
+      z.object({
+        variantId: z.string().uuid(),
+        quantity: z.number().int().min(1).max(50),
+      })
+    )
+    .min(1)
+    .max(40),
 });
 
-export async function POST(request: Request) {
+/** Server-side price for a variant. The client's number is never trusted. */
+async function priceLines(items: Array<{ variantId: string; quantity: number }>) {
+  const ids = items.map((i) => i.variantId);
+
+  let rows: Array<{ id: string; price: string; stock: number; sku: string }> = [];
   try {
-    const body = await request.json();
-    const validated = createOrderSchema.parse(body);
+    rows = await db
+      .select({
+        id: productVariants.id,
+        price: productVariants.price,
+        stock: productVariants.stock,
+        sku: productVariants.sku,
+      })
+      .from(productVariants)
+      .where(inArray(productVariants.id, ids));
+  } catch (error) {
+    console.error("[orders] variant lookup failed, pricing from catalog:", error);
+  }
 
-    let subtotal = 0;
-    const itemsWithDetails: { variantId: string; quantity: number; priceAtPurchase: string }[] = [];
+  const byId = new Map(rows.map((r) => [r.id, r]));
 
-    // Initialize Order details with random order number
-    const orderNumber = `SA-${Math.floor(100000 + Math.random() * 900000)}`;
+  const priced = [];
+  const unknown: string[] = [];
+  const outOfStock: string[] = [];
 
-    // Try DB operation
-    let orderSavedSuccessfully = false;
-    let newOrderId = "mock-id-" + Math.random();
+  for (const item of items) {
+    const row = byId.get(item.variantId);
 
-    try {
-      // Stock check and calculation
-      for (const item of validated.items) {
-        const variant = await db.query.productVariants.findFirst({
-          where: eq(productVariants.id, item.variantId),
-        });
-
-        if (variant) {
-          const itemPrice = Number(variant.price);
-          subtotal += itemPrice * item.quantity;
-          itemsWithDetails.push({
-            variantId: variant.id,
-            quantity: item.quantity,
-            priceAtPurchase: variant.price,
-          });
-        }
-      }
-
-      // If no valid DB items are resolved, use custom calculation
-      if (subtotal === 0) {
-        subtotal = 3000 * validated.items.reduce((acc, current) => acc + current.quantity, 0);
-      }
-
-      const shippingFee = validated.shippingState === "Lagos" ? 2500 : 5000;
-      const vat = subtotal * 0.075;
-      const grandTotal = subtotal + vat + shippingFee;
-
-      const result = await db.transaction(async (tx) => {
-        const [newOrder] = await tx
-          .insert(orders)
-          .values({
-            orderNumber,
-            totalAmount: grandTotal.toString(),
-            status: "pending",
-            shippingAddress: `${validated.shippingAddress}, State: ${validated.shippingState}`,
-          })
-          .returning();
-
-        for (const item of itemsWithDetails) {
-          await tx.insert(orderItems).values({
-            orderId: newOrder.id,
-            variantId: item.variantId,
-            quantity: item.quantity,
-            priceAtPurchase: item.priceAtPurchase,
-          });
-
-          const currentVariant = await tx.query.productVariants.findFirst({
-            where: eq(productVariants.id, item.variantId),
-          });
-
-          if (currentVariant) {
-            await tx
-              .update(productVariants)
-              .set({ stock: Math.max(0, currentVariant.stock - item.quantity) })
-              .where(eq(productVariants.id, item.variantId));
-          }
-        }
-        return newOrder;
+    if (row) {
+      if (row.stock < item.quantity) outOfStock.push(row.sku);
+      priced.push({
+        variantId: item.variantId,
+        quantity: item.quantity,
+        unitPrice: Number(row.price),
+        sku: row.sku,
+        persistable: true,
       });
-
-      newOrderId = result.id;
-      orderSavedSuccessfully = true;
-    } catch (dbError) {
-      console.warn("DB not present or failed, running in simulated order mode:", dbError);
-      // Fallback calculation for mock
-      subtotal = 3000 * validated.items.reduce((acc, current) => acc + current.quantity, 0);
+      continue;
     }
 
-    const shippingFee = validated.shippingState === "Lagos" ? 2500 : 5000;
-    const vat = subtotal * 0.075;
-    const grandTotal = subtotal + vat + shippingFee;
+    // Catalog ids are the same ids we seed, so this still prices correctly if the
+    // database is briefly unreachable. It will not be written as an order line.
+    const fromCatalog = findVariant(item.variantId);
+    if (fromCatalog) {
+      priced.push({
+        variantId: item.variantId,
+        quantity: item.quantity,
+        unitPrice: fromCatalog.variant.price,
+        sku: fromCatalog.variant.sku,
+        persistable: false,
+      });
+      continue;
+    }
 
-    const host = request.headers.get("host") || "localhost:3000";
-    const protocol = request.headers.get("x-forwarded-proto") || "http";
-    const callbackUrl = `${protocol}://${host}/checkout/success?reference=${orderNumber}`;
+    unknown.push(item.variantId);
+  }
 
-    // Initialize Paystack Payment with fallback safety
-    try {
-      if (process.env.PAYSTACK_SECRET_KEY && process.env.PAYSTACK_SECRET_KEY !== "sk_test_mockkey") {
-        const paystackSession = await initializePaystackPayment(
-          validated.email,
-          grandTotal,
-          callbackUrl,
-          { orderId: newOrderId, orderNumber }
-        );
+  return { priced, unknown, outOfStock };
+}
 
-        if (orderSavedSuccessfully) {
-          await db
-            .update(orders)
-            .set({ paymentReference: paystackSession.data.reference })
-            .where(eq(orders.id, newOrderId));
-        }
+export async function POST(request: Request) {
+  let payload: unknown;
+  try {
+    payload = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Malformed request body." }, { status: 400 });
+  }
 
-        return NextResponse.json({
-          success: true,
-          authorizationUrl: paystackSession.data.authorization_url,
+  const parsed = createOrderSchema.safeParse(payload);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Please check your details and try again.", issues: parsed.error.issues },
+      { status: 400 }
+    );
+  }
+  const input = parsed.data;
+
+  // --- Price the order ourselves -------------------------------------------
+  const { priced, unknown, outOfStock } = await priceLines(input.items);
+
+  // Previously an unrecognised variant silently fell back to ₦3,000 per unit, so a
+  // ₦28,000 bottle could be billed at ₦3,000. Refuse the order instead.
+  if (unknown.length > 0) {
+    return NextResponse.json(
+      {
+        error:
+          "Some items in your bag are no longer available. Please refresh the page and try again.",
+        unknownVariants: unknown,
+      },
+      { status: 409 }
+    );
+  }
+
+  if (outOfStock.length > 0) {
+    return NextResponse.json(
+      {
+        error: `Not enough stock for: ${outOfStock.join(", ")}. Please reduce the quantity.`,
+        outOfStock,
+      },
+      { status: 409 }
+    );
+  }
+
+  const totals = computeTotals(
+    priced.map(({ variantId, quantity, unitPrice }) => ({ variantId, quantity, unitPrice })),
+    input.shippingState,
+    input.deliverySpeed as DeliverySpeed
+  );
+
+  if (totals.total <= 0) {
+    return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
+  }
+
+  // --- Payment must be configured ------------------------------------------
+  const paystackKey = process.env.PAYSTACK_SECRET_KEY;
+  if (!paystackKey || paystackKey === "sk_test_mockkey") {
+    // This used to fall through to /checkout/success, which showed the customer a
+    // "Payment Confirmed" page for an order that was never paid for.
+    console.error("[orders] PAYSTACK_SECRET_KEY is not configured — refusing checkout.");
+    return NextResponse.json(
+      { error: "Payments are temporarily unavailable. Please try again shortly." },
+      { status: 503 }
+    );
+  }
+
+  const orderNumber = `SA-${Date.now().toString(36).toUpperCase()}-${Math.floor(
+    1000 + Math.random() * 9000
+  )}`;
+
+  // Attach the order to the signed-in customer when there is one, so it shows up
+  // in their order history.
+  let userId: string | null = null;
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    userId = session?.user?.id ?? null;
+  } catch {
+    // Guest checkout is fine.
+  }
+
+  // --- Persist ---------------------------------------------------------------
+  const persistableLines = priced.filter((l) => l.persistable);
+  let orderId: string | null = null;
+
+  try {
+    orderId = await db.transaction(async (tx) => {
+      const [created] = await tx
+        .insert(orders)
+        .values({
+          userId,
           orderNumber,
+          totalAmount: totals.total.toFixed(2),
+          status: "pending",
+          shippingAddress: `${input.name}\n${input.shippingAddress}\n${input.shippingState}\n${input.email}`,
+        })
+        .returning({ id: orders.id });
+
+      for (const line of persistableLines) {
+        await tx.insert(orderItems).values({
+          orderId: created.id,
+          variantId: line.variantId,
+          quantity: line.quantity,
+          priceAtPurchase: line.unitPrice.toFixed(2),
         });
-      } else {
-        throw new Error("Mock key detected. Falling back to checkout redirect.");
       }
-    } catch (paystackError) {
-      console.warn("Paystack initialisation failed or in mock environment. Simulating redirection:", paystackError);
-      
-      // Fallback directly to checkout success path for visual testing flow
-      return NextResponse.json({
-        success: true,
-        authorizationUrl: `/checkout/success?reference=${orderNumber}&status=simulated`,
-        orderNumber,
-      });
-    }
-  } catch (error: any) {
-    console.error("Order creation failed:", error);
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.issues }, { status: 400 });
-    }
-    return NextResponse.json({ error: error.message || "Failed to create order." }, { status: 500 });
+
+      return created.id;
+    });
+  } catch (error) {
+    console.error("[orders] could not record order:", error);
+    return NextResponse.json(
+      { error: "We could not record your order. Please try again." },
+      { status: 500 }
+    );
+  }
+
+  // --- Hand off to Paystack --------------------------------------------------
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("host") ?? "sanaamniscoconut.com";
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
+  const callbackUrl = `${protocol}://${host}/checkout/success?reference=${encodeURIComponent(orderNumber)}`;
+
+  try {
+    const session = await initializePaystackPayment(input.email, totals.total, callbackUrl, {
+      orderId,
+      orderNumber,
+      customerName: input.name,
+    });
+
+    await db
+      .update(orders)
+      .set({ paymentReference: session.data.reference })
+      .where(eq(orders.id, orderId));
+
+    return NextResponse.json({
+      success: true,
+      authorizationUrl: session.data.authorization_url,
+      orderNumber,
+      total: totals.total,
+    });
+  } catch (error) {
+    console.error("[orders] Paystack initialisation failed:", error);
+
+    await db
+      .update(orders)
+      .set({ status: "payment_failed" })
+      .where(eq(orders.id, orderId))
+      .catch(() => undefined);
+
+    return NextResponse.json(
+      { error: "We could not start the payment. No money has been taken — please try again." },
+      { status: 502 }
+    );
   }
 }

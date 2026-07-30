@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
+import { computeTotals } from "@/lib/pricing";
 import {
   CreditCard,
   ShoppingBag,
@@ -39,15 +40,17 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const subtotal = totalAmount;
-  const vat = subtotal * 0.075;
-  const baseShipping = shippingState === "Lagos" ? 2500 : 5000;
-  const shippingFee = deliverySpeed === "express" ? baseShipping + 1500 : baseShipping;
-  const grandTotal = subtotal + vat + shippingFee;
+  // Same module the order API prices with, so this total is the amount charged.
+  const totals = computeTotals(
+    items.map((i) => ({ variantId: i.variantId, quantity: i.quantity, unitPrice: i.price })),
+    shippingState,
+    deliverySpeed
+  );
+  const { subtotal, vat, shipping: shippingFee, total: grandTotal } = totals;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0) return;
+    if (items.length === 0 || isSubmitting) return;
 
     setIsSubmitting(true);
     setError("");
@@ -61,6 +64,7 @@ export default function CheckoutPage() {
           name,
           shippingAddress: address,
           shippingState,
+          deliverySpeed,
           items: items.map((i) => ({
             variantId: i.variantId,
             quantity: i.quantity,
@@ -70,15 +74,19 @@ export default function CheckoutPage() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to process order.");
+      if (!response.ok || !data.authorizationUrl) {
+        throw new Error(data.error || "We could not start your payment. Please try again.");
       }
 
-      clearCart();
+      // The cart is deliberately left intact until Paystack confirms payment — the
+      // success page clears it. Emptying it here lost the bag whenever a payment
+      // was abandoned or declined.
       window.location.href = data.authorizationUrl;
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.message || "An unexpected error occurred.");
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again."
+      );
       setIsSubmitting(false);
     }
   };

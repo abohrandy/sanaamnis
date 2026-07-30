@@ -15,6 +15,7 @@ import {
   Check,
 } from "lucide-react";
 import { ProductCard } from "@/components/ds/cards/product-card";
+import { type CatalogProduct, type CategorySlug } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -102,82 +103,18 @@ export const LIFESTYLE_MODULES: LifestyleCategory[] = [
   },
 ];
 
-export const ALL_PRODUCTS = [
-  {
-    id: "1",
-    title: "Extra Virgin Coconut Oil",
-    slug: "extra-virgin-coconut-oil",
-    category: "Organic Wellness",
-    price: 15000,
-    imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
-    keywords: ["oil", "wellness", "fitness", "beauty", "family", "cooking", "gifts", "recipes"],
-  },
-  {
-    id: "2",
-    title: "Sana Amnis Coconut Water",
-    slug: "sana-amnis-coconut-water",
-    category: "Organic Wellness",
-    price: 4500,
-    imageUrl: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000",
-    keywords: ["water", "wellness", "fitness", "family", "gifts", "recipes"],
-  },
-  {
-    id: "3",
-    title: "Pure Coconut Milk Powder",
-    slug: "pure-coconut-milk-powder",
-    category: "Organic Wellness",
-    price: 8500,
-    imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
-    keywords: ["milk", "powder", "cooking", "family", "recipes"],
-  },
-  {
-    id: "4",
-    title: "Nourishing Coconut Body Butter",
-    slug: "coconut-body-butter",
-    category: "Premium Skincare",
-    price: 18000,
-    imageUrl: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000",
-    keywords: ["butter", "beauty", "family", "gifts"],
-  },
-  {
-    id: "5",
-    title: "Restorative Coconut Hair Mask",
-    slug: "restorative-coconut-hair-mask",
-    category: "Hair & Body",
-    price: 14000,
-    imageUrl: "https://drive.google.com/thumbnail?id=1--CLF51noixdnvV8HhLmosvtP75RDlRE&sz=w1000",
-    keywords: ["mask", "beauty", "gifts", "recipes"],
-  },
-  {
-    id: "6",
-    title: "Exfoliating Coconut Sugar Scrub",
-    slug: "coconut-sugar-scrub",
-    category: "Premium Skincare",
-    price: 12500,
-    imageUrl: "https://drive.google.com/thumbnail?id=1kfVkQ-lqEpTKfvtl_WT-zwa28NeEOO1n&sz=w1000",
-    keywords: ["scrub", "beauty", "fitness", "gifts"],
-  },
-  {
-    id: "7",
-    title: "Toasted Organic Coconut Chips",
-    slug: "organic-coconut-chips",
-    category: "Gourmet Snacks",
-    price: 3500,
-    imageUrl: "https://drive.google.com/thumbnail?id=16WhogTSxDzbjaVewUFprCCPbN_mfhPxg&sz=w1000",
-    keywords: ["chips", "family", "cooking", "fitness"],
-  },
-  {
-    id: "8",
-    title: "Raw Organic Coconut Flour",
-    slug: "raw-coconut-flour",
-    category: "Culinary Essentials",
-    price: 6000,
-    imageUrl: "https://drive.google.com/thumbnail?id=1hk33UKAflm0EIoFg_sGRzbQ3jSZsPLUp&sz=w1000",
-    keywords: ["flour", "cooking", "wellness", "recipes"],
-  },
-];
+/** Which catalog categories each lifestyle module draws from. */
+const MODULE_CATEGORIES: Record<LifestyleCategory["id"], CategorySlug[]> = {
+  wellness: ["hydration", "oils"],
+  fitness: ["hydration"],
+  beauty: ["body", "oils"],
+  family: ["hydration", "culinary"],
+  cooking: ["culinary", "oils"],
+  gifts: ["body", "culinary", "hydration"],
+  recipes: ["culinary", "oils"],
+};
 
-export function LifestyleCommerceModules() {
+export function LifestyleCommerceModules({ products }: { products: CatalogProduct[] }) {
   const [selectedModuleId, setSelectedModuleId] = useState<LifestyleCategory["id"]>("wellness");
 
   const activeModule = useMemo(
@@ -185,12 +122,10 @@ export function LifestyleCommerceModules() {
     [selectedModuleId]
   );
 
-  // Automated recommendation matching engine
   const recommendedProducts = useMemo(() => {
-    return ALL_PRODUCTS.filter((prod) =>
-      prod.keywords.some((kw) => activeModule.keywords.includes(kw) || kw === activeModule.id)
-    ).slice(0, 4);
-  }, [activeModule]);
+    const wanted = MODULE_CATEGORIES[activeModule.id] ?? [];
+    return products.filter((p) => wanted.includes(p.categorySlug)).slice(0, 4);
+  }, [activeModule, products]);
 
   return (
     <div className="space-y-12 font-sans">
@@ -284,12 +219,8 @@ export function LifestyleCommerceModules() {
           {recommendedProducts.map((product) => (
             <ProductCard
               key={product.id}
-              id={product.id}
-              title={product.title}
-              slug={product.slug}
-              category={product.category}
-              price={product.price}
-              imageUrl={product.imageUrl}
+              product={product}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
           ))}
         </div>

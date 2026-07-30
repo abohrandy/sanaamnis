@@ -1,111 +1,100 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ProductCard } from "@/components/ds/cards/product-card";
 import { CollectionBanner } from "./CollectionBanner";
 import { FilterSidebar } from "./FilterSidebar";
-import { QuickViewModal } from "./QuickViewModal";
 import { EmptyState } from "@/components/ds/feedback/EmptyState";
-import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { useHydrated } from "@/hooks/useHydratedStore";
 import { SlidersHorizontal, LayoutGrid, Grid3X3, ArrowDown } from "lucide-react";
 import { Tag } from "@/components/ui/tag";
 import { Button } from "@/components/ui/button";
-
-export interface ProductItem {
-  id: string;
-  title: string;
-  slug: string;
-  category: { id: string; name: string } | string;
-  price: number;
-  imageUrl: string;
-  description?: string;
-  variants?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    stock: number;
-  }>;
-}
+import {
+  CATEGORIES,
+  startingPrice,
+  type CatalogProduct,
+  type CategorySlug,
+} from "@/lib/catalog";
 
 export interface ShopClientProps {
-  initialProducts: ProductItem[];
-  categories: Array<{ id: string; name: string; count?: number }>;
+  products: CatalogProduct[];
+  categories: Array<{ id: string; slug: string; name: string; count?: number }>;
   bannerTitle?: string;
   bannerSubtitle?: string;
   bannerDescription?: string;
 }
 
+const PAGE_SIZE = 8;
+
 export function ShopClient({
-  initialProducts,
+  products,
   categories,
   bannerTitle,
   bannerSubtitle,
   bannerDescription,
 }: ShopClientProps) {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("featured");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
-  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const [quickViewProduct, setQuickViewProduct] = useState<ProductItem | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // The category lives in the URL so /shop?category=hydration is linkable from
+  // the homepage tiles and survives a refresh or a shared link.
+  const selectedCategory = searchParams.get("category") ?? "all";
+  const sortBy = searchParams.get("sort") ?? "featured";
+
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [gridColumns, setGridColumns] = useState<3 | 4>(4);
 
-  const addItem = useCartStore((state) => state.addItem);
+  const hydrated = useHydrated();
+  const wishlist = useWishlistStore((s) => s.items);
+  const toggleWishlist = useWishlistStore((s) => s.toggle);
 
-  // Filter & Sort Logic
+  const setParam = useCallback(
+    (key: string, value: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (!value || value === "all" || value === "featured") {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      setVisibleCount(PAGE_SIZE);
+    },
+    [router, pathname, searchParams]
+  );
+
   const filteredProducts = useMemo(() => {
-    let list = [...initialProducts];
+    let list = products;
 
-    // Category Filter
     if (selectedCategory !== "all") {
-      list = list.filter((p) => {
-        const catId = typeof p.category === "object" ? p.category.id : p.category;
-        const catName = typeof p.category === "object" ? p.category.name : p.category;
-        return catId === selectedCategory || catName === selectedCategory;
-      });
+      list = list.filter((p) => p.categorySlug === selectedCategory);
     }
 
-    // Sort Logic
+    const sorted = [...list];
     if (sortBy === "price_asc") {
-      list.sort((a, b) => a.price - b.price);
+      sorted.sort((a, b) => startingPrice(a) - startingPrice(b));
     } else if (sortBy === "price_desc") {
-      list.sort((b, a) => a.price - b.price);
-    } else if (sortBy === "newest") {
-      list.reverse();
+      sorted.sort((a, b) => startingPrice(b) - startingPrice(a));
+    } else if (sortBy === "name") {
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
     }
-
-    return list;
-  }, [initialProducts, selectedCategory, sortBy]);
+    return sorted;
+  }, [products, selectedCategory, sortBy]);
 
   const displayedProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
 
-  const toggleWishlist = (id: string) => {
-    setWishlistIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  const handleAddToCart = (product: ProductItem) => {
-    const variantId = product.variants?.[0]?.id || product.id;
-    const variantName = product.variants?.[0]?.name || "250ml Glass Bottle";
-    const stock = product.variants?.[0]?.stock || 50;
-    addItem({
-      variantId,
-      productId: product.id,
-      sku: product.slug,
-      name: variantName,
-      title: product.title,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      stock,
-    }, 1);
-  };
+  const selectedCategoryName =
+    selectedCategory !== "all"
+      ? CATEGORIES[selectedCategory as CategorySlug]?.name ?? selectedCategory
+      : null;
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-8 font-sans">
-      {/* Editorial Collection Hero Banner */}
       <CollectionBanner
         title={bannerTitle}
         subtitle={bannerSubtitle}
@@ -113,7 +102,6 @@ export function ShopClient({
         itemCount={filteredProducts.length}
       />
 
-      {/* Control Bar (Mobile Filter Toggle, Grid Switcher & Count) */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-[#E2E6E3]">
         <div className="flex items-center gap-3">
           <Button
@@ -122,126 +110,129 @@ export function ShopClient({
             onClick={() => setIsMobileFilterOpen(true)}
             className="lg:hidden flex items-center gap-2"
           >
-            <SlidersHorizontal className="w-4 h-4 text-[#C9A227]" /> Filters & Sort
+            <SlidersHorizontal className="w-4 h-4 text-[#C9A227]" /> Filter & sort
           </Button>
 
-          <span className="text-xs font-sans uppercase font-bold tracking-[0.18em] text-[#676E6A]">
-            Showing {displayedProducts.length} of {filteredProducts.length} Formulations
+          <span
+            className="text-[11px] font-sans uppercase font-bold tracking-[0.16em] text-[#676E6A]"
+            aria-live="polite"
+          >
+            Showing {displayedProducts.length} of {filteredProducts.length}{" "}
+            {filteredProducts.length === 1 ? "product" : "products"}
           </span>
         </div>
 
-        {/* Active Filter Chips */}
-        {selectedCategory !== "all" && (
-          <div className="flex items-center gap-2">
-            <Tag active onRemove={() => setSelectedCategory("all")}>
-              Category: {categories.find((c) => c.id === selectedCategory)?.name || selectedCategory}
-            </Tag>
-          </div>
+        {selectedCategoryName && (
+          <Tag active onRemove={() => setParam("category", null)}>
+            {selectedCategoryName}
+          </Tag>
         )}
 
-        {/* Desktop Grid Switcher */}
         <div className="hidden lg:flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setGridColumns(3)}
+            aria-pressed={gridColumns === 3}
+            aria-label="Show three products per row"
             className={`p-2 rounded-[0.5rem] border transition-colors cursor-pointer ${
-              gridColumns === 3 ? "bg-[#1C3322] text-[#FAF8F5] border-transparent shadow-ambient-sm" : "bg-[#FAF8F5] text-[#161A17] border-[#E2E6E3] hover:bg-[#F3EFE8]"
+              gridColumns === 3
+                ? "bg-[#1C3322] text-[#FAF8F5] border-transparent shadow-ambient-sm"
+                : "bg-[#FAF8F5] text-[#161A17] border-[#E2E6E3] hover:bg-[#F3EFE8]"
             }`}
-            title="3 Column Grid"
           >
             <Grid3X3 className="w-4 h-4" />
           </button>
           <button
+            type="button"
             onClick={() => setGridColumns(4)}
+            aria-pressed={gridColumns === 4}
+            aria-label="Show four products per row"
             className={`p-2 rounded-[0.5rem] border transition-colors cursor-pointer ${
-              gridColumns === 4 ? "bg-[#1C3322] text-[#FAF8F5] border-transparent shadow-ambient-sm" : "bg-[#FAF8F5] text-[#161A17] border-[#E2E6E3] hover:bg-[#F3EFE8]"
+              gridColumns === 4
+                ? "bg-[#1C3322] text-[#FAF8F5] border-transparent shadow-ambient-sm"
+                : "bg-[#FAF8F5] text-[#161A17] border-[#E2E6E3] hover:bg-[#F3EFE8]"
             }`}
-            title="4 Column Grid"
           >
             <LayoutGrid className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Main Catalog Section */}
       <div className="flex gap-12">
-        {/* Sticky Filter Sidebar Component */}
         <FilterSidebar
-          categories={categories}
+          categories={categories.map((c) => ({ id: c.slug, name: c.name, count: c.count }))}
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={(id) => setParam("category", id)}
           sortBy={sortBy}
-          onSelectSort={setSortBy}
-          priceRange={priceRange}
-          onPriceChange={setPriceRange}
+          onSelectSort={(sort) => setParam("sort", sort)}
+          priceRange={[0, 500000]}
+          onPriceChange={() => {}}
           onResetFilters={() => {
-            setSelectedCategory("all");
-            setSortBy("featured");
+            setParam("category", null);
+            setParam("sort", null);
           }}
           isMobileOpen={isMobileFilterOpen}
           onCloseMobile={() => setIsMobileFilterOpen(false)}
         />
 
-        {/* Product Grid Area */}
         <div className="flex-1">
           {displayedProducts.length === 0 ? (
             <EmptyState
-              title="No Formulations Match Your Selection"
-              description="Try broadening your category filter or resetting sort parameters to discover available organic elixirs."
-              actionText="Reset All Filters"
-              onAction={() => setSelectedCategory("all")}
+              title="Nothing here yet"
+              description="No products match this filter. Try another category, or browse everything."
+              actionText="Show all products"
+              onAction={() => setParam("category", null)}
             />
           ) : (
             <div
-              className={`grid grid-cols-1 sm:grid-cols-2 gap-8 ${
+              className={`grid grid-cols-2 gap-4 md:gap-6 ${
                 gridColumns === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
               }`}
             >
-              {displayedProducts.map((p) => {
-                const categoryName = typeof p.category === "object" ? p.category.name : p.category;
-
-                return (
-                  <ProductCard
-                    key={p.id}
-                    id={p.id}
-                    title={p.title}
-                    slug={p.slug}
-                    category={categoryName || "Cold-Pressed"}
-                    price={p.price}
-                    imageUrl={p.imageUrl}
-                    isWishlisted={wishlistIds.includes(p.id)}
-                    onAddToCart={() => handleAddToCart(p)}
-                    onToggleWishlist={() => toggleWishlist(p.id)}
-                  />
-                );
-              })}
+              {displayedProducts.map((product, i) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  priority={i < 4}
+                  sizes={
+                    gridColumns === 3
+                      ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 380px"
+                      : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
+                  }
+                  // Only trust the store after hydration, otherwise the server HTML
+                  // and the first client render disagree.
+                  isWishlisted={
+                    hydrated && wishlist.some((w) => w.productId === product.id)
+                  }
+                  onToggleWishlist={(p) =>
+                    toggleWishlist({
+                      productId: p.id,
+                      slug: p.slug,
+                      title: p.title,
+                      price: startingPrice(p),
+                      imageUrl: p.images[0],
+                      categoryName: CATEGORIES[p.categorySlug].name,
+                    })
+                  }
+                />
+              ))}
             </div>
           )}
 
-          {/* Load More / Infinite Scroll Action Trigger */}
           {hasMore && (
-            <div className="mt-16 text-center">
+            <div className="mt-14 text-center">
               <Button
                 variant="alabaster"
                 size="lg"
-                onClick={() => setVisibleCount((prev) => prev + 8)}
-                className="py-4 text-xs font-bold uppercase tracking-[0.2em]"
+                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                className="flex items-center gap-2 mx-auto"
               >
-                Load More Formulations <ArrowDown className="w-4 h-4 ml-2" />
+                Load more <ArrowDown className="w-4 h-4" />
               </Button>
             </div>
           )}
         </div>
       </div>
-
-      {/* Quick View Modal Overlay */}
-      <QuickViewModal
-        product={quickViewProduct}
-        isOpen={Boolean(quickViewProduct)}
-        onClose={() => setQuickViewProduct(null)}
-        isWishlisted={quickViewProduct ? wishlistIds.includes(quickViewProduct.id) : false}
-        onToggleWishlist={(id) => toggleWishlist(id)}
-      />
     </div>
   );
 }
-

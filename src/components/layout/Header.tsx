@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
@@ -16,13 +18,21 @@ import { ShoppingBag, User, Search, Menu, X, Heart, ChevronDown } from "lucide-r
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
+type MegaMenuId = "selection" | "collections" | "recipes" | "journal";
+
+const MEGA_MENU_LINKS: Array<{ id: MegaMenuId; href: string; label: string }> = [
+  { id: "selection", href: "/shop", label: "Shop" },
+  { id: "recipes", href: "/recipes", label: "Recipes" },
+  { id: "journal", href: "/blog", label: "Journal" },
+];
+
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [activeMegaMenu, setActiveMegaMenu] = useState<"selection" | "collections" | "recipes" | "journal" | null>(null);
+  const [activeMegaMenu, setActiveMegaMenu] = useState<MegaMenuId | null>(null);
 
   const { isScrolled } = useScrollPosition();
 
@@ -49,13 +59,17 @@ export default function Header() {
     <>
       {/* Editorial Top Announcement Bar */}
       <div className="bg-[#1C3322] text-[#FAF8F5] text-[10px] font-sans font-semibold uppercase tracking-[0.25em] py-2.5 text-center border-b border-gold-hairline px-4 flex items-center justify-center gap-2 z-50 relative">
-        <span>Complimentary Express Shipping on Orders Above ₦50,000</span>
+        <span>Free delivery on orders over ₦50,000</span>
         <span className="hidden md:inline text-[#C9A227]">|</span>
-        <span className="hidden md:inline text-[#C9A227]">Press CMD+K for Instant Search</span>
+        <span className="hidden md:inline text-[#C9A227]">Nationwide across Nigeria</span>
       </div>
 
       {/* Main Adaptive Header Shell (Transparent -> Frosted Glass on Scroll) */}
       <header
+        // The mega menu opens on hover but had no matching leave handler, so moving
+        // the pointer sideways off the nav left it stuck open until you pressed
+        // Escape. Closing on leaving the whole header covers every exit path.
+        onMouseLeave={() => setActiveMegaMenu(null)}
         className={cn(
           "sticky top-0 z-40 w-full transition-all duration-500 ease-out",
           isScrolled
@@ -74,11 +88,13 @@ export default function Header() {
           </button>
 
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <Link href="/" className="flex items-center gap-3" aria-label="Sana Amnis home">
+            <Image
               src="/logo_long.png"
-              alt="Sana Amnis Luxury Organic"
+              alt="Sana Amnis"
+              width={240}
+              height={56}
+              priority
               className="h-10 md:h-12 w-auto object-contain transition-all duration-300"
             />
           </Link>
@@ -89,35 +105,32 @@ export default function Header() {
               Home
             </Link>
 
-            <div
-              className="relative py-2 cursor-pointer"
-              onMouseEnter={() => setActiveMegaMenu("selection")}
-            >
-              <Link href="/shop" className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
-                Selection <ChevronDown className="w-3 h-3 text-[#C9A227]" />
-              </Link>
-            </div>
-
-            <div
-              className="relative py-2 cursor-pointer"
-              onMouseEnter={() => setActiveMegaMenu("recipes")}
-            >
-              <Link href="/recipes" className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
-                Recipes <ChevronDown className="w-3 h-3 text-[#C9A227]" />
-              </Link>
-            </div>
-
-            <div
-              className="relative py-2 cursor-pointer"
-              onMouseEnter={() => setActiveMegaMenu("journal")}
-            >
-              <Link href="/blog" className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1">
-                Journal <ChevronDown className="w-3 h-3 text-[#C9A227]" />
-              </Link>
-            </div>
+            {MEGA_MENU_LINKS.map(({ id, href, label }) => (
+              <div
+                key={id}
+                className="relative py-2"
+                onMouseEnter={() => setActiveMegaMenu(id)}
+                onFocusCapture={() => setActiveMegaMenu(id)}
+              >
+                <Link
+                  href={href}
+                  className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1"
+                  aria-expanded={activeMegaMenu === id}
+                  aria-haspopup="true"
+                >
+                  {label}
+                  <ChevronDown
+                    className={cn(
+                      "w-3 h-3 text-[#C9A227] transition-transform duration-300",
+                      activeMegaMenu === id && "rotate-180"
+                    )}
+                  />
+                </Link>
+              </div>
+            ))}
 
             <Link href="/about" className="hover:text-[#C9A227] transition-colors py-2">
-              Ethos
+              About
             </Link>
           </nav>
 
@@ -193,9 +206,15 @@ export default function Header() {
         </div>
 
         {/* Active Hover Mega Menu Overlay */}
-        {activeMegaMenu && (
-          <MegaMenu type={activeMegaMenu} onClose={() => setActiveMegaMenu(null)} />
-        )}
+        <AnimatePresence>
+          {activeMegaMenu && (
+            <MegaMenu
+              key={activeMegaMenu}
+              type={activeMegaMenu}
+              onClose={() => setActiveMegaMenu(null)}
+            />
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Drawers & Modals */}
