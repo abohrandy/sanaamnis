@@ -13,6 +13,13 @@
  * Pure data, safe to import anywhere.
  */
 
+export interface Faq {
+  question: string;
+  /** Plain text. A single `[label](/path)` markdown-style link is supported — see parseFaqAnswer() in src/lib/faqs.ts. */
+  answer: string;
+  category: string;
+}
+
 export interface Recipe {
   slug: string;
   title: string;
@@ -289,6 +296,59 @@ export const ARTICLES: Article[] = [
     ],
   },
 ];
+
+// Previously lived only inline in src/app/(shop)/faq/page.tsx as JSX (some
+// answers embedded real <Link> elements). Extracted here as plain text, with a
+// single `[label](/path)` markdown-style link where the original had one — the
+// FAQ page renders that syntax back into a real link (see parseFaqAnswer()).
+export const FAQS: Faq[] = [
+  {
+    question: "What is the difference between your cold-pressed and hot-pressed coconut oil?",
+    answer:
+      "Cold-pressed is extracted on a temperature-controlled press held below 37°C, so nothing is refined, bleached or deodorised — it keeps a stronger coconut aroma and a lower smoke point, which suits skin, hair and baking. Hot-pressed uses heat for a higher yield, giving a milder flavour and a higher smoke point, which suits everyday frying and cooking.",
+    category: "products",
+  },
+  {
+    question: "Where do you deliver?",
+    answer:
+      "Nationwide across Nigeria. Lagos orders typically arrive in 24–48 hours; other states take 3–5 working days. Orders above ₦50,000 ship free. See our shipping page for details.",
+    category: "shipping",
+  },
+  {
+    question: "Why has my coconut oil gone solid?",
+    answer:
+      "Coconut oil naturally sets solid below about 24°C and turns liquid again above it — that is normal for an unrefined oil, not a fault. See our [storage guide](/blog/storing-coconut-oil) for how to bring it back to liquid.",
+    category: "products",
+  },
+  {
+    question: "Are your products suitable for sensitive skin?",
+    answer:
+      "Our oils and butters contain no synthetic fragrance, parabens, sulphates or alcohol. As with any natural oil, we would still suggest a small patch test first if you have a known sensitivity.",
+    category: "products",
+  },
+  {
+    question: "Can I use your coconut oil for cooking and on my skin?",
+    answer:
+      "Yes — both are food-grade. Many customers use the same cold-pressed bottle for cooking and for skin and hair. If you are frying regularly, the hot-pressed bottle's higher smoke point will serve you better.",
+    category: "products",
+  },
+  {
+    question: "What is your returns policy?",
+    answer:
+      "Unopened items can be returned within 14 days of delivery for a full refund. For food-safety reasons we cannot accept returns of opened consumables unless the product is faulty. Full details are on our [returns page](/returns).",
+    category: "orders",
+  },
+  {
+    question: "Do you sell wholesale or in bulk?",
+    answer:
+      "Yes — get in touch through our [contact page](/contact) with the quantities you need and we will quote you directly.",
+    category: "orders",
+  },
+];
+
+export function getFaqs(): Faq[] {
+  return FAQS;
+}
 
 export function getRecipe(slug: string): Recipe | undefined {
   return RECIPES.find((r) => r.slug === slug);

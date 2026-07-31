@@ -6,7 +6,10 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ArrowRight, Calendar } from "lucide-react";
-import { ARTICLES, formatDate } from "@/lib/content";
+import { formatDate } from "@/lib/content";
+import { getArticles } from "@/lib/blog";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Journal",
@@ -15,8 +18,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-export default function BlogPage() {
-  const [lead, ...rest] = ARTICLES;
+export default async function BlogPage() {
+  const articles = await getArticles();
+  const [lead, ...rest] = articles;
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">

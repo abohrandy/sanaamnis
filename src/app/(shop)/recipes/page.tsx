@@ -6,7 +6,9 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ArrowRight, Clock, Users } from "lucide-react";
-import { RECIPES } from "@/lib/content";
+import { getRecipes } from "@/lib/recipes";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Recipes",
@@ -15,7 +17,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/recipes" },
 };
 
-export default function RecipesPage() {
+export default async function RecipesPage() {
+  const recipes = await getRecipes();
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
       <Header />
@@ -37,7 +40,7 @@ export default function RecipesPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
-          {RECIPES.map((recipe, i) => (
+          {recipes.map((recipe, i) => (
             <article
               key={recipe.slug}
               className="group relative flex flex-col rounded-[1.25rem] border border-[#E2E6E3] overflow-hidden bg-[#FAF8F5] hover:shadow-ambient-md hover-lift-luxury transition-all duration-500"

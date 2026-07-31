@@ -14,6 +14,8 @@ import { Pool } from "pg";
 import { eq, inArray } from "drizzle-orm";
 import * as schema from "./schema";
 import { CATALOG, CATEGORIES } from "../lib/catalog";
+import { ARTICLES, RECIPES, FAQS } from "../lib/content";
+import { deterministicId } from "../../scripts/deterministic-id.mjs";
 
 const ADMIN_EMAILS = (process.env.SEED_ADMIN_EMAILS || "abohrandy@gmail.com,me@randyaboh.com")
   .split(",")
@@ -141,6 +143,90 @@ async function main() {
       console.log(`[seed] deactivated ${stale.length} product(s) no longer in the catalog`);
     }
 
+    // --- Journal, recipes & FAQs ----------------------------------------------
+    // Seeds src/lib/content.ts's fallback data as the starting rows, using the
+    // same deterministic-id + onConflictDoUpdate pattern as products above, so
+    // re-running this never duplicates what an admin has since edited by hand —
+    // it only touches rows whose id still matches the original seed content.
+    console.log(`[seed] ${ARTICLES.length} journal articles`);
+    for (const article of ARTICLES) {
+      const content = article.body
+        .map((section) => (section.heading ? `## ${section.heading}\n\n${section.paragraphs.join("\n\n")}` : section.paragraphs.join("\n\n")))
+        .join("\n\n");
+
+      await db
+        .insert(schema.blogPosts)
+        .values({
+          id: deterministicId("blog-post", article.slug),
+          title: article.title,
+          slug: article.slug,
+          excerpt: article.excerpt,
+          content,
+          category: article.category,
+          imageUrl: article.image,
+          isPublished: true,
+          publishedAt: new Date(article.date),
+        })
+        .onConflictDoUpdate({
+          target: schema.blogPosts.id,
+          set: { title: article.title, slug: article.slug, excerpt: article.excerpt, content, category: article.category, imageUrl: article.image },
+        });
+    }
+
+    console.log(`[seed] ${RECIPES.length} recipes`);
+    for (const recipe of RECIPES) {
+      await db
+        .insert(schema.recipes)
+        .values({
+          id: deterministicId("recipe", recipe.slug),
+          title: recipe.title,
+          slug: recipe.slug,
+          excerpt: recipe.excerpt,
+          imageUrl: recipe.image,
+          difficulty: recipe.difficulty,
+          durationLabel: recipe.duration,
+          servingsLabel: recipe.serves,
+          ingredients: recipe.ingredients,
+          instructions: recipe.steps.join("\n"),
+          tip: recipe.tip ?? null,
+          usesProductSlugs: recipe.usesProducts,
+          isPublished: true,
+        })
+        .onConflictDoUpdate({
+          target: schema.recipes.id,
+          set: {
+            title: recipe.title,
+            slug: recipe.slug,
+            excerpt: recipe.excerpt,
+            imageUrl: recipe.image,
+            difficulty: recipe.difficulty,
+            durationLabel: recipe.duration,
+            servingsLabel: recipe.serves,
+            ingredients: recipe.ingredients,
+            instructions: recipe.steps.join("\n"),
+            tip: recipe.tip ?? null,
+            usesProductSlugs: recipe.usesProducts,
+          },
+        });
+    }
+
+    console.log(`[seed] ${FAQS.length} FAQs`);
+    for (const [index, faq] of FAQS.entries()) {
+      await db
+        .insert(schema.faqs)
+        .values({
+          id: deterministicId("faq", faq.question),
+          question: faq.question,
+          answer: faq.answer,
+          category: faq.category,
+          sortOrder: index,
+        })
+        .onConflictDoUpdate({
+          target: schema.faqs.id,
+          set: { question: faq.question, answer: faq.answer, category: faq.category, sortOrder: index },
+        });
+    }
+
     // --- Store settings ------------------------------------------------------
     console.log("[seed] settings and coupons");
     await db
@@ -176,7 +262,9 @@ async function main() {
     }
 
     const variantCount = CATALOG.reduce((n, p) => n + p.variants.length, 0);
-    console.log(`[seed] done — ${CATALOG.length} products, ${variantCount} variants`);
+    console.log(
+      `[seed] done — ${CATALOG.length} products, ${variantCount} variants, ${ARTICLES.length} articles, ${RECIPES.length} recipes, ${FAQS.length} FAQs`
+    );
   } catch (error) {
     console.error("[seed] failed:", error);
     process.exitCode = 1;

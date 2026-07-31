@@ -8,10 +8,23 @@ import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
-import { ARTICLES, getArticle, formatDate } from "@/lib/content";
+import { ARTICLES, formatDate } from "@/lib/content";
+import { getArticle, getArticles } from "@/lib/blog";
 
-export function generateStaticParams() {
-  return ARTICLES.map((article) => ({ slug: article.slug }));
+export const revalidate = 300;
+
+// Pre-renders the articles known at build time (the content.ts fallback list);
+// anything created afterward in the admin still renders correctly on first
+// request via Next's on-demand dynamicParams (default true), it just isn't
+// pre-built. Falls back to the static list if the database is unreachable at
+// build time, same as every other DB-first module in this codebase.
+export async function generateStaticParams() {
+  try {
+    const articles = await getArticles();
+    return articles.map((article) => ({ slug: article.slug }));
+  } catch {
+    return ARTICLES.map((article) => ({ slug: article.slug }));
+  }
 }
 
 export async function generateMetadata({
@@ -20,7 +33,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getArticle(slug);
   if (!article) return { title: "Article not found" };
 
   return {
@@ -43,11 +56,11 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const [article, allArticles] = await Promise.all([getArticle(slug), getArticles()]);
 
   if (!article) notFound();
 
-  const more = ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 3);
+  const more = allArticles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   const jsonLd = {
     "@context": "https://schema.org",

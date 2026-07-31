@@ -9,11 +9,21 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/ds/cards/product-card";
 import { Clock, Users, Lightbulb } from "lucide-react";
-import { RECIPES, getRecipe } from "@/lib/content";
+import { RECIPES } from "@/lib/content";
+import { getRecipe, getRecipes } from "@/lib/recipes";
 import { CATALOG } from "@/lib/catalog";
 
-export function generateStaticParams() {
-  return RECIPES.map((recipe) => ({ slug: recipe.slug }));
+export const revalidate = 300;
+
+// See src/app/(shop)/blog/[slug]/page.tsx for why this queries the database
+// rather than just mapping the static fallback list.
+export async function generateStaticParams() {
+  try {
+    const recipes = await getRecipes();
+    return recipes.map((recipe) => ({ slug: recipe.slug }));
+  } catch {
+    return RECIPES.map((recipe) => ({ slug: recipe.slug }));
+  }
 }
 
 export async function generateMetadata({
@@ -22,7 +32,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const recipe = getRecipe(slug);
+  const recipe = await getRecipe(slug);
   if (!recipe) return { title: "Recipe not found" };
 
   return {
@@ -44,7 +54,7 @@ export default async function RecipeDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const recipe = getRecipe(slug);
+  const recipe = await getRecipe(slug);
 
   if (!recipe) notFound();
 

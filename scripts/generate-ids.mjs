@@ -8,24 +8,15 @@
  *
  * Usage: node scripts/generate-ids.mjs [slug-or-sku ...]
  * With no arguments it prints ids for everything currently in the catalog.
+ *
+ * The actual hashing lives in deterministic-id.mjs, imported (not redefined)
+ * here, and also imported directly by src/db/seed.ts — that file has no
+ * top-level await, unlike this one, which src/db/seed.ts (run via `tsx`, in
+ * CJS mode) can't pull in without tripping esbuild's "top-level await isn't
+ * supported in cjs" transform error.
  */
-import { createHash } from "node:crypto";
-
-/** UUIDv5-shaped id derived from a namespace and a name. */
-export function deterministicId(namespace, name) {
-  const hash = createHash("sha1").update(`sanaamnis:${namespace}:${name}`).digest();
-  const bytes = Buffer.from(hash.subarray(0, 16));
-  bytes[6] = (bytes[6] & 0x0f) | 0x50; // version 5
-  bytes[8] = (bytes[8] & 0x3f) | 0x80; // RFC 4122 variant
-  const hex = bytes.toString("hex");
-  return [
-    hex.slice(0, 8),
-    hex.slice(8, 12),
-    hex.slice(12, 16),
-    hex.slice(16, 20),
-    hex.slice(20, 32),
-  ].join("-");
-}
+export { deterministicId } from "./deterministic-id.mjs";
+import { deterministicId } from "./deterministic-id.mjs";
 
 const args = process.argv.slice(2);
 
