@@ -47,6 +47,7 @@ type DbProductRow = {
     price: string;
     stock: number;
     imageUrl: string | null;
+    isActive: boolean;
   }>;
 };
 
@@ -61,6 +62,9 @@ function fromDb(row: DbProductRow): CatalogProduct {
   const categorySlug = (row.category?.slug as CategorySlug) || seed?.categorySlug || "culinary";
 
   const variants = row.variants
+    // A discontinued variant (isActive: false) stays in the database — order
+    // history references it (FK restrict) — but stops appearing for sale.
+    .filter((v) => v.isActive)
     .map((v) => ({
       id: v.id,
       sku: v.sku,

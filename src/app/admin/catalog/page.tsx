@@ -1,375 +1,386 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Image from "next/image";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Tabs } from "@/components/ds/tabs";
 import { Table } from "@/components/ds/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Plus, Trash2, X, Image as ImageIcon, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { useToast } from "@/hooks/useToast";
+import { Edit, Plus, Trash2, X, Archive, ArchiveRestore } from "lucide-react";
 
-// Initial Seed Data with Product Images from Google Drive
-const INITIAL_PRODUCTS = [
-  {
-    id: "1",
-    title: "Extra Virgin Coconut Oil",
-    slug: "extra-virgin-coconut-oil",
-    sku: "SA-COCO-OIL-250",
-    price: "15000",
-    stock: 50,
-    category: "Organic Wellness",
-    imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000",
-    description: "Cold-pressed organic extra virgin coconut oil for pure hair, skin, and culinary nourishment.",
-  },
-  {
-    id: "2",
-    title: "Sana Amnis Coconut Water",
-    slug: "sana-amnis-coconut-water",
-    sku: "SA-COCO-WTR-330",
-    price: "4500",
-    stock: 120,
-    category: "Organic Wellness",
-    imageUrl: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000",
-    description: "100% natural bio-active coconut water packed with natural electrolytes.",
-  },
-  {
-    id: "3",
-    title: "Pure Coconut Milk Powder",
-    slug: "pure-coconut-milk-powder",
-    sku: "SA-MILK-PWD-250",
-    price: "8500",
-    stock: 80,
-    category: "Organic Wellness",
-    imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000",
-    description: "Spray-dried premium coconut milk powder from raw organic coconuts.",
-  },
-  {
-    id: "4",
-    title: "Nourishing Coconut Body Butter",
-    slug: "coconut-body-butter",
-    sku: "SA-COCO-BTR-200",
-    price: "18000",
-    stock: 40,
-    category: "Premium Skincare",
-    imageUrl: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000",
-    description: "Rich restorative body butter infused with raw coconut extract and botanical shea butter.",
-  },
-  {
-    id: "5",
-    title: "Restorative Coconut Hair Mask",
-    slug: "restorative-coconut-hair-mask",
-    sku: "SA-HAIR-MSK-250",
-    price: "14000",
-    stock: 35,
-    category: "Hair & Body",
-    imageUrl: "https://drive.google.com/thumbnail?id=1--CLF51noixdnvV8HhLmosvtP75RDlRE&sz=w1000",
-    description: "Intensive deep conditioning treatment enriched with raw coconut oil.",
-  },
-  {
-    id: "6",
-    title: "Exfoliating Coconut Sugar Scrub",
-    slug: "coconut-sugar-scrub",
-    sku: "SA-SGR-SCR-200",
-    price: "12500",
-    stock: 45,
-    category: "Premium Skincare",
-    imageUrl: "https://drive.google.com/thumbnail?id=1kfVkQ-lqEpTKfvtl_WT-zwa28NeEOO1n&sz=w1000",
-    description: "Gentle exfoliating body polish combining organic coconut sugar crystals with virgin coconut oil.",
-  },
-  {
-    id: "7",
-    title: "Toasted Organic Coconut Chips",
-    slug: "organic-coconut-chips",
-    sku: "SA-CHIP-SNK-100",
-    price: "3500",
-    stock: 100,
-    category: "Gourmet Snacks",
-    imageUrl: "https://drive.google.com/thumbnail?id=16WhogTSxDzbjaVewUFprCCPbN_mfhPxg&sz=w1000",
-    description: "Crispy, golden-toasted coconut flakes lightly seasoned with sea salt.",
-  },
-  {
-    id: "8",
-    title: "Raw Organic Coconut Flour",
-    slug: "raw-coconut-flour",
-    sku: "SA-COCO-FLR-500",
-    price: "6000",
-    stock: 75,
-    category: "Culinary Essentials",
-    imageUrl: "https://drive.google.com/thumbnail?id=1hk33UKAflm0EIoFg_sGRzbQ3jSZsPLUp&sz=w1000",
-    description: "High-fiber, gluten-free baking flour finely ground from organic coconut meat.",
-  },
-];
+interface AdminVariant {
+  id: string;
+  sku: string;
+  name: string;
+  price: string;
+  stock: number;
+  imageUrl: string | null;
+  isActive: boolean;
+}
 
-const INITIAL_CATEGORIES = [
-  { id: "1", name: "Organic Wellness", slug: "organic-wellness", count: 2, imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000" },
-  { id: "2", name: "Premium Skincare", slug: "premium-skincare", count: 1, imageUrl: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000" },
-];
+interface AdminProduct {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  isActive: boolean;
+  categoryId: string | null;
+  category: { id: string; name: string } | null;
+  variants: AdminVariant[];
+}
 
-const INITIAL_COUPONS = [
-  { id: "1", code: "AMNISVIP", discount: "20% OFF", type: "percentage", status: "active" },
-  { id: "2", code: "COCO50", discount: "₦5,000 OFF", type: "fixed", status: "active" },
-];
+interface AdminCategory {
+  id: string;
+  name: string;
+  slug: string;
+  imageUrl: string | null;
+  productCount: number;
+}
 
-const SAMPLE_IMAGES = [
-  { label: "Coconut Oil", url: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w1000" },
-  { label: "Coconut Water", url: "https://drive.google.com/thumbnail?id=19MfciPsk515kPomAxziUo3PT_x_-y6K_&sz=w1000" },
-  { label: "Body Butter", url: "https://drive.google.com/thumbnail?id=11VjXF_JnUyd9JX6FIqcfMSkF4D5POY4M&sz=w1000" },
-  { label: "Pure Coconut Milk", url: "https://drive.google.com/thumbnail?id=1Z9Yf9iquA-YUp0eGmrcM7xr411520Qgp&sz=w1000" },
-  { label: "Hair Mask", url: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w1000" },
-  { label: "Coconut Scrub", url: "https://drive.google.com/thumbnail?id=1--CLF51noixdnvV8HhLmosvtP75RDlRE&sz=w1000" },
-];
+interface AdminCoupon {
+  id: string;
+  code: string;
+  discountType: "percentage" | "fixed";
+  discountValue: string;
+  expiresAt: string | null;
+  isActive: boolean;
+}
+
+const naira = (value: string | number) => `₦${Number(value).toLocaleString()}`;
+
+async function api<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...init?.headers },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Something went wrong.");
+  return data as T;
+}
 
 export default function AdminCatalogPage() {
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
-  const [coupons, setCoupons] = useState(INITIAL_COUPONS);
-  const [toastMessage, setToastMessage] = useState("");
+  const toast = useToast();
+  const queryClient = useQueryClient();
 
-  // Modal State
-  const [activeModal, setActiveModal] = useState<"add-product" | "edit-product" | "category" | "coupon" | null>(null);
-  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<
+    "add-product" | "edit-product" | "category" | "coupon" | null
+  >(null);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
 
-  // Product Form Fields
+  const productsQuery = useQuery({
+    queryKey: ["admin", "products"],
+    queryFn: () => api<{ products: AdminProduct[] }>("/api/admin/products"),
+  });
+  const categoriesQuery = useQuery({
+    queryKey: ["admin", "categories"],
+    queryFn: () => api<{ categories: AdminCategory[] }>("/api/admin/categories"),
+  });
+  const couponsQuery = useQuery({
+    queryKey: ["admin", "coupons"],
+    queryFn: () => api<{ coupons: AdminCoupon[] }>("/api/admin/coupons"),
+  });
+
+  const products = productsQuery.data?.products ?? [];
+  const categories = categoriesQuery.data?.categories ?? [];
+  const coupons = couponsQuery.data?.coupons ?? [];
+
+  const invalidate = (key: string) => queryClient.invalidateQueries({ queryKey: ["admin", key] });
+
+  // ---------------------------------------------------------------- Products
   const [prodTitle, setProdTitle] = useState("");
-  const [prodSku, setProdSku] = useState("");
-  const [prodPrice, setProdPrice] = useState("");
-  const [prodStock, setProdStock] = useState("");
-  const [prodCategory, setProdCategory] = useState("Organic Wellness");
-  const [prodImageUrl, setProdImageUrl] = useState("");
+  const [prodSlug, setProdSlug] = useState("");
   const [prodDescription, setProdDescription] = useState("");
+  const [prodCategoryId, setProdCategoryId] = useState("");
+  const [varSku, setVarSku] = useState("");
+  const [varName, setVarName] = useState("");
+  const [varPrice, setVarPrice] = useState("");
+  const [varStock, setVarStock] = useState("50");
+  const [varImageUrl, setVarImageUrl] = useState("");
 
-  // Category Form Fields
-  const [catName, setCatName] = useState("");
-  const [catSlug, setCatSlug] = useState("");
-
-  // Coupon Form Fields
-  const [coupCode, setCoupCode] = useState("");
-  const [coupDiscount, setCoupDiscount] = useState("");
-  const [coupType, setCoupType] = useState("percentage");
-
-  // Load saved catalog items from localStorage on client mount if available
-  useEffect(() => {
-    try {
-      const savedProds = localStorage.getItem("sana_amnis_admin_products");
-      if (savedProds) setProducts(JSON.parse(savedProds));
-
-      const savedCats = localStorage.getItem("sana_amnis_admin_categories");
-      if (savedCats) setCategories(JSON.parse(savedCats));
-
-      const savedCoups = localStorage.getItem("sana_amnis_admin_coupons");
-      if (savedCoups) setCoupons(JSON.parse(savedCoups));
-    } catch (err) {
-      console.warn("Could not read stored catalog from local storage:", err);
-    }
-  }, []);
-
-  const saveProductsState = (updated: typeof products) => {
-    setProducts(updated);
-    try {
-      localStorage.setItem("sana_amnis_admin_products", JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 3000);
-  };
-
-  // Open Product Modal for Edit
-  const handleOpenEditProduct = (prod: (typeof products)[0]) => {
-    setEditingProductId(prod.id);
-    setProdTitle(prod.title);
-    setProdSku(prod.sku);
-    setProdPrice(prod.price);
-    setProdStock(String(prod.stock));
-    setProdCategory(prod.category);
-    setProdImageUrl(prod.imageUrl);
-    setProdDescription(prod.description || "");
-    setActiveModal("edit-product");
-  };
-
-  // Open Product Modal for New Addition
-  const handleOpenAddProduct = () => {
-    setEditingProductId(null);
+  const resetProductForm = () => {
     setProdTitle("");
-    setProdSku("");
-    setProdPrice("");
-    setProdStock("50");
-    setProdCategory("Organic Wellness");
-    setProdImageUrl(SAMPLE_IMAGES[0].url);
+    setProdSlug("");
     setProdDescription("");
+    setProdCategoryId(categories[0]?.id ?? "");
+    setVarSku("");
+    setVarName("Standard");
+    setVarPrice("");
+    setVarStock("50");
+    setVarImageUrl("");
+  };
+
+  const openAddProduct = () => {
+    setEditingProduct(null);
+    resetProductForm();
     setActiveModal("add-product");
   };
 
-  // Save Product (Add or Edit)
+  const createProduct = useMutation({
+    mutationFn: () =>
+      api("/api/admin/products", {
+        method: "POST",
+        body: JSON.stringify({
+          title: prodTitle,
+          slug: prodSlug || prodTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+          description: prodDescription || undefined,
+          categoryId: prodCategoryId,
+          variant: {
+            sku: varSku,
+            name: varName,
+            price: Number(varPrice),
+            stock: Number(varStock),
+            imageUrl: varImageUrl || undefined,
+          },
+        }),
+      }),
+    onSuccess: () => {
+      toast.success("Product created", `"${prodTitle}" is live on the storefront.`);
+      invalidate("products");
+      setActiveModal(null);
+    },
+    onError: (err: Error) => toast.error("Could not create product", err.message),
+  });
+
+  const updateProduct = useMutation({
+    mutationFn: (input: { id: string; title: string; description: string; categoryId: string }) =>
+      api(`/api/admin/products/${input.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          title: input.title,
+          description: input.description || null,
+          categoryId: input.categoryId,
+        }),
+      }),
+    onSuccess: () => {
+      toast.success("Product updated");
+      invalidate("products");
+      setActiveModal(null);
+    },
+    onError: (err: Error) => toast.error("Could not update product", err.message),
+  });
+
+  const toggleProductActive = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      api(`/api/admin/products/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+    onSuccess: (_data, vars) => {
+      toast.success(vars.isActive ? "Product restored" : "Product archived");
+      invalidate("products");
+    },
+    onError: (err: Error) => toast.error("Could not update product", err.message),
+  });
+
+  const openEditProduct = (product: AdminProduct) => {
+    setEditingProduct(product);
+    setProdTitle(product.title);
+    setProdDescription(product.description ?? "");
+    setProdCategoryId(product.categoryId ?? "");
+    setActiveModal("edit-product");
+  };
+
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (activeModal === "edit-product" && editingProductId) {
-      const updated = products.map((p) => {
-        if (p.id === editingProductId) {
-          return {
-            ...p,
-            title: prodTitle,
-            sku: prodSku,
-            price: prodPrice,
-            stock: Number(prodStock) || 0,
-            category: prodCategory,
-            imageUrl: prodImageUrl || SAMPLE_IMAGES[0].url,
-            description: prodDescription,
-          };
-        }
-        return p;
-      });
-      saveProductsState(updated);
-      showToast(`Updated "${prodTitle}" successfully!`);
-    } else {
-      const slug = prodTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      const newProd = {
-        id: `${Date.now()}`,
+    if (editingProduct) {
+      updateProduct.mutate({
+        id: editingProduct.id,
         title: prodTitle,
-        slug: slug || `product-${Date.now()}`,
-        sku: prodSku || `SA-PROD-${products.length + 1}`,
-        price: prodPrice,
-        stock: Number(prodStock) || 0,
-        category: prodCategory,
-        imageUrl: prodImageUrl || SAMPLE_IMAGES[0].url,
-        description: prodDescription || "Organic premium formulation.",
-      };
-      saveProductsState([newProd, ...products]);
-      showToast(`Created new product "${prodTitle}"!`);
-    }
-
-    setActiveModal(null);
-  };
-
-  const handleDeleteProduct = (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      const updated = products.filter((p) => p.id !== id);
-      saveProductsState(updated);
-      showToast(`Deleted "${title}"`);
+        description: prodDescription,
+        categoryId: prodCategoryId,
+      });
+    } else {
+      createProduct.mutate();
     }
   };
 
-  // Category Actions
-  const handleCreateCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newCat = {
-      id: `${Date.now()}`,
-      name: catName,
-      slug: catSlug || catName.toLowerCase().replace(/\s+/g, "-"),
-      count: 0,
-      imageUrl: SAMPLE_IMAGES[0].url,
-    };
-    const updated = [...categories, newCat];
-    setCategories(updated);
-    localStorage.setItem("sana_amnis_admin_categories", JSON.stringify(updated));
-    setCatName("");
-    setCatSlug("");
-    setActiveModal(null);
-    showToast(`Created category "${catName}"`);
-  };
+  // ---------------------------------------------------------------- Variants
+  const addVariant = useMutation({
+    mutationFn: ({ productId, ...body }: { productId: string; sku: string; name: string; price: number; stock: number }) =>
+      api(`/api/admin/products/${productId}/variants`, { method: "POST", body: JSON.stringify(body) }),
+    onSuccess: () => {
+      toast.success("Variant added");
+      invalidate("products");
+    },
+    onError: (err: Error) => toast.error("Could not add variant", err.message),
+  });
 
-  // Coupon Actions
-  const handleCreateCoupon = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newCoup = {
-      id: `${Date.now()}`,
-      code: coupCode.toUpperCase(),
-      discount: coupType === "percentage" ? `${coupDiscount}% OFF` : `₦${Number(coupDiscount).toLocaleString()} OFF`,
-      type: coupType,
-      status: "active",
-    };
-    const updated = [...coupons, newCoup];
-    setCoupons(updated);
-    localStorage.setItem("sana_amnis_admin_coupons", JSON.stringify(updated));
-    setCoupCode("");
-    setCoupDiscount("");
-    setActiveModal(null);
-    showToast(`Created discount voucher "${coupCode.toUpperCase()}"`);
-  };
+  const updateVariant = useMutation({
+    mutationFn: ({ id, ...body }: { id: string; [key: string]: unknown }) =>
+      api(`/api/admin/variants/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+    onSuccess: () => {
+      invalidate("products");
+    },
+    onError: (err: Error) => toast.error("Could not update variant", err.message),
+  });
 
-  // Table Columns Setup
-  const productsColumns = [
+  const deleteVariant = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/variants/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Variant deleted");
+      invalidate("products");
+    },
+    onError: (err: Error) => toast.error("Could not delete variant", err.message),
+  });
+
+  // -------------------------------------------------------------- Categories
+  const [catName, setCatName] = useState("");
+  const [catSlug, setCatSlug] = useState("");
+
+  const createCategory = useMutation({
+    mutationFn: () =>
+      api("/api/admin/categories", {
+        method: "POST",
+        body: JSON.stringify({ name: catName, slug: catSlug || catName.toLowerCase().replace(/\s+/g, "-") }),
+      }),
+    onSuccess: () => {
+      toast.success(`Created category "${catName}"`);
+      invalidate("categories");
+      setCatName("");
+      setCatSlug("");
+      setActiveModal(null);
+    },
+    onError: (err: Error) => toast.error("Could not create category", err.message),
+  });
+
+  const deleteCategory = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/categories/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Category removed");
+      invalidate("categories");
+      invalidate("products");
+    },
+    onError: (err: Error) => toast.error("Could not remove category", err.message),
+  });
+
+  // ----------------------------------------------------------------- Coupons
+  const [coupCode, setCoupCode] = useState("");
+  const [coupDiscount, setCoupDiscount] = useState("");
+  const [coupType, setCoupType] = useState<"percentage" | "fixed">("percentage");
+
+  const createCoupon = useMutation({
+    mutationFn: () =>
+      api("/api/admin/coupons", {
+        method: "POST",
+        body: JSON.stringify({
+          code: coupCode,
+          discountType: coupType,
+          discountValue: Number(coupDiscount),
+        }),
+      }),
+    onSuccess: () => {
+      toast.success(`Created coupon "${coupCode.toUpperCase()}"`);
+      invalidate("coupons");
+      setCoupCode("");
+      setCoupDiscount("");
+      setActiveModal(null);
+    },
+    onError: (err: Error) => toast.error("Could not create coupon", err.message),
+  });
+
+  const toggleCoupon = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      api(`/api/admin/coupons/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+    onSuccess: () => invalidate("coupons"),
+    onError: (err: Error) => toast.error("Could not update coupon", err.message),
+  });
+
+  const deleteCoupon = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/coupons/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Coupon deleted");
+      invalidate("coupons");
+    },
+    onError: (err: Error) => toast.error("Could not delete coupon", err.message),
+  });
+
+  // -------------------------------------------------------------- Table defs
+  const productColumns = [
     {
-      header: "Product Title & Image",
-      accessor: (item: (typeof products)[0]) => (
-        <div
-          onClick={() => handleOpenEditProduct(item)}
-          className="flex items-center gap-3 cursor-pointer group/item py-1"
+      header: "Product",
+      accessor: (item: AdminProduct) => (
+        <button
+          type="button"
+          onClick={() => openEditProduct(item)}
+          className="flex items-center gap-3 py-1 text-left cursor-pointer group/item"
         >
-          <div className="w-10 h-10 bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shrink-0 group-hover/item:border-primary transition-colors">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+          <div className="relative w-10 h-10 bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shrink-0 group-hover/item:border-primary transition-colors">
+            {item.variants[0]?.imageUrl && (
+              <Image src={item.variants[0].imageUrl} alt="" fill sizes="40px" className="object-cover" />
+            )}
           </div>
           <div>
             <h4 className="font-serif text-sm font-semibold text-white group-hover/item:text-primary transition-colors">
               {item.title}
             </h4>
-            <span className="text-[10px] text-neutral-400 font-sans block">{item.description || "Organic formulation"}</span>
+            <span className="text-[10px] text-neutral-400 font-sans block">
+              {item.variants.length} {item.variants.length === 1 ? "variant" : "variants"}
+            </span>
           </div>
-        </div>
+        </button>
       ),
     },
-    { header: "SKU", accessor: "sku" as const },
-    { header: "Category", accessor: "category" as const },
+    { header: "Category", accessor: (item: AdminProduct) => item.category?.name ?? "—" },
     {
-      header: "Price",
-      accessor: (item: (typeof products)[0]) => (
-        <span className="font-serif font-semibold text-white">₦{Number(item.price).toLocaleString()}</span>
-      ),
+      header: "Price range",
+      accessor: (item: AdminProduct) => {
+        const prices = item.variants.map((v) => Number(v.price));
+        if (prices.length === 0) return "—";
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        return <span className="font-serif font-semibold text-white">{min === max ? naira(min) : `${naira(min)}–${naira(max)}`}</span>;
+      },
     },
     {
-      header: "Stock Status",
-      accessor: (item: (typeof products)[0]) => (
-        <span className={item.stock > 10 ? "text-emerald-400 font-semibold text-xs" : "text-amber-400 font-semibold text-xs"}>
-          {item.stock} items available
-        </span>
-      ),
+      header: "Stock",
+      accessor: (item: AdminProduct) => {
+        const total = item.variants.reduce((sum, v) => sum + v.stock, 0);
+        return (
+          <span className={total > 10 ? "text-emerald-400 font-semibold text-xs" : "text-amber-400 font-semibold text-xs"}>
+            {total} units
+          </span>
+        );
+      },
+    },
+    {
+      header: "Status",
+      accessor: (item: AdminProduct) => <Badge variant={item.isActive ? "success" : "secondary"}>{item.isActive ? "Live" : "Archived"}</Badge>,
     },
     {
       header: "Actions",
-      accessor: (item: (typeof products)[0]) => (
+      accessor: (item: AdminProduct) => (
         <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleOpenEditProduct(item)}
-            className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800"
-            title="Edit Product Details"
-          >
+          <Button variant="ghost" size="sm" onClick={() => openEditProduct(item)} className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800" title="Edit">
             <Edit className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => handleDeleteProduct(item.id, item.title)}
-            className="p-2 text-destructive hover:bg-destructive/10"
-            title="Delete Product"
+            onClick={() => toggleProductActive.mutate({ id: item.id, isActive: !item.isActive })}
+            className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800"
+            title={item.isActive ? "Archive" : "Restore"}
           >
-            <Trash2 className="w-4 h-4" />
+            {item.isActive ? <Archive className="w-4 h-4" /> : <ArchiveRestore className="w-4 h-4" />}
           </Button>
         </div>
       ),
     },
   ];
 
-  const categoriesColumns = [
-    { header: "Category Name", accessor: "name" as const },
-    { header: "Slug Path", accessor: "slug" as const },
-    { header: "Total Products Linked", accessor: "count" as const },
+  const categoryColumns = [
+    { header: "Category", accessor: "name" as const },
+    { header: "Slug", accessor: "slug" as const },
+    { header: "Products", accessor: "productCount" as const },
     {
       header: "Actions",
-      accessor: (item: (typeof categories)[0]) => (
+      accessor: (item: AdminCategory) => (
         <Button
           variant="ghost"
           size="sm"
           onClick={() => {
-            const updated = categories.filter((c) => c.id !== item.id);
-            setCategories(updated);
-            localStorage.setItem("sana_amnis_admin_categories", JSON.stringify(updated));
-            showToast(`Removed category "${item.name}"`);
+            if (item.productCount > 0 && !confirm(`"${item.name}" has ${item.productCount} product(s), which will become uncategorised. Continue?`)) return;
+            deleteCategory.mutate(item.id);
           }}
           className="p-2 text-destructive hover:bg-destructive/10"
         >
@@ -379,32 +390,25 @@ export default function AdminCatalogPage() {
     },
   ];
 
-  const couponsColumns = [
-    { header: "Coupon Code", accessor: "code" as const },
-    { header: "Benefit", accessor: "discount" as const },
-    { header: "Type", accessor: "type" as const },
+  const couponColumns = [
+    { header: "Code", accessor: "code" as const },
+    {
+      header: "Discount",
+      accessor: (item: AdminCoupon) => (item.discountType === "percentage" ? `${Number(item.discountValue)}%` : naira(item.discountValue)),
+    },
+    { header: "Expires", accessor: (item: AdminCoupon) => (item.expiresAt ? new Date(item.expiresAt).toLocaleDateString() : "Never") },
     {
       header: "Status",
-      accessor: (item: (typeof coupons)[0]) => (
-        <Badge variant={item.status === "active" ? "success" : "destructive"}>
-          {item.status}
-        </Badge>
+      accessor: (item: AdminCoupon) => (
+        <button onClick={() => toggleCoupon.mutate({ id: item.id, isActive: !item.isActive })} className="cursor-pointer">
+          <Badge variant={item.isActive ? "success" : "destructive"}>{item.isActive ? "active" : "disabled"}</Badge>
+        </button>
       ),
     },
     {
       header: "Actions",
-      accessor: (item: (typeof coupons)[0]) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            const updated = coupons.filter((c) => c.id !== item.id);
-            setCoupons(updated);
-            localStorage.setItem("sana_amnis_admin_coupons", JSON.stringify(updated));
-            showToast(`Removed voucher "${item.code}"`);
-          }}
-          className="p-2 text-destructive hover:bg-destructive/10"
-        >
+      accessor: (item: AdminCoupon) => (
+        <Button variant="ghost" size="sm" onClick={() => deleteCoupon.mutate(item.id)} className="p-2 text-destructive hover:bg-destructive/10">
           <Trash2 className="w-4 h-4" />
         </Button>
       ),
@@ -414,67 +418,57 @@ export default function AdminCatalogPage() {
   const tabContents = [
     {
       id: "products",
-      label: "Products Catalog",
+      label: "Products",
       content: (
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <div>
-              <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
-                Formulation Inventory ({products.length})
-              </h3>
-              <p className="text-[11px] text-neutral-400">Click any product row or edit button to update title, price, stock, or storefront images.</p>
-            </div>
-            <Button
-              size="sm"
-              onClick={handleOpenAddProduct}
-              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
-            >
+            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
+              Products ({products.length})
+            </h3>
+            <Button size="sm" onClick={openAddProduct} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Add Product
             </Button>
           </div>
-          <Table columns={productsColumns} data={products} />
+          <Table columns={productColumns} data={products} loading={productsQuery.isLoading} />
         </div>
       ),
     },
     {
       id: "categories",
-      label: "Categories & Collections",
+      label: "Categories",
       content: (
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
             <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
-              Categories Directory ({categories.length})
+              Categories ({categories.length})
             </h3>
-            <Button
-              size="sm"
-              onClick={() => setActiveModal("category")}
-              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
-            >
+            <Button size="sm" onClick={() => setActiveModal("category")} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Add Category
             </Button>
           </div>
-          <Table columns={categoriesColumns} data={categories} />
+          <Table columns={categoryColumns} data={categories} loading={categoriesQuery.isLoading} />
         </div>
       ),
     },
     {
       id: "coupons",
-      label: "Discounts & Coupons",
+      label: "Coupons",
       content: (
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
-              Campaign Vouchers ({coupons.length})
-            </h3>
-            <Button
-              size="sm"
-              onClick={() => setActiveModal("coupon")}
-              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
-            >
+            <div>
+              <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
+                Coupons ({coupons.length})
+              </h3>
+              <p className="text-[11px] text-neutral-400 mt-1">
+                Codes are stored and validated only — checkout doesn&apos;t apply a discount from them yet.
+              </p>
+            </div>
+            <Button size="sm" onClick={() => setActiveModal("coupon")} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Create Coupon
             </Button>
           </div>
-          <Table columns={couponsColumns} data={coupons} />
+          <Table columns={couponColumns} data={coupons} loading={couponsQuery.isLoading} />
         </div>
       ),
     },
@@ -482,190 +476,89 @@ export default function AdminCatalogPage() {
 
   return (
     <div className="space-y-10 relative">
-      {/* Toast Alert */}
-      {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 bg-emerald-950 border border-emerald-500 text-emerald-200 px-5 py-3 shadow-2xl flex items-center gap-3 text-xs uppercase tracking-wider font-semibold animate-in fade-in slide-in-from-top-4 duration-300">
-          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-          {toastMessage}
-        </div>
-      )}
-
-      {/* Header */}
       <div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">
-          Catalog Manager & CMS
-        </h1>
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Catalog</h1>
         <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
-          Administer Formulations, Custom Images, Collections, and Discount Vouchers
+          Products, categories and coupons — changes apply to the live storefront immediately.
         </p>
       </div>
 
-      {/* Tabs */}
       <Tabs tabs={tabContents} />
 
-      {/* Product Editor Modal (Add & Edit) */}
+      {/* Product Add/Edit Modal */}
       {(activeModal === "add-product" || activeModal === "edit-product") && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
-          <div className="max-w-xl w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-6 relative my-auto">
-            <button
-              onClick={() => setActiveModal(null)}
-              className="absolute top-5 right-5 text-neutral-400 hover:text-white transition-colors"
-            >
+          <div className="max-w-2xl w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-6 relative my-auto">
+            <button onClick={() => setActiveModal(null)} className="absolute top-5 right-5 text-neutral-400 hover:text-white transition-colors">
               <X className="w-5 h-5" />
             </button>
 
             <div className="border-b border-neutral-800 pb-4">
               <h3 className="font-serif text-xl font-semibold text-white">
-                {activeModal === "edit-product" ? "Edit Product Formulation" : "Add New Formulation"}
+                {editingProduct ? "Edit Product" : "Add New Product"}
               </h3>
-              <p className="text-[11px] text-neutral-400">
-                {activeModal === "edit-product" ? "Update inventory details and storefront presentation" : "Publish a new product item to the store catalog"}
-              </p>
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-5">
-              <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                  Product Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={prodTitle}
-                  onChange={(e) => setProdTitle(e.target.value)}
-                  placeholder="e.g. Extra Virgin Coconut Oil"
-                  className="w-full bg-neutral-950 border border-neutral-800 p-3.5 text-xs text-white outline-none focus:border-primary transition-colors"
-                />
-              </div>
+              <Input label="Product Title" required value={prodTitle} onChange={(e) => setProdTitle(e.target.value)} placeholder="e.g. Extra Virgin Coconut Oil" />
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                    SKU Identifier
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={prodSku}
-                    onChange={(e) => setProdSku(e.target.value)}
-                    placeholder="e.g. SA-COCO-OIL-250"
-                    className="w-full bg-neutral-950 border border-neutral-800 p-3.5 text-xs text-white outline-none focus:border-primary transition-colors"
-                  />
-                </div>
+              {!editingProduct && (
+                <Input label="Slug (optional — generated from title)" value={prodSlug} onChange={(e) => setProdSlug(e.target.value)} placeholder="e.g. extra-virgin-coconut-oil" />
+              )}
 
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                    Category
-                  </label>
-                  <select
-                    value={prodCategory}
-                    onChange={(e) => setProdCategory(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 p-3.5 text-xs text-white outline-none focus:border-primary transition-colors"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.name}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                    Price (₦)
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={prodPrice}
-                    onChange={(e) => setProdPrice(e.target.value)}
-                    placeholder="e.g. 15000"
-                    className="w-full bg-neutral-950 border border-neutral-800 p-3.5 text-xs text-white outline-none focus:border-primary transition-colors"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                    Available Stock
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={prodStock}
-                    onChange={(e) => setProdStock(e.target.value)}
-                    placeholder="e.g. 50"
-                    className="w-full bg-neutral-950 border border-neutral-800 p-3.5 text-xs text-white outline-none focus:border-primary transition-colors"
-                  />
-                </div>
-              </div>
-
-              {/* Product Image URL & Preview */}
-              <div className="space-y-2 pt-2 border-t border-neutral-800">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold flex items-center gap-2">
-                  <ImageIcon className="w-3.5 h-3.5 text-primary" /> Product Image (URL / Presets)
-                </label>
-
-                <div className="flex gap-4 items-center">
-                  <div className="w-16 h-16 bg-neutral-950 border border-neutral-800 rounded-lg overflow-hidden shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={prodImageUrl || SAMPLE_IMAGES[0].url}
-                      alt="Product Preview"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <input
-                      type="url"
-                      required
-                      value={prodImageUrl}
-                      onChange={(e) => setProdImageUrl(e.target.value)}
-                      placeholder="Paste image URL (e.g. https://...)"
-                      className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary transition-colors"
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 font-bold">Presets:</span>
-                      {SAMPLE_IMAGES.map((sample) => (
-                        <button
-                          key={sample.label}
-                          type="button"
-                          onClick={() => setProdImageUrl(sample.url)}
-                          className="text-[10px] bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-2 py-0.5 rounded-xs transition-colors"
-                        >
-                          {sample.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Select
+                label="Category"
+                required
+                value={prodCategoryId}
+                onChange={(e) => setProdCategoryId(e.target.value)}
+                options={categories.map((c) => ({ value: c.id, label: c.name }))}
+              />
 
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                  Description / Ingredients
-                </label>
+                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">Description</label>
                 <textarea
                   rows={3}
                   value={prodDescription}
                   onChange={(e) => setProdDescription(e.target.value)}
-                  placeholder="Describe benefits, organic ingredients, packaging size..."
+                  placeholder="What is this, and what makes it worth buying?"
                   className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary resize-none"
                 />
               </div>
 
+              {!editingProduct && (
+                <div className="pt-4 border-t border-neutral-800 space-y-4">
+                  <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
+                    First variant
+                  </span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input label="SKU" required value={varSku} onChange={(e) => setVarSku(e.target.value)} placeholder="e.g. SA-OIL-500" />
+                    <Input label="Variant name" required value={varName} onChange={(e) => setVarName(e.target.value)} placeholder="e.g. 500ml Bottle" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input label="Price (₦)" type="number" required min={1} value={varPrice} onChange={(e) => setVarPrice(e.target.value)} />
+                    <Input label="Stock" type="number" required min={0} value={varStock} onChange={(e) => setVarStock(e.target.value)} />
+                  </div>
+                  <Input label="Image URL (optional)" value={varImageUrl} onChange={(e) => setVarImageUrl(e.target.value)} placeholder="/products/… or https://…" />
+                </div>
+              )}
+
+              {editingProduct && (
+                <VariantsEditor
+                  product={editingProduct}
+                  onAdd={(v) => addVariant.mutate({ productId: editingProduct.id, ...v })}
+                  onUpdate={(id, patch) => updateVariant.mutate({ id, ...patch })}
+                  onDelete={(id) => {
+                    if (confirm("Delete this variant? This can't be undone.")) deleteVariant.mutate(id);
+                  }}
+                />
+              )}
+
               <div className="pt-2 flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setActiveModal(null)}
-                  className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white"
-                >
+                <Button type="button" variant="outline" onClick={() => setActiveModal(null)} className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white">
                   Cancel
                 </Button>
-                <Button type="submit" className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
-                  {activeModal === "edit-product" ? "Save Changes" : "Publish Product"}
+                <Button type="submit" loading={createProduct.isPending || updateProduct.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
+                  {editingProduct ? "Save Changes" : "Publish Product"}
                 </Button>
               </div>
             </form>
@@ -680,30 +573,17 @@ export default function AdminCatalogPage() {
             <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
               <X className="w-4 h-4" />
             </button>
-            <form onSubmit={handleCreateCategory} className="space-y-4">
-              <h3 className="font-serif text-lg text-white">Add Collection Category</h3>
-              <div className="space-y-1">
-                <label className="text-[9px] uppercase tracking-widest text-neutral-400">Category Name</label>
-                <input
-                  type="text"
-                  required
-                  value={catName}
-                  onChange={(e) => setCatName(e.target.value)}
-                  placeholder="e.g. Premium Skincare"
-                  className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[9px] uppercase tracking-widest text-neutral-400">Slug Path</label>
-                <input
-                  type="text"
-                  value={catSlug}
-                  onChange={(e) => setCatSlug(e.target.value)}
-                  placeholder="e.g. premium-skincare"
-                  className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary"
-                />
-              </div>
-              <Button type="submit" className="w-full rounded-none mt-2">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                createCategory.mutate();
+              }}
+              className="space-y-4"
+            >
+              <h3 className="font-serif text-lg text-white">Add Category</h3>
+              <Input label="Category Name" required value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="e.g. Skin & Body" />
+              <Input label="Slug (optional)" value={catSlug} onChange={(e) => setCatSlug(e.target.value)} placeholder="e.g. skin-body" />
+              <Button type="submit" loading={createCategory.isPending} className="w-full rounded-none mt-2">
                 Add Category
               </Button>
             </form>
@@ -718,50 +598,121 @@ export default function AdminCatalogPage() {
             <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
               <X className="w-4 h-4" />
             </button>
-            <form onSubmit={handleCreateCoupon} className="space-y-4">
-              <h3 className="font-serif text-lg text-white">Create Campaign Voucher</h3>
-              <div className="space-y-1">
-                <label className="text-[9px] uppercase tracking-widest text-neutral-400">Coupon Code</label>
-                <input
-                  type="text"
-                  required
-                  value={coupCode}
-                  onChange={(e) => setCoupCode(e.target.value)}
-                  placeholder="e.g. COCO50"
-                  className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary"
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                createCoupon.mutate();
+              }}
+              className="space-y-4"
+            >
+              <h3 className="font-serif text-lg text-white">Create Coupon</h3>
+              <Input label="Coupon Code" required value={coupCode} onChange={(e) => setCoupCode(e.target.value.toUpperCase())} placeholder="e.g. COCO50" />
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Value" type="number" required value={coupDiscount} onChange={(e) => setCoupDiscount(e.target.value)} placeholder="e.g. 20" />
+                <Select
+                  label="Type"
+                  value={coupType}
+                  onChange={(e) => setCoupType(e.target.value as "percentage" | "fixed")}
+                  options={[
+                    { value: "percentage", label: "Percentage (%)" },
+                    { value: "fixed", label: "Fixed Amount (₦)" },
+                  ]}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] uppercase tracking-widest text-neutral-400">Value</label>
-                  <input
-                    type="number"
-                    required
-                    value={coupDiscount}
-                    onChange={(e) => setCoupDiscount(e.target.value)}
-                    placeholder="e.g. 20"
-                    className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] uppercase tracking-widest text-neutral-400">Discount Type</label>
-                  <select
-                    value={coupType}
-                    onChange={(e) => setCoupType(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary"
-                  >
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Amount (₦)</option>
-                  </select>
-                </div>
-              </div>
-              <Button type="submit" className="w-full rounded-none mt-2">
+              <Button type="submit" loading={createCoupon.isPending} className="w-full rounded-none mt-2">
                 Create Coupon
               </Button>
             </form>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function VariantsEditor({
+  product,
+  onAdd,
+  onUpdate,
+  onDelete,
+}: {
+  product: AdminProduct;
+  onAdd: (v: { sku: string; name: string; price: number; stock: number }) => void;
+  onUpdate: (id: string, patch: { price?: number; stock?: number; isActive?: boolean }) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [newSku, setNewSku] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newPrice, setNewPrice] = useState("");
+  const [newStock, setNewStock] = useState("0");
+
+  return (
+    <div className="pt-4 border-t border-neutral-800 space-y-3">
+      <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
+        Variants ({product.variants.length})
+      </span>
+
+      <div className="space-y-2">
+        {product.variants.map((v) => (
+          <div key={v.id} className="flex items-center gap-2 bg-neutral-950 border border-neutral-800 p-2.5">
+            <span className="text-[10px] text-neutral-400 font-mono w-24 shrink-0 truncate">{v.sku}</span>
+            <span className="text-xs text-white flex-1 truncate">{v.name}</span>
+            <input
+              type="number"
+              defaultValue={v.price}
+              onBlur={(e) => {
+                const n = Number(e.target.value);
+                if (n > 0 && n !== Number(v.price)) onUpdate(v.id, { price: n });
+              }}
+              className="w-24 bg-neutral-900 border border-neutral-800 px-2 py-1 text-xs text-white outline-none focus:border-primary"
+            />
+            <input
+              type="number"
+              defaultValue={v.stock}
+              onBlur={(e) => {
+                const n = Number(e.target.value);
+                if (n >= 0 && n !== v.stock) onUpdate(v.id, { stock: n });
+              }}
+              className="w-16 bg-neutral-900 border border-neutral-800 px-2 py-1 text-xs text-white outline-none focus:border-primary"
+            />
+            <button
+              type="button"
+              onClick={() => onUpdate(v.id, { isActive: !v.isActive })}
+              className="shrink-0"
+              title={v.isActive ? "Archive variant" : "Restore variant"}
+            >
+              <Badge variant={v.isActive ? "success" : "secondary"} size="sm">
+                {v.isActive ? "live" : "archived"}
+              </Badge>
+            </button>
+            <button type="button" onClick={() => onDelete(v.id)} className="p-1 text-destructive hover:bg-destructive/10 shrink-0">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 pt-2">
+        <input value={newSku} onChange={(e) => setNewSku(e.target.value)} placeholder="SKU" className="w-24 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
+        <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Name" className="flex-1 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
+        <input value={newPrice} onChange={(e) => setNewPrice(e.target.value)} type="number" placeholder="Price" className="w-24 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
+        <input value={newStock} onChange={(e) => setNewStock(e.target.value)} type="number" placeholder="Stock" className="w-16 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => {
+            if (!newSku || !newName || Number(newPrice) <= 0) return;
+            onAdd({ sku: newSku, name: newName, price: Number(newPrice), stock: Number(newStock) || 0 });
+            setNewSku("");
+            setNewName("");
+            setNewPrice("");
+            setNewStock("0");
+          }}
+          className="rounded-none shrink-0"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </Button>
+      </div>
     </div>
   );
 }
