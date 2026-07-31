@@ -31,13 +31,19 @@ interface RequireAdminResult {
  *   const { session, deny } = await requireAdmin("edit:catalog");
  *   if (deny) return deny;
  *   // session.userId, session.role, ... are available here
+ *
+ * Pass an array when a route legitimately serves more than one section (media
+ * is used from both the catalog and content editors) — any one matching
+ * permission is enough.
  */
-export async function requireAdmin(permission: string): Promise<RequireAdminResult> {
+export async function requireAdmin(permission: string | string[]): Promise<RequireAdminResult> {
+  const permissions = Array.isArray(permission) ? permission : [permission];
+
   try {
     const result = await auth.api.getSession({ headers: await headers() });
     const user = result?.user;
 
-    if (!user || !hasPermission(user.role, permission)) {
+    if (!user || !permissions.some((p) => hasPermission(user.role, p))) {
       return {
         session: null,
         deny: NextResponse.json({ error: "Forbidden" }, { status: 403 }),

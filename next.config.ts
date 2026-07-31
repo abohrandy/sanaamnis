@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
     // editorial imagery on the journal, recipes and about pages.
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
+      // Admin-uploaded media (src/app/api/admin/media) once Cloudinary is configured.
+      { protocol: "https", hostname: "res.cloudinary.com" },
     ],
     formats: ["image/avif", "image/webp"],
     // Source photography is 2000px wide, so the default 2560/3840 breakpoints only
