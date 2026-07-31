@@ -1,181 +1,241 @@
 "use client";
 
 import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Tabs } from "@/components/ds/tabs";
 import { Table } from "@/components/ds/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Trash2, ShieldCheck, Download, Award, TrendingUp, ShoppingCart } from "lucide-react";
+import { Select } from "@/components/ui/select";
+import { useToast } from "@/hooks/useToast";
+import { Trash2, ShieldCheck } from "lucide-react";
 
-// --- CLIENT PORTFOLIOS & TRANSACTION HISTORY ---
-const CUSTOMERS_DATA = [
-  { id: "1", name: "Adebayo O.", email: "adebayo@gmail.com", orders: 12, spent: "₦360,000", preference: "500ml Coconut Water Bottles" },
-  { id: "2", name: "Chioma K.", email: "chioma.k@yahoo.com", orders: 8, spent: "₦240,000", preference: "500ml Coconut Water Bottles" },
-  { id: "3", name: "Hassana Jibril", email: "hassana.j@outlook.com", orders: 4, spent: "₦60,000", preference: "250ml Coconut Water Pouches" },
-  { id: "4", name: "Amina Kaduna", email: "amina.k@gmail.com", orders: 6, spent: "₦90,000", preference: "250ml Coconut Water Pouches" },
-];
+interface OrderItem {
+  quantity: number;
+  priceAtPurchase: number;
+  productTitle: string;
+  productSlug: string | null;
+  variantName: string;
+}
 
-const TRANSACTIONS_DATA = [
-  { id: "TX-9021", client: "Adebayo O.", reference: "pstk_902816", amount: "₦30,000", date: "June 30, 2026", method: "Paystack Card", status: "success" },
-  { id: "TX-9018", client: "Chioma K.", reference: "pstk_901538", amount: "₦30,000", date: "June 29, 2026", method: "Paystack Transfer", status: "success" },
-  { id: "TX-8994", client: "Amina Kaduna", reference: "pstk_899214", amount: "₦15,000", date: "June 28, 2026", method: "Paystack Card", status: "success" },
-  { id: "TX-8912", client: "Hassana Jibril", reference: "pstk_890281", amount: "₦15,000", date: "June 24, 2026", method: "Paystack Transfer", status: "success" },
-];
+interface AdminOrder {
+  id: string;
+  orderNumber: string;
+  status: string;
+  totalAmount: number;
+  customerName: string | null;
+  customerEmail: string | null;
+  createdAt: string;
+  items: OrderItem[];
+}
 
-const SUBSCRIBERS_DATA = [
-  { id: "1", email: "newsletter1@gmail.com", joined: "June 25, 2026", status: "subscribed" },
-  { id: "2", email: "buyer_interest@yahoo.com", joined: "May 12, 2026", status: "subscribed" },
-];
+interface RegisteredAccount {
+  id: string;
+  name: string;
+  email: string;
+  role: string | null;
+  createdAt: string;
+}
+
+interface OrderActivity {
+  email: string;
+  name: string;
+  orderCount: number;
+  totalSpent: number;
+  lastOrderAt: string;
+}
+
+interface Subscriber {
+  id: string;
+  email: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+const naira = (n: number) => `₦${n.toLocaleString()}`;
+
+const STATUS_VARIANT: Record<string, "success" | "warning" | "primary" | "destructive" | "secondary"> = {
+  paid: "success",
+  shipped: "primary",
+  delivered: "success",
+  pending: "warning",
+  payment_failed: "destructive",
+  cancelled: "secondary",
+};
+
+const STATUS_OPTIONS = ["pending", "paid", "payment_failed", "shipped", "delivered", "cancelled"].map((s) => ({
+  value: s,
+  label: s.replace("_", " "),
+}));
+
+async function api<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, { ...init, headers: { "Content-Type": "application/json", ...init?.headers } });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Something went wrong.");
+  return data as T;
+}
 
 export default function AdminOperationsPage() {
-  const [customers, setCustomers] = useState(CUSTOMERS_DATA);
-  const [transactions, setTransactions] = useState(TRANSACTIONS_DATA);
-  const [subscribers, setSubscribers] = useState(SUBSCRIBERS_DATA);
+  const toast = useToast();
+  const queryClient = useQueryClient();
 
-  // Customers Columns
-  const customersColumns = [
-    { header: "Customer Name", accessor: "name" as const },
-    { header: "Email Address", accessor: "email" as const },
-    { header: "Total Orders", accessor: "orders" as const },
-    { header: "Total Capital Spent", accessor: "spent" as const },
-    { header: "Preferred Formulation", accessor: "preference" as const },
+  const ordersQuery = useQuery({
+    queryKey: ["admin", "orders"],
+    queryFn: () => api<{ orders: AdminOrder[] }>("/api/admin/orders"),
+  });
+  const customersQuery = useQuery({
+    queryKey: ["admin", "customers"],
+    queryFn: () => api<{ accounts: RegisteredAccount[]; orderActivity: OrderActivity[] }>("/api/admin/customers"),
+  });
+  const subscribersQuery = useQuery({
+    queryKey: ["admin", "newsletter"],
+    queryFn: () => api<{ subscribers: Subscriber[] }>("/api/admin/newsletter"),
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      api(`/api/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+    onSuccess: () => {
+      toast.success("Order status updated");
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
+    },
+    onError: (err: Error) => toast.error("Could not update order", err.message),
+  });
+
+  const removeSubscriber = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/newsletter/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Subscriber removed");
+      queryClient.invalidateQueries({ queryKey: ["admin", "newsletter"] });
+    },
+    onError: (err: Error) => toast.error("Could not remove subscriber", err.message),
+  });
+
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+
+  const orders = ordersQuery.data?.orders ?? [];
+  const accounts = customersQuery.data?.accounts ?? [];
+  const activity = customersQuery.data?.orderActivity ?? [];
+  const subscribers = subscribersQuery.data?.subscribers ?? [];
+
+  const orderColumns = [
     {
-      header: "Actions",
-      accessor: (item: typeof CUSTOMERS_DATA[0]) => (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCustomers(customers.filter((c) => c.id !== item.id))}
-            className="p-1 text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
+      header: "Order",
+      accessor: (item: AdminOrder) => (
+        <button onClick={() => setExpandedOrder(expandedOrder === item.id ? null : item.id)} className="text-left cursor-pointer">
+          <span className="font-serif font-bold text-sm text-white block">{item.orderNumber}</span>
+          <span className="text-[10px] text-neutral-400">{new Date(item.createdAt).toLocaleDateString()}</span>
+        </button>
+      ),
+    },
+    {
+      header: "Customer",
+      accessor: (item: AdminOrder) => (
+        <div>
+          <span className="block">{item.customerName || "Guest"}</span>
+          <span className="text-[10px] text-neutral-400">{item.customerEmail || "—"}</span>
         </div>
       ),
     },
-  ];
-
-  // Transactions Columns
-  const transactionsColumns = [
-    { header: "Tx ID", accessor: "id" as const },
-    { header: "Client", accessor: "client" as const },
-    { header: "Paystack Ref", accessor: "reference" as const },
-    { header: "Paid Amount", accessor: "amount" as const },
-    { header: "Payment Method", accessor: "method" as const },
-    { header: "Transaction Date", accessor: "date" as const },
+    { header: "Total", accessor: (item: AdminOrder) => naira(item.totalAmount) },
     {
       header: "Status",
-      accessor: (item: typeof TRANSACTIONS_DATA[0]) => (
-        <Badge variant="success">
-          {item.status}
-        </Badge>
+      accessor: (item: AdminOrder) => (
+        <Select
+          value={item.status}
+          onChange={(e) => updateStatus.mutate({ id: item.id, status: e.target.value })}
+          options={STATUS_OPTIONS}
+          className="!py-2 !text-[10px] w-36"
+        />
       ),
     },
   ];
 
-  // Subscribers Columns
-  const subscribersColumns = [
-    { header: "Subscriber Email", accessor: "email" as const },
-    { header: "Date Subscribed", accessor: "joined" as const },
-    {
-      header: "Status",
-      accessor: (item: typeof SUBSCRIBERS_DATA[0]) => (
-        <Badge variant="success">
-          {item.status}
-        </Badge>
-      ),
-    },
+  const accountColumns = [
+    { header: "Name", accessor: "name" as const },
+    { header: "Email", accessor: "email" as const },
+    { header: "Role", accessor: (item: RegisteredAccount) => <Badge variant="secondary">{item.role || "customer"}</Badge> },
+    { header: "Joined", accessor: (item: RegisteredAccount) => new Date(item.createdAt).toLocaleDateString() },
+  ];
+
+  const activityColumns = [
+    { header: "Email", accessor: "email" as const },
+    { header: "Name on orders", accessor: "name" as const },
+    { header: "Orders", accessor: "orderCount" as const },
+    { header: "Total spent", accessor: (item: OrderActivity) => naira(item.totalSpent) },
+    { header: "Last order", accessor: (item: OrderActivity) => new Date(item.lastOrderAt).toLocaleDateString() },
+  ];
+
+  const subscriberColumns = [
+    { header: "Email", accessor: "email" as const },
+    { header: "Subscribed", accessor: (item: Subscriber) => new Date(item.createdAt).toLocaleDateString() },
+    { header: "Status", accessor: (item: Subscriber) => <Badge variant={item.isActive ? "success" : "secondary"}>{item.isActive ? "active" : "unsubscribed"}</Badge> },
     {
       header: "Actions",
-      accessor: (item: typeof SUBSCRIBERS_DATA[0]) => (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSubscribers(subscribers.filter((s) => s.id !== item.id))}
-            className="p-1 text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
+      accessor: (item: Subscriber) => (
+        <Button variant="ghost" size="sm" onClick={() => removeSubscriber.mutate(item.id)} className="p-2 text-destructive hover:bg-destructive/10">
+          <Trash2 className="w-4 h-4" />
+        </Button>
       ),
     },
   ];
+
+  const expanded = orders.find((o) => o.id === expandedOrder);
 
   const tabContents = [
     {
-      id: "customers",
-      label: "Client Database & Habits",
+      id: "orders",
+      label: "Orders",
       content: (
-        <div className="space-y-8">
-          {/* Quick Analytics Header */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-neutral-900 border border-neutral-800 p-6 space-y-2">
-              <div className="flex justify-between items-center text-neutral-400">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Top Premium Spender</span>
-                <Award className="w-4 h-4 text-[#cea62c]" />
-              </div>
-              <h4 className="font-serif text-lg text-white">Adebayo O.</h4>
-              <p className="text-xs text-neutral-500">Total Spent: ₦360,000 (12 Orders)</p>
+        <div className="space-y-6">
+          <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+            Orders ({orders.length})
+          </h3>
+          <Table columns={orderColumns} data={orders} loading={ordersQuery.isLoading} />
+          {expanded && (
+            <div className="p-5 bg-neutral-900 border border-neutral-800 space-y-3">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider">{expanded.orderNumber} — items</h4>
+              {expanded.items.map((item, i) => (
+                <div key={i} className="flex justify-between text-xs text-neutral-300 py-1.5 border-b border-neutral-800 last:border-0">
+                  <span>{item.productTitle} — {item.variantName} × {item.quantity}</span>
+                  <span className="font-serif text-white">{naira(item.priceAtPurchase * item.quantity)}</span>
+                </div>
+              ))}
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 p-6 space-y-2">
-              <div className="flex justify-between items-center text-neutral-400">
-                <span className="text-[10px] uppercase tracking-widest font-bold">Preferred Item</span>
-                <ShoppingCart className="w-4 h-4 text-primary" />
-              </div>
-              <h4 className="font-serif text-lg text-white">500ml Bottle Pack</h4>
-              <p className="text-xs text-neutral-500">Represents 70% of total catalog revenue</p>
-            </div>
-            <div className="bg-neutral-900 border border-neutral-800 p-6 space-y-2">
-              <div className="flex justify-between items-center text-neutral-400">
-                <span className="text-[10px] uppercase tracking-widest font-bold">AOV (Avg Order Value)</span>
-                <TrendingUp className="w-4 h-4 text-emerald-500" />
-              </div>
-              <h4 className="font-serif text-lg text-white">₦22,500</h4>
-              <p className="text-xs text-neutral-500">Up 15% from last marketing cycle</p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">Client Habit Profiler</h3>
-              <Button size="sm" className="flex items-center gap-1.5 rounded-none">
-                <Download className="w-3.5 h-3.5" /> Export Client Database
-              </Button>
-            </div>
-            <Table columns={customersColumns} data={customers} />
-          </div>
+          )}
         </div>
       ),
     },
     {
-      id: "transactions",
-      label: "Transaction History",
+      id: "customers",
+      label: "Customers",
       content: (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">Payment Audit Log</h3>
-            <span className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-bold uppercase tracking-widest">
-              <ShieldCheck className="w-4 h-4" /> Paystack Secured
-            </span>
+        <div className="space-y-10">
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+              Order activity ({activity.length}) — grouped by email, checkout doesn&apos;t require an account
+            </h3>
+            <Table columns={activityColumns} data={activity} loading={customersQuery.isLoading} />
           </div>
-          <Table columns={transactionsColumns} data={transactions} />
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+              Registered accounts ({accounts.length})
+            </h3>
+            <Table columns={accountColumns} data={accounts} loading={customersQuery.isLoading} />
+          </div>
         </div>
       ),
     },
     {
       id: "newsletter",
-      label: "Newsletter Subscribers",
+      label: "Newsletter",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">Marketing Mail Lists</h3>
-            <Button size="sm" className="flex items-center gap-1.5 rounded-none">
-              <Mail className="w-3.5 h-3.5" /> Blast Campaign
-            </Button>
-          </div>
-          <Table columns={subscribersColumns} data={subscribers} />
+          <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+            Subscribers ({subscribers.length})
+          </h3>
+          <Table columns={subscriberColumns} data={subscribers} loading={subscribersQuery.isLoading} />
         </div>
       ),
     },
@@ -183,17 +243,18 @@ export default function AdminOperationsPage() {
 
   return (
     <div className="space-y-10">
-      {/* Header */}
-      <div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">
-          Operations Center
-        </h1>
-        <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
-          Manage Customer Portfolios, Spending Habits, and Transaction Records
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Operations</h1>
+          <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+            Real orders, customers and subscribers
+          </p>
+        </div>
+        <span className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-bold uppercase tracking-widest">
+          <ShieldCheck className="w-4 h-4" /> Live database
+        </span>
       </div>
 
-      {/* Tabs */}
       <Tabs tabs={tabContents} />
     </div>
   );

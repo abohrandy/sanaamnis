@@ -1,107 +1,93 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { StatCard } from "@/components/ds/cards/stat-card";
-import { BarChart, LineChart } from "@/components/ds/charts";
+import { BarChart } from "@/components/ds/charts";
 import { Table } from "@/components/ds/table";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, FileText, Users, TrendingUp, Sparkles, ShieldCheck } from "lucide-react";
+import { ShoppingBag, Clock, Mail, TrendingUp, ShieldCheck } from "lucide-react";
 
-const RECENT_ORDERS = [
-  { id: "1", orderNumber: "SA-982312", customer: "John Doe", total: "₦185,000", status: "paid" },
-  { id: "2", orderNumber: "SA-102943", customer: "Jane Smith", total: "₦95,000", status: "pending" },
-  { id: "3", orderNumber: "SA-549210", customer: "Alex Johnson", total: "₦68,000", status: "shipped" },
-];
+interface DashboardData {
+  grossRevenue: number;
+  paidOrders: number;
+  pendingOrders: number;
+  totalOrders: number;
+  activeSubscribers: number;
+  monthlyRevenue: Array<{ label: string; value: number }>;
+  recentOrders: Array<{ id: string; orderNumber: string; customer: string; total: number; status: string }>;
+}
 
-const SALES_TREND = [
-  { label: "Jan", value: 340000 },
-  { label: "Feb", value: 450000 },
-  { label: "Mar", value: 680000 },
-  { label: "Apr", value: 590000 },
-  { label: "May", value: 890000 },
-  { label: "Jun", value: 1200000 },
-];
+const STATUS_VARIANT: Record<string, "success" | "warning" | "primary" | "destructive" | "secondary"> = {
+  paid: "success",
+  shipped: "primary",
+  delivered: "success",
+  pending: "warning",
+  payment_failed: "destructive",
+  cancelled: "secondary",
+};
 
 export default function AdminDashboardPage() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "dashboard"],
+    queryFn: async (): Promise<DashboardData> => {
+      const res = await fetch("/api/admin/dashboard");
+      if (!res.ok) throw new Error("Could not load dashboard data.");
+      return res.json();
+    },
+  });
 
   const columns = [
-    { header: "Order ID", accessor: "orderNumber" as const },
+    { header: "Order", accessor: "orderNumber" as const },
     { header: "Customer", accessor: "customer" as const },
-    { header: "Amount", accessor: "total" as const },
+    { header: "Amount", accessor: (item: DashboardData["recentOrders"][0]) => `₦${item.total.toLocaleString()}` },
     {
       header: "Status",
-      accessor: (item: typeof RECENT_ORDERS[0]) => {
-        const variants: Record<string, "success" | "warning" | "primary"> = {
-          paid: "success",
-          pending: "warning",
-          shipped: "primary",
-        };
-        return <Badge variant={variants[item.status]}>{item.status}</Badge>;
-      },
+      accessor: (item: DashboardData["recentOrders"][0]) => (
+        <Badge variant={STATUS_VARIANT[item.status] ?? "secondary"}>{item.status.replace("_", " ")}</Badge>
+      ),
     },
   ];
 
   return (
     <div className="space-y-10 font-sans">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#242A26]">
         <div>
-          <Badge variant="gold">SANCTUARY CONTROL HUB</Badge>
+          <Badge variant="gold">DASHBOARD</Badge>
           <h1 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#FAF8F5] mt-1">
-            Operations & Performance
+            Overview
           </h1>
-          <p className="text-xs text-[#FAF8F5]/60 font-sans">
-            Real-time revenue metrics, Paystack transaction stream, and content management.
-          </p>
+          <p className="text-xs text-[#FAF8F5]/60 font-sans">Real order and revenue data, refreshed on load.</p>
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="px-4 py-2 rounded-[0.5rem] bg-[#1C3322] border border-[#242A26] text-xs text-[#C9A227] font-semibold flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4" /> Live Gateway Sync
-          </div>
+        <div className="px-4 py-2 rounded-[0.5rem] bg-[#1C3322] border border-[#242A26] text-xs text-[#C9A227] font-semibold flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4" /> Live database
         </div>
       </div>
 
-      {/* Stats Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Gross Volume" value="₦2,318,000" change={14.8} icon={TrendingUp} />
-        <StatCard title="Successful Orders" value="234" change={8.4} icon={ShoppingBag} />
-        <StatCard title="Platform Pages" value="12" change={0.0} icon={FileText} />
-        <StatCard title="Active Patrons" value="1,849" change={22.1} icon={Users} />
+        <StatCard title="Paid Revenue" value={isLoading ? "…" : `₦${(data?.grossRevenue ?? 0).toLocaleString()}`} icon={TrendingUp} />
+        <StatCard title="Paid Orders" value={isLoading ? "…" : data?.paidOrders ?? 0} icon={ShoppingBag} />
+        <StatCard title="Pending Orders" value={isLoading ? "…" : data?.pendingOrders ?? 0} icon={Clock} />
+        <StatCard title="Newsletter Subscribers" value={isLoading ? "…" : data?.activeSubscribers ?? 0} icon={Mail} />
       </div>
 
-      {/* Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="p-6 rounded-[1.25rem] bg-[#161A17] border border-[#242A26] space-y-4">
-          <h3 className="text-xs uppercase tracking-[0.2em] text-[#C9A227] font-bold">
-            Monthly Revenue Performance (NGN)
-          </h3>
-          <BarChart data={SALES_TREND} height={200} />
-        </div>
-
-        <div className="p-6 rounded-[1.25rem] bg-[#161A17] border border-[#242A26] space-y-4">
-          <h3 className="text-xs uppercase tracking-[0.2em] text-[#C9A227] font-bold">
-            Platform Traffic & Collector Growth
-          </h3>
-          <LineChart data={SALES_TREND} height={200} />
-        </div>
-      </div>
-
-      {/* Recent Orders table */}
       <div className="p-6 rounded-[1.25rem] bg-[#161A17] border border-[#242A26] space-y-4">
         <h3 className="text-xs uppercase tracking-[0.2em] text-[#C9A227] font-bold">
-          Recent Transaction Activity
+          Monthly Revenue — Paid Orders (₦)
         </h3>
-        <Table
-          columns={columns}
-          data={RECENT_ORDERS}
-          currentPage={currentPage}
-          totalPages={5}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        {data?.monthlyRevenue && data.monthlyRevenue.length > 0 ? (
+          <BarChart data={data.monthlyRevenue} height={200} />
+        ) : (
+          <p className="text-xs text-[#FAF8F5]/50 py-10 text-center">
+            No paid orders in the last 6 months yet.
+          </p>
+        )}
+      </div>
+
+      <div className="p-6 rounded-[1.25rem] bg-[#161A17] border border-[#242A26] space-y-4">
+        <h3 className="text-xs uppercase tracking-[0.2em] text-[#C9A227] font-bold">Recent Orders</h3>
+        <Table columns={columns} data={data?.recentOrders ?? []} loading={isLoading} />
       </div>
     </div>
   );
 }
-
