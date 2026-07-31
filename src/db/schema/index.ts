@@ -152,6 +152,10 @@ export const productVariants = pgTable("product_variants", {
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   stock: integer("stock").notNull(),
   imageUrl: text("image_url"),
+  // A variant with order history can't be hard-deleted (orderItems.variantId is
+  // onDelete: restrict) — this lets admin discontinue a SKU without breaking
+  // past orders or hiding the whole parent product.
+  isActive: boolean("is_active").default(true).notNull(),
 }, (t) => [
   index("var_sku_idx").on(t.sku),
   index("var_prod_idx").on(t.productId)
@@ -175,9 +179,17 @@ export const orders = pgTable("orders", {
   orderNumber: text("order_number").notNull().unique(),
   totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
   couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "set null" }),
-  status: text("status").default("pending").notNull(), // pending, paid, shipped, delivered
+  // pending, paid, payment_failed, shipped, delivered, cancelled
+  status: text("status").default("pending").notNull(),
   paymentReference: text("payment_reference"),
   shippingAddress: text("shipping_address").notNull(),
+  // Previously the only place the customer's name/email were recorded was baked
+  // into shippingAddress as "{name}\n{address}\n{state}\n{email}" — unusable for
+  // an admin customer view. New orders populate these directly; historical rows
+  // are backfilled for email only (see migration 0002), name is left null since
+  // it isn't reliably extractable from free text.
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("order_num_idx").on(t.orderNumber),
@@ -294,7 +306,11 @@ export const blogPosts = pgTable("blog_posts", {
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
   excerpt: text("excerpt"),
+  // Body copy: paragraphs separated by a blank line; a line starting with "## "
+  // is rendered as a subheading. See src/lib/blog.ts's parseArticleBody().
   content: text("content"),
+  category: text("category").default("Guides").notNull(),
+  imageUrl: text("image_url"),
   authorId: uuid("author_id").references(() => authors.id, { onDelete: "set null" }),
   isPublished: boolean("is_published").default(true).notNull(),
   publishedAt: timestamp("published_at"),
@@ -305,10 +321,22 @@ export const recipes = pgTable("recipes", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
-  ingredients: jsonb("ingredients").notNull(), // list of ingredients
-  instructions: text("instructions"),
+  excerpt: text("excerpt"),
+  imageUrl: text("image_url"),
+  difficulty: text("difficulty").default("Easy").notNull(), // Easy, Simple, Takes practice
+  // Display strings ("35 mins", "Serves 4") rather than structured numbers — the
+  // source content is authored this way and nothing in the app computes on
+  // minutes/servings as numbers. prepTimeMinutes/cookTimeMinutes below are kept
+  // for potential future use but are not read anywhere today.
+  durationLabel: text("duration_label").default("30 mins").notNull(),
+  servingsLabel: text("servings_label").default("Serves 4").notNull(),
+  ingredients: jsonb("ingredients").notNull(), // list of ingredient strings
+  instructions: text("instructions"), // one step per line
+  tip: text("tip"),
+  usesProductSlugs: jsonb("uses_product_slugs").default([]).notNull(), // string[] of catalog product slugs
   prepTimeMinutes: integer("prep_time_minutes"),
   cookTimeMinutes: integer("cook_time_minutes"),
+  isPublished: boolean("is_published").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

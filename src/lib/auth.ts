@@ -29,7 +29,16 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          if (user.email === "abohrandy@gmail.com" || user.email === "me@randyaboh.com") {
+          // Previously hardcoded two literal email addresses in committed source.
+          // Same bootstrap mechanism as SEED_ADMIN_EMAILS in src/db/seed.ts —
+          // reusing that env var rather than a second one, so there is exactly
+          // one place that controls who gets auto-promoted on signup.
+          const bootstrapEmails = (process.env.SEED_ADMIN_EMAILS || "")
+            .split(",")
+            .map((e) => e.trim().toLowerCase())
+            .filter(Boolean);
+
+          if (bootstrapEmails.includes(user.email.toLowerCase())) {
             await db.update(schema.user)
               .set({ role: "admin", emailVerified: true })
               .where(eq(schema.user.id, user.id));

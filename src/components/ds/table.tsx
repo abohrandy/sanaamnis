@@ -14,6 +14,10 @@ interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   className?: string;
+  /** Renders skeleton rows instead of `data` — for the gap between mount and the first query response. */
+  loading?: boolean;
+  /** Row count for the skeleton while loading. */
+  loadingRows?: number;
   // Pagination
   currentPage?: number;
   totalPages?: number;
@@ -24,6 +28,8 @@ export function Table<T>({
   columns,
   data,
   className,
+  loading = false,
+  loadingRows = 5,
   currentPage,
   totalPages,
   onPageChange,
@@ -48,7 +54,17 @@ export function Table<T>({
             </tr>
           </thead>
           <tbody className="divide-y divide-border/20 text-xs font-sans text-foreground">
-            {data.length === 0 ? (
+            {loading ? (
+              Array.from({ length: loadingRows }).map((_, rowIdx) => (
+                <tr key={rowIdx}>
+                  {columns.map((_, colIdx) => (
+                    <td key={colIdx} className="p-4">
+                      <div className="h-3.5 rounded-sm bg-muted/30 animate-pulse" style={{ width: `${55 + ((rowIdx + colIdx) % 3) * 15}%` }} />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="p-8 text-center text-muted-foreground">
                   No records found.
