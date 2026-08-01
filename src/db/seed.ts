@@ -143,6 +143,21 @@ async function main() {
       console.log(`[seed] deactivated ${stale.length} product(s) no longer in the catalog`);
     }
 
+    // Same for variants — e.g. a size that's been replaced (250g swapped for
+    // 100g) leaves its old row in place, referenced by any historical orders,
+    // but it must stop being sold.
+    const catalogVariantIds = CATALOG.flatMap((p) => p.variants.map((v) => v.id));
+    const staleVariants = await db.query.productVariants.findMany({
+      where: (variants, { notInArray }) => notInArray(variants.id, catalogVariantIds),
+    });
+    if (staleVariants.length > 0) {
+      await db
+        .update(schema.productVariants)
+        .set({ isActive: false })
+        .where(inArray(schema.productVariants.id, staleVariants.map((v) => v.id)));
+      console.log(`[seed] deactivated ${staleVariants.length} variant(s) no longer in the catalog`);
+    }
+
     // --- Journal, recipes & FAQs ----------------------------------------------
     // Seeds src/lib/content.ts's fallback data as the starting rows, using the
     // same deterministic-id + onConflictDoUpdate pattern as products above, so

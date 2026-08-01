@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -13,10 +13,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Sparkles,
-  Gift,
   Truck,
   Clock,
-  Check,
 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
@@ -30,42 +28,15 @@ const FREE_SHIPPING_THRESHOLD = 50000;
 export default function CartPage() {
   const hydrated = useHydrated();
   const items = useCartStore((state) => state.items);
-  const addItem = useCartStore((state) => state.addItem);
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const rawSubtotal = useCartStore((state) => state.getTotalAmount)();
 
-  // Gift wrap state
-  const [includeGiftWrap, setIncludeGiftWrap] = useState(false);
-  const [giftNote, setGiftNote] = useState("");
-
-  // Coupon state
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
-  const [couponError, setCouponError] = useState("");
-  const [couponSuccess, setCouponSuccess] = useState("");
-
-  // Delivery estimator state
+  // Informational only — no monetary effect, so nothing here can disagree with
+  // what checkout actually charges.
   const [selectedCity, setSelectedCity] = useState<"lagos" | "abuja" | "ph">("lagos");
 
   const savedCount = useWishlistStore((s) => (hydrated ? s.items.length : 0));
-
-  const handleApplyCoupon = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCouponError("");
-    setCouponSuccess("");
-
-    if (couponCode.toUpperCase() === "SANA10") {
-      setAppliedDiscount(0.1);
-      setCouponSuccess("10% Sanctuary Privilege Applied");
-    } else {
-      setCouponError("Invalid promo code. Try 'SANA10'");
-    }
-  };
-
-  const giftWrapFee = includeGiftWrap ? 2500 : 0;
-  const discountAmount = rawSubtotal * appliedDiscount;
-  const finalTotal = Math.max(0, rawSubtotal - discountAmount + giftWrapFee);
 
   const progressPercentage = Math.min((rawSubtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - rawSubtotal, 0);
@@ -191,32 +162,6 @@ export default function CartPage() {
                 ))}
               </div>
 
-              {/* Organic Gift Wrap Option */}
-              <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster space-y-3">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
-                    <Gift className="w-4 h-4 text-[#C9A227]" />
-                    <span>Organic Linen Gift Wrapping & Custom Handwritten Card (+₦2,500)</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={includeGiftWrap}
-                    onChange={(e) => setIncludeGiftWrap(e.target.checked)}
-                    className="w-4 h-4 accent-[#1C3322] cursor-pointer"
-                  />
-                </label>
-
-                {includeGiftWrap && (
-                  <textarea
-                    rows={2}
-                    value={giftNote}
-                    onChange={(e) => setGiftNote(e.target.value)}
-                    placeholder="Enter custom gift note message..."
-                    className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs outline-none focus:border-[#1C3322] resize-none"
-                  />
-                )}
-              </div>
-
               {/* Delivery Dispatch Estimator */}
               <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster space-y-3">
                 <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
@@ -226,7 +171,7 @@ export default function CartPage() {
 
                 <select
                   value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value as any)}
+                  onChange={(e) => setSelectedCity(e.target.value as "lagos" | "abuja" | "ph")}
                   className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none cursor-pointer"
                 >
                   <option value="lagos">Lagos (Mainland & Islands)</option>
@@ -252,51 +197,18 @@ export default function CartPage() {
                   <span className="font-bold text-[#161A17]">₦{rawSubtotal.toLocaleString()}</span>
                 </div>
 
-                {appliedDiscount > 0 && (
-                  <div className="flex justify-between text-green-700 font-semibold">
-                    <span>Privilege Discount (10%)</span>
-                    <span>-₦{discountAmount.toLocaleString()}</span>
-                  </div>
-                )}
-
-                {includeGiftWrap && (
-                  <div className="flex justify-between text-[#161A17]">
-                    <span>Linen Gift Wrap</span>
-                    <span>+₦2,500</span>
-                  </div>
-                )}
-
                 <div className="flex justify-between">
                   <span>Shipping & Taxes</span>
                   <span className="font-bold text-[#1C3322]">Calculated at Checkout</span>
                 </div>
               </div>
 
-              {/* Coupon UX Form */}
-              <form onSubmit={handleApplyCoupon} className="flex gap-2 pt-2 border-t border-[#E2E6E3]">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Promo Code (e.g. SANA10)"
-                  className="w-full p-3 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs outline-none uppercase font-semibold focus:border-[#1C3322]"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-3 bg-[#1C3322] text-[#FAF8F5] text-xs uppercase font-bold tracking-wider rounded-[0.5rem] hover:bg-[#C9A227] hover:text-[#161A17] transition-colors cursor-pointer"
-                >
-                  Apply
-                </button>
-              </form>
-              {couponSuccess && <p className="text-[10px] text-green-600 font-bold">{couponSuccess}</p>}
-              {couponError && <p className="text-[10px] text-red-500 font-bold">{couponError}</p>}
-
               <div className="pt-4 border-t border-[#E2E6E3] flex justify-between items-baseline">
                 <span className="font-sans text-xs uppercase font-bold tracking-[0.18em] text-[#161A17]">
-                  Final Total
+                  Subtotal
                 </span>
                 <span className="font-serif text-3xl font-bold text-[#1C3322]">
-                  ₦{finalTotal.toLocaleString()}
+                  ₦{rawSubtotal.toLocaleString()}
                 </span>
               </div>
 
@@ -344,4 +256,3 @@ export default function CartPage() {
     </div>
   );
 }
-

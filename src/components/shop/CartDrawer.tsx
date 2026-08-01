@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
@@ -13,10 +13,7 @@ import {
   Trash2,
   ShieldCheck,
   Sparkles,
-  Gift,
-  Tag,
   Truck,
-  Check,
   ArrowRight,
   Clock,
 } from "lucide-react";
@@ -30,85 +27,24 @@ interface CartDrawerProps {
 
 const FREE_SHIPPING_THRESHOLD = 50000;
 
-const MOCK_CROSS_SELLS = [
-  {
-    id: "cs-1",
-    productId: "cs-1",
-    variantId: "cs-v1",
-    title: "Travel Virgin Coconut Oil (50ml)",
-    name: "50ml Travel Bottle",
-    price: 3500,
-    imageUrl: "https://drive.google.com/thumbnail?id=1cRxBW7bAXR5Alft8iGGt5AVugXPRusMY&sz=w500",
-    stock: 50,
-  },
-  {
-    id: "cs-2",
-    productId: "cs-2",
-    variantId: "cs-v2",
-    title: "Organic Coconut Lip Balm",
-    name: "15g Balm Tin",
-    price: 2500,
-    imageUrl: "https://drive.google.com/thumbnail?id=1Xcc9CmWFaAEvsU4ovWMHKYkEiEhzN0cr&sz=w500",
-    stock: 100,
-  },
-];
-
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const isHydrated = useHydrated();
   const rawItems = useCartStore((state) => state.items);
   const items = isHydrated ? rawItems : [];
-  const addItem = useCartStore((state) => state.addItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
-  const rawTotalAmount = useCartStore((state) => state.getTotalAmount)();
+  const totalAmount = useCartStore((state) => state.getTotalAmount)();
 
-  // Gift wrap state
-  const [includeGiftWrap, setIncludeGiftWrap] = useState(false);
-  const [giftNote, setGiftNote] = useState("");
-
-  // Coupon state
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
-  const [couponError, setCouponError] = useState("");
-  const [couponSuccess, setCouponSuccess] = useState("");
-
-  // Delivery estimator state
+  // Informational only — no monetary effect, so nothing here can disagree with
+  // what checkout actually charges. This drawer previously also had a coupon
+  // form and a gift-wrap toggle that both changed the "Estimated Total" shown
+  // here without checkout (src/lib/pricing.ts) knowing anything about either —
+  // a customer could apply "SANA10", see a 10% discount, then be charged the
+  // full undiscounted amount at checkout. Removed rather than left half-wired.
   const [selectedCity, setSelectedCity] = useState<"lagos" | "abuja" | "ph">("lagos");
 
-  // Recently viewed state
-  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
-
-  useEffect(() => {
-    const storedRaw = localStorage.getItem("sana_amnis_recently_viewed");
-    if (storedRaw) {
-      try {
-        const parsed = JSON.parse(storedRaw);
-        setRecentlyViewed(parsed.slice(0, 2));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, [isOpen]);
-
-  const handleApplyCoupon = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCouponError("");
-    setCouponSuccess("");
-
-    if (couponCode.toUpperCase() === "SANA10") {
-      setAppliedDiscount(0.1);
-      setCouponSuccess("10% Sanctuary Privilege Applied");
-    } else {
-      setCouponError("Invalid promo code. Try 'SANA10'");
-    }
-  };
-
-  const giftWrapFee = includeGiftWrap ? 2500 : 0;
-  const discountAmount = rawTotalAmount * appliedDiscount;
-  const finalTotalAmount = Math.max(0, rawTotalAmount - discountAmount + giftWrapFee);
-
-  const progressPercentage = Math.min((rawTotalAmount / FREE_SHIPPING_THRESHOLD) * 100, 100);
-  const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - rawTotalAmount, 0);
+  const progressPercentage = Math.min((totalAmount / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - totalAmount, 0);
 
   const deliveryEstimates = {
     lagos: "24 Hours Express (Lagos Metropolis)",
@@ -144,9 +80,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <ShoppingBag className="w-4 h-4 text-[#C9A227]" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-lg font-medium text-[#161A17]">Your Sanctuary Selection</h3>
+                  <h3 className="font-serif text-lg font-medium text-[#161A17]">Your Bag</h3>
                   <p className="text-[10px] uppercase tracking-[0.18em] text-[#676E6A]">
-                    {items.length} {items.length === 1 ? "Formula" : "Formulations"} Reserved
+                    {items.length} {items.length === 1 ? "item" : "items"}
                   </p>
                 </div>
               </div>
@@ -261,32 +197,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     ))}
                   </div>
 
-                  {/* Organic Gift Wrap Toggle Option */}
-                  <div className="p-4 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3] space-y-3">
-                    <label className="flex items-center justify-between cursor-pointer">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
-                        <Gift className="w-4 h-4 text-[#C9A227]" />
-                        <span>Organic Linen Gift Wrapping & Card (+₦2,500)</span>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={includeGiftWrap}
-                        onChange={(e) => setIncludeGiftWrap(e.target.checked)}
-                        className="w-4 h-4 accent-[#1C3322] cursor-pointer"
-                      />
-                    </label>
-
-                    {includeGiftWrap && (
-                      <textarea
-                        rows={2}
-                        value={giftNote}
-                        onChange={(e) => setGiftNote(e.target.value)}
-                        placeholder="Enter custom gift note message..."
-                        className="w-full p-2.5 bg-[#FAF8F5] border border-[#E2E6E3] rounded-[0.5rem] text-xs outline-none focus:border-[#1C3322] resize-none"
-                      />
-                    )}
-                  </div>
-
                   {/* Delivery Logistics Estimator */}
                   <div className="p-4 rounded-[1rem] bg-[#FAF8F5] border border-[#E2E6E3] space-y-2">
                     <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
@@ -296,7 +206,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                     <select
                       value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value as any)}
+                      onChange={(e) => setSelectedCity(e.target.value as "lagos" | "abuja" | "ph")}
                       className="w-full p-2 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none cursor-pointer"
                     >
                       <option value="lagos">Lagos (Mainland & Islands)</option>
@@ -308,71 +218,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       <Clock className="w-3 h-3 text-[#C9A227]" /> {deliveryEstimates[selectedCity]}
                     </p>
                   </div>
-
-                  {/* One-Click Cross-Sell Pairings */}
-                  <div className="space-y-3 pt-2">
-                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#C9A227] block">
-                      Enhance Your Order
-                    </span>
-
-                    <div className="space-y-2">
-                      {MOCK_CROSS_SELLS.map((cs) => (
-                        <div
-                          key={cs.id}
-                          className="flex items-center justify-between p-3 rounded-[0.75rem] bg-[#FAF8F5] border border-[#E2E6E3]"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="relative w-10 h-10 rounded-[0.375rem] bg-[#F3EFE8] overflow-hidden shrink-0">
-                              <Image src={cs.imageUrl} alt="" fill sizes="40px" className="object-cover" />
-                            </div>
-                            <div>
-                              <h5 className="text-xs font-semibold text-[#161A17] line-clamp-1">{cs.title}</h5>
-                              <span className="text-[10px] text-[#1C3322] font-serif font-bold">₦{cs.price.toLocaleString()}</span>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() =>
-                              addItem({
-                                variantId: cs.variantId,
-                                productId: cs.productId,
-                                sku: cs.id,
-                                name: cs.name,
-                                title: cs.title,
-                                price: cs.price,
-                                imageUrl: cs.imageUrl,
-                                stock: cs.stock,
-                              })
-                            }
-                            className="px-3 py-1.5 rounded-[0.375rem] bg-[#1C3322] text-[#FAF8F5] text-[10px] uppercase font-bold tracking-wider hover:bg-[#C9A227] hover:text-[#161A17] transition-colors cursor-pointer"
-                          >
-                            + Add
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Coupon Promo Code UX */}
-                  <form onSubmit={handleApplyCoupon} className="flex gap-2 pt-2">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        placeholder="Promo Code (e.g. SANA10)"
-                        className="w-full p-2.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs outline-none uppercase tracking-wider font-semibold focus:border-[#1C3322]"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="px-4 py-2.5 bg-[#1C3322] text-[#FAF8F5] text-xs font-semibold uppercase tracking-wider rounded-[0.5rem] hover:bg-[#C9A227] hover:text-[#161A17] transition-colors cursor-pointer"
-                    >
-                      Apply
-                    </button>
-                  </form>
-                  {couponSuccess && <p className="text-[10px] text-green-600 font-bold">{couponSuccess}</p>}
-                  {couponError && <p className="text-[10px] text-red-500 font-bold">{couponError}</p>}
                 </>
               )}
             </div>
@@ -381,29 +226,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {items.length > 0 && (
               <div className="p-6 border-t border-[#E2E6E3] bg-[#F3EFE8]/70 glass-alabaster space-y-4">
                 <div className="space-y-1 text-xs font-sans">
-                  <div className="flex justify-between text-[#676E6A]">
-                    <span>Subtotal</span>
-                    <span>₦{rawTotalAmount.toLocaleString()}</span>
+                  <div className="flex justify-between items-baseline pt-2">
+                    <span className="text-xs uppercase font-bold tracking-[0.18em] text-[#161A17]">Subtotal</span>
+                    <span className="font-serif text-2xl font-bold text-[#1C3322]">₦{totalAmount.toLocaleString()}</span>
                   </div>
-
-                  {appliedDiscount > 0 && (
-                    <div className="flex justify-between text-green-700 font-semibold">
-                      <span>Privilege Discount (10%)</span>
-                      <span>-₦{discountAmount.toLocaleString()}</span>
-                    </div>
-                  )}
-
-                  {includeGiftWrap && (
-                    <div className="flex justify-between text-[#161A17]">
-                      <span>Linen Gift Wrap</span>
-                      <span>+₦2,500</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-baseline pt-2 border-t border-[#E2E6E3]">
-                    <span className="text-xs uppercase font-bold tracking-[0.18em] text-[#161A17]">Estimated Total</span>
-                    <span className="font-serif text-2xl font-bold text-[#1C3322]">₦{finalTotalAmount.toLocaleString()}</span>
-                  </div>
+                  <p className="text-[10px] text-[#676E6A]">Shipping and any taxes are calculated at checkout.</p>
                 </div>
 
                 <Link href="/checkout" onClick={onClose} className="block w-full">
