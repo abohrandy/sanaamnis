@@ -27,10 +27,10 @@ const SLIDE_DURATION = 7000;
 const HERO_SLIDES: HeroSlide[] = [
   {
     id: "range",
-    eyebrow: "Nature's Best",
+    eyebrow: "Made In Nigeria",
     title: "One coconut, a dozen ways",
     description:
-      "Coconut water, milk, oil, flour and flakes — pressed, dried and bottled in Nigeria from coconuts grown along the Lagos coastal belt.",
+      "Coconut products made in Nigeria, from home-grown coconuts — water, milk, oil, flour and flakes, pressed, dried and bottled from coconuts grown along the Lagos coastal belt.",
     ctaText: "Shop the range",
     ctaLink: "/shop",
     secondaryCtaText: "Our story",
@@ -54,9 +54,9 @@ const HERO_SLIDES: HeroSlide[] = [
   {
     id: "oil",
     eyebrow: "Cold-Pressed Coconut Oil",
-    title: "Pressed below body temperature",
+    title: "Made without heat",
     description:
-      "Extracted on a temperature-controlled press held under 37°C, so nothing is bleached, deodorised or cooked away.",
+      "Extracted through a natural fermentation process, so nothing is bleached, deodorised or cooked away.",
     ctaText: "Shop coconut oil",
     ctaLink: "/products/extra-virgin-coconut-oil",
     secondaryCtaText: "How we press",

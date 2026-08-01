@@ -11,7 +11,7 @@ import { Sprout, Thermometer, PackageCheck, ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Sana Amnis buys coconuts direct from smallholder farms in Lagos and Ogun State and presses them into oil, water, milk, flour and more.",
+    "Sana Amnis coconut products are made in Nigeria from home-grown coconuts, bought directly from smallholder farms in Lagos and Ogun State.",
   alternates: { canonical: "/about" },
 };
 
@@ -28,8 +28,8 @@ const PRINCIPLES = [
   },
   {
     icon: Thermometer,
-    title: "Pressed without heat",
-    body: "Our cold-pressed oil is extracted below 37°C on a temperature-controlled press — no solvents, no hexane, no bleaching.",
+    title: "Made without heat",
+    body: "Our coconut oil is extracted through a natural fermentation process — no added heat, no solvents, no bleaching.",
   },
   {
     icon: PackageCheck,
@@ -62,10 +62,10 @@ export default function AboutPage() {
                 Why we started
               </h2>
               <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
-                Most coconut products sold in Nigeria pass through several hands before
-                they reach a shelf, and the coconut itself is usually pressed for one
-                thing — oil, or water, or flour — with the rest discarded or sold on
-                separately.
+                Every Sana Amnis product is made in Nigeria, from home-grown coconuts.
+                Most coconut products sold here pass through several hands before they
+                reach a shelf, and the coconut itself is usually pressed for one thing —
+                oil, or water, or flour — with the rest discarded or sold on separately.
               </p>
               <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
                 We buy coconuts directly from farming families along the coastal belt

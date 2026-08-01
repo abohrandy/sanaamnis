@@ -30,7 +30,7 @@ export interface ProductDetailClientProps {
 const FAQS = [
   {
     q: "How is Sana Amnis coconut oil different from what I find in the supermarket?",
-    a: "Most commercial coconut oil is refined, bleached and deodorised at temperatures above 200°C, which strips the natural polyphenols and aroma. Our cold-pressed bottle is extracted on a temperature-controlled hydraulic press held below 37°C, and is never refined or bleached. Our hot-pressed bottle is traditionally extracted for a fuller flavour and a higher smoke point.",
+    a: "Most commercial coconut oil is refined, bleached and deodorised at temperatures above 200°C, which strips the natural polyphenols and aroma. Our cold-pressed bottle is extracted through a natural fermentation process, with no added heat, and is never refined or bleached. Our hot-pressed bottle is traditionally extracted for a fuller flavour and a higher smoke point.",
   },
   {
     q: "How should I store it, and how long does it keep?",

@@ -70,8 +70,8 @@ const PROCESS_STEPS = [
   },
   {
     icon: Thermometer,
-    title: "Pressed without heat",
-    body: "Our cold-pressed oil is extracted on a temperature-controlled hydraulic press held below 37°C. No solvents, no hexane, no bleaching.",
+    title: "Made without heat",
+    body: "Our coconut oil is extracted through a natural fermentation process — no added heat, no solvents, no bleaching.",
   },
   {
     icon: PackageCheck,

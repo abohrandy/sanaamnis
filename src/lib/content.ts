@@ -173,7 +173,7 @@ export const ARTICLES: Article[] = [
       {
         heading: "Cold-pressed",
         paragraphs: [
-          "Our cold-pressed oil is extracted on a temperature-controlled hydraulic press held below 37°C. Nothing is refined, bleached or deodorised afterwards, which is why it still smells and tastes distinctly of coconut.",
+          "Our cold-pressed oil is extracted through a natural fermentation process, with no added heat. Nothing is refined, bleached or deodorised afterwards, which is why it still smells and tastes distinctly of coconut.",
           "That aroma is the point, and also the limitation. It carries into whatever you cook, and it has a lower smoke point than the hot-pressed bottle. Use it where you want to taste it: baking, low and slow cooking, stirring into coffee or porridge, and on skin and hair.",
         ],
       },
@@ -305,7 +305,7 @@ export const FAQS: Faq[] = [
   {
     question: "What is the difference between your cold-pressed and hot-pressed coconut oil?",
     answer:
-      "Cold-pressed is extracted on a temperature-controlled press held below 37°C, so nothing is refined, bleached or deodorised — it keeps a stronger coconut aroma and a lower smoke point, which suits skin, hair and baking. Hot-pressed uses heat for a higher yield, giving a milder flavour and a higher smoke point, which suits everyday frying and cooking.",
+      "Cold-pressed is extracted through a natural fermentation process, with no added heat, so nothing is refined, bleached or deodorised — it keeps a stronger coconut aroma and a lower smoke point, which suits skin, hair and baking. Hot-pressed uses heat for a higher yield, giving a milder flavour and a higher smoke point, which suits everyday frying and cooking.",
     category: "products",
   },
   {

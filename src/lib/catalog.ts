@@ -177,7 +177,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Cold-Pressed Coconut Oil",
     tagline: "Pressed below body temperature and fortified with vitamin A.",
     description:
-      "Extra virgin coconut oil extracted from fresh coconut meat using a temperature-controlled hydraulic press held below 37°C, so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
+      "Extra virgin coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
     categorySlug: "oils",
     images: ["/products/coconut-oil-cold-pressed.jpg"],
     badge: "COLD PRESSED",
