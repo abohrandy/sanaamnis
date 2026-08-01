@@ -14,7 +14,7 @@ import { Pool } from "pg";
 import { eq, inArray } from "drizzle-orm";
 import * as schema from "./schema";
 import { CATALOG, CATEGORIES } from "../lib/catalog";
-import { ARTICLES, RECIPES, FAQS } from "../lib/content";
+import { ARTICLES, RECIPES, FAQS, DISTRIBUTORS } from "../lib/content";
 import { deterministicId } from "../../scripts/deterministic-id.mjs";
 
 const ADMIN_EMAILS = (process.env.SEED_ADMIN_EMAILS || "abohrandy@gmail.com,me@randyaboh.com")
@@ -242,6 +242,25 @@ async function main() {
         });
     }
 
+    console.log(`[seed] ${DISTRIBUTORS.length} distributor/pickup locations`);
+    for (const [index, entry] of DISTRIBUTORS.entries()) {
+      const values = {
+        region: entry.region,
+        slug: entry.slug,
+        areasCovered: entry.areasCovered ?? null,
+        contactName: entry.contactName ?? null,
+        phone: entry.phone ?? null,
+        whatsapp: entry.whatsapp ?? null,
+        address: entry.address ?? null,
+        notes: entry.notes ?? null,
+        sortOrder: index,
+      };
+      await db
+        .insert(schema.distributors)
+        .values({ id: deterministicId("distributor", entry.slug), ...values })
+        .onConflictDoUpdate({ target: schema.distributors.id, set: values });
+    }
+
     // --- Store settings ------------------------------------------------------
     console.log("[seed] settings and coupons");
     await db
@@ -278,7 +297,7 @@ async function main() {
 
     const variantCount = CATALOG.reduce((n, p) => n + p.variants.length, 0);
     console.log(
-      `[seed] done — ${CATALOG.length} products, ${variantCount} variants, ${ARTICLES.length} articles, ${RECIPES.length} recipes, ${FAQS.length} FAQs`
+      `[seed] done — ${CATALOG.length} products, ${variantCount} variants, ${ARTICLES.length} articles, ${RECIPES.length} recipes, ${FAQS.length} FAQs, ${DISTRIBUTORS.length} distributors`
     );
   } catch (error) {
     console.error("[seed] failed:", error);

@@ -350,6 +350,67 @@ export function getFaqs(): Faq[] {
   return FAQS;
 }
 
+export interface Distributor {
+  slug: string;
+  region: string;
+  /** e.g. "Apo, Garki, Guzape, Gudu, Durumi" — set when a region covers several named areas. */
+  areasCovered?: string;
+  contactName?: string;
+  phone?: string;
+  whatsapp?: string;
+  address?: string;
+  notes?: string;
+}
+
+// Pickup/distributor network as supplied directly by the client. Kept as
+// separate entries per region/contact rather than merged, since each has its
+// own contact person and, in most cases, its own physical pickup address.
+export const DISTRIBUTORS: Distributor[] = [
+  {
+    slug: "lagos-mainland",
+    region: "Lagos Mainland",
+    address: "10 Olarenwaju Close, Heritage Estate, Egbeda",
+    phone: "08026470045",
+  },
+  {
+    slug: "lagos-island",
+    region: "Lagos Island, Lekki, Ajah & environs",
+    address: "No 11 Chief Akeem Shobande Street, Thomas Estate, Ajah, Lagos",
+    phone: "+234 812 407 9806, 0813 578 0652",
+  },
+  {
+    slug: "south-east-south-south",
+    region: "South East & South South",
+    areasCovered: "Benin, Imo, Onitsha, Aba, Port Harcourt, Enugu and environs",
+    address: "6c Orianwo Street, Ogunabali Road, Port Harcourt",
+    whatsapp: "08180848530",
+  },
+  {
+    slug: "uyo",
+    region: "Uyo and environs",
+    contactName: "Mrs Hope",
+    phone: "08035311614",
+  },
+  {
+    slug: "abuja-pickup",
+    region: "Abuja pickup locations",
+    areasCovered: "Apo, Garki, Guzape, Gudu, Durumi",
+    contactName: "Mercy Jayeola",
+    phone: "08158495170",
+    address: "House 75, Marigold Close, Dogongada Village, behind Efab Estate, Lokogoma, Abuja",
+  },
+  {
+    slug: "abuja-office",
+    region: "Abuja (office address)",
+    address: "Plot 506, Cadastral Zone, Dakibiyu — behind Christ Embassy, Dakibiyu, Jabi, Abuja",
+    notes: "Search “Community Mart” or “Lui Latte” on Google Maps.",
+  },
+];
+
+export function getDistributors(): Distributor[] {
+  return DISTRIBUTORS;
+}
+
 export function getRecipe(slug: string): Recipe | undefined {
   return RECIPES.find((r) => r.slug === slug);
 }

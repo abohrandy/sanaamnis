@@ -357,6 +357,21 @@ export const faqs = pgTable("faqs", {
   sortOrder: integer("sort_order").default(0).notNull(),
 });
 
+export const distributors = pgTable("distributors", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  region: text("region").notNull(), // e.g. "Lagos Mainland"
+  areasCovered: text("areas_covered"), // e.g. "Apo, Garki, Guzape, Gudu, Durumi"
+  contactName: text("contact_name"),
+  phone: text("phone"),
+  whatsapp: text("whatsapp"),
+  address: text("address"),
+  notes: text("notes"), // e.g. "Search Community Mart on Maps"
+  sortOrder: integer("sort_order").default(0).notNull(),
+  isPublished: boolean("is_published").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const newsletterSubscribers = pgTable("newsletter_subscribers", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),

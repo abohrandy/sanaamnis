@@ -46,6 +46,19 @@ interface AdminFaq {
   sortOrder: number;
 }
 
+interface AdminDistributor {
+  id: string;
+  slug: string;
+  region: string;
+  areasCovered: string | null;
+  contactName: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  address: string | null;
+  notes: string | null;
+  isPublished: boolean;
+}
+
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { ...init, headers: { "Content-Type": "application/json", ...init?.headers } });
   const data = await res.json().catch(() => ({}));
@@ -239,6 +252,83 @@ export default function AdminContentPage() {
     onError: (err: Error) => toast.error("Could not remove FAQ", err.message),
   });
 
+  // ------------------------------------------------------------ Distributors
+  const distributorsQuery = useQuery({
+    queryKey: ["admin", "distributors"],
+    queryFn: () => api<{ distributors: AdminDistributor[] }>("/api/admin/distributors"),
+  });
+  const distributorList = distributorsQuery.data?.distributors ?? [];
+
+  const [distModal, setDistModal] = useState<"add" | "edit" | null>(null);
+  const [editingDist, setEditingDist] = useState<AdminDistributor | null>(null);
+  const [distRegion, setDistRegion] = useState("");
+  const [distSlug, setDistSlug] = useState("");
+  const [distAreas, setDistAreas] = useState("");
+  const [distContact, setDistContact] = useState("");
+  const [distPhone, setDistPhone] = useState("");
+  const [distWhatsapp, setDistWhatsapp] = useState("");
+  const [distAddress, setDistAddress] = useState("");
+  const [distNotes, setDistNotes] = useState("");
+  const [distPublished, setDistPublished] = useState(true);
+
+  const resetDistForm = () => {
+    setDistRegion("");
+    setDistSlug("");
+    setDistAreas("");
+    setDistContact("");
+    setDistPhone("");
+    setDistWhatsapp("");
+    setDistAddress("");
+    setDistNotes("");
+    setDistPublished(true);
+  };
+
+  const saveDist = useMutation({
+    mutationFn: () => {
+      const body = {
+        region: distRegion,
+        areasCovered: distAreas || undefined,
+        contactName: distContact || undefined,
+        phone: distPhone || undefined,
+        whatsapp: distWhatsapp || undefined,
+        address: distAddress || undefined,
+        notes: distNotes || undefined,
+        isPublished: distPublished,
+      };
+      return editingDist
+        ? api(`/api/admin/distributors/${editingDist.id}`, { method: "PATCH", body: JSON.stringify(body) })
+        : api("/api/admin/distributors", { method: "POST", body: JSON.stringify({ ...body, slug: distSlug || slugify(distRegion) }) });
+    },
+    onSuccess: () => {
+      toast.success(editingDist ? "Location updated" : "Location added");
+      invalidate("distributors");
+      setDistModal(null);
+    },
+    onError: (err: Error) => toast.error("Could not save location", err.message),
+  });
+
+  const deleteDist = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/distributors/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Location removed");
+      invalidate("distributors");
+    },
+    onError: (err: Error) => toast.error("Could not remove location", err.message),
+  });
+
+  const openEditDist = (d: AdminDistributor) => {
+    setEditingDist(d);
+    setDistRegion(d.region);
+    setDistAreas(d.areasCovered ?? "");
+    setDistContact(d.contactName ?? "");
+    setDistPhone(d.phone ?? "");
+    setDistWhatsapp(d.whatsapp ?? "");
+    setDistAddress(d.address ?? "");
+    setDistNotes(d.notes ?? "");
+    setDistPublished(d.isPublished);
+    setDistModal("edit");
+  };
+
   // ------------------------------------------------------------------ Tables
   const postColumns = [
     {
@@ -307,6 +397,33 @@ export default function AdminContentPage() {
     },
   ];
 
+  const distributorColumns = [
+    {
+      header: "Region",
+      accessor: (item: AdminDistributor) => (
+        <button onClick={() => openEditDist(item)} className="text-left cursor-pointer">
+          <span className="font-serif text-sm font-semibold text-white block">{item.region}</span>
+          {item.contactName && <span className="text-[10px] text-neutral-400">{item.contactName}</span>}
+        </button>
+      ),
+    },
+    { header: "Phone", accessor: (item: AdminDistributor) => item.phone || item.whatsapp || "—" },
+    { header: "Status", accessor: (item: AdminDistributor) => <Badge variant={item.isPublished ? "success" : "secondary"}>{item.isPublished ? "Published" : "Hidden"}</Badge> },
+    {
+      header: "Actions",
+      accessor: (item: AdminDistributor) => (
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm" onClick={() => openEditDist(item)} className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800">
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => confirm(`Remove "${item.region}"?`) && deleteDist.mutate(item.id)} className="p-2 text-destructive hover:bg-destructive/10">
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   const tabContents = [
     {
       id: "blog",
@@ -366,6 +483,29 @@ export default function AdminContentPage() {
             </Button>
           </div>
           <Table columns={faqColumns} data={faqList} loading={faqsQuery.isLoading} />
+        </div>
+      ),
+    },
+    {
+      id: "distributors",
+      label: "Pickup Locations",
+      content: (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
+            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">Locations ({distributorList.length})</h3>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditingDist(null);
+                resetDistForm();
+                setDistModal("add");
+              }}
+              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
+            >
+              <Plus className="w-4 h-4" /> Add Location
+            </Button>
+          </div>
+          <Table columns={distributorColumns} data={distributorList} loading={distributorsQuery.isLoading} />
         </div>
       ),
     },
@@ -519,6 +659,50 @@ export default function AdminContentPage() {
               <Button type="submit" loading={createFaq.isPending} className="w-full rounded-none mt-2">
                 Add FAQ
               </Button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Distributor Modal */}
+      {distModal && (
+        <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
+          <div className="max-w-lg w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-4 relative my-auto">
+            <button onClick={() => setDistModal(null)} className="absolute top-5 right-5 text-neutral-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="font-serif text-xl font-semibold text-white border-b border-neutral-800 pb-4">
+              {editingDist ? "Edit Location" : "New Pickup Location"}
+            </h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                saveDist.mutate();
+              }}
+              className="space-y-4"
+            >
+              <Input label="Region / title" required value={distRegion} onChange={(e) => setDistRegion(e.target.value)} placeholder="e.g. Lagos Mainland" />
+              {!editingDist && <Input label="Slug (optional)" value={distSlug} onChange={(e) => setDistSlug(e.target.value)} placeholder={slugify(distRegion)} />}
+              <Input label="Areas covered (optional)" value={distAreas} onChange={(e) => setDistAreas(e.target.value)} placeholder="e.g. Apo, Garki, Guzape" />
+              <Input label="Address (optional)" value={distAddress} onChange={(e) => setDistAddress(e.target.value)} />
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Contact name (optional)" value={distContact} onChange={(e) => setDistContact(e.target.value)} />
+                <Input label="Phone (optional)" value={distPhone} onChange={(e) => setDistPhone(e.target.value)} />
+              </div>
+              <Input label="WhatsApp number (optional)" value={distWhatsapp} onChange={(e) => setDistWhatsapp(e.target.value)} />
+              <Input label="Notes (optional)" value={distNotes} onChange={(e) => setDistNotes(e.target.value)} placeholder="e.g. Search “Community Mart” on Maps" />
+              <label className="flex items-center gap-2 text-xs text-neutral-300">
+                <input type="checkbox" checked={distPublished} onChange={(e) => setDistPublished(e.target.checked)} />
+                Published (unchecked hides it from the site)
+              </label>
+              <div className="pt-2 flex gap-3">
+                <Button type="button" variant="outline" onClick={() => setDistModal(null)} className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white">
+                  Cancel
+                </Button>
+                <Button type="submit" loading={saveDist.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
+                  {editingDist ? "Save Changes" : "Add Location"}
+                </Button>
+              </div>
             </form>
           </div>
         </div>
