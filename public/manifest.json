@@ -1,0 +1,16 @@
+{
+  "name": "Sana Amnis",
+  "short_name": "Sana Amnis",
+  "description": "Coconut products made in Nigeria from home-grown coconuts — water, milk, cold-pressed oils, flour and flakes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#1C3322",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48 256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}

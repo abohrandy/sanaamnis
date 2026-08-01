@@ -168,7 +168,7 @@ export default async function Home() {
                     >
                       <Image
                         src={image}
-                        alt=""
+                        alt={category.name}
                         fill
                         sizes="(max-width: 768px) 50vw, 25vw"
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"

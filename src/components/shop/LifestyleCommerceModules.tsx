@@ -134,7 +134,7 @@ export function LifestyleCommerceModules({ products }: { products: CatalogProduc
           <div className="lg:col-span-5 relative aspect-square lg:aspect-auto overflow-hidden bg-[#242A26]">
             <Image
               src={active.heroImage}
-              alt=""
+              alt={CATEGORIES[active.categorySlug].name}
               fill
               sizes="(max-width: 1024px) 100vw, 42vw"
               className="object-cover"

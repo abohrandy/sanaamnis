@@ -48,7 +48,7 @@ export default async function RecipesPage() {
               <div className="relative aspect-[4/3] bg-[#F3EFE8] overflow-hidden">
                 <Image
                   src={recipe.image}
-                  alt=""
+                  alt={recipe.title}
                   fill
                   priority={i < 2}
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"

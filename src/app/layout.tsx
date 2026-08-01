@@ -32,6 +32,7 @@ const SOCIAL_IMAGE = "/products/range-full-dark.jpg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  manifest: "/manifest.json",
   title: {
     default: "Sana Amnis | Nigerian Coconut Water, Milk & Cold-Pressed Oil",
     template: "%s | Sana Amnis",
@@ -79,6 +80,23 @@ export const metadata: Metadata = {
   },
 };
 
+const ORGANIZATION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Sana Amnis",
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo_long.png`,
+  description: SITE_DESCRIPTION,
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      email: "concierge@sanaamnis.com",
+      areaServed: "NG",
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -87,6 +105,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${outfit.variable} ${playfair.variable} antialiased bg-[#FAF8F5] text-[#161A17] min-h-screen flex flex-col selection:bg-[#C9A227] selection:text-[#161A17]`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSON_LD) }}
+        />
         <Providers>
           <PageTransition>
             {children}

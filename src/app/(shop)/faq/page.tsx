@@ -19,9 +19,26 @@ export default async function FAQPage() {
   const faqs = await getFaqs();
   const items = faqs.map((f) => ({ question: f.question, segments: parseFaqAnswer(f.answer) }));
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: f.answer.replace(/\[([^\]]+)\]\([^)]+\)/, "$1"),
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans">
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
 
       <main className="flex-grow w-full max-w-[820px] mx-auto px-4 md:px-8 py-12 md:py-16 space-y-10">
         <Breadcrumbs items={[{ label: "FAQ" }]} />

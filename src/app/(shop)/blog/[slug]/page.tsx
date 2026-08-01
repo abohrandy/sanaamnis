@@ -102,7 +102,7 @@ export default async function ArticlePage({
           <div className="relative aspect-[16/9] rounded-[1.5rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3] shadow-ambient-md">
             <Image
               src={article.image}
-              alt=""
+              alt={article.title}
               fill
               priority
               sizes="840px"
@@ -152,7 +152,7 @@ export default async function ArticlePage({
                     <div className="relative aspect-[16/10] rounded-[1.25rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3]">
                       <Image
                         src={post.image}
-                        alt=""
+                        alt={post.title}
                         fill
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-105"

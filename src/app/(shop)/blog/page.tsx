@@ -52,7 +52,7 @@ export default async function BlogPage() {
             >
               <Image
                 src={lead.image}
-                alt=""
+                alt={lead.title}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 58vw"
@@ -97,7 +97,7 @@ export default async function BlogPage() {
               <div className="relative aspect-[16/10] rounded-[1.25rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3]">
                 <Image
                   src={post.image}
-                  alt=""
+                  alt={post.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"

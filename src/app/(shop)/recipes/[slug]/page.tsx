@@ -110,7 +110,7 @@ export default async function RecipeDetailPage({
         <div className="relative aspect-[16/9] rounded-[1.5rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3] shadow-ambient-md">
           <Image
             src={recipe.image}
-            alt=""
+            alt={recipe.title}
             fill
             priority
             sizes="(max-width: 1100px) 100vw, 1100px"

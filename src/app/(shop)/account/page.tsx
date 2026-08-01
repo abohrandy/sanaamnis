@@ -1,7 +1,13 @@
 import React from "react";
+import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AccountClient } from "@/components/account/AccountClient";
+
+export const metadata: Metadata = {
+  title: "Your account",
+  robots: { index: false, follow: true },
+};
 
 /**
  * Statically rendered on purpose. Everything on this page is per-customer and comes
