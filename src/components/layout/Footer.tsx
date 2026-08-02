@@ -118,7 +118,7 @@ export default function Footer() {
           <address className="not-italic space-y-2.5 text-xs text-[#FAF8F5]/70 leading-relaxed">
             <p className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
-              Victoria Island, Lagos, Nigeria
+              Plot 506, Cadastral Zone, Dakibiyu, Jabi, Abuja
             </p>
             <p className="flex items-start gap-2">
               <Mail className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />

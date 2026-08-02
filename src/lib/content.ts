@@ -376,7 +376,8 @@ export const DISTRIBUTORS: Distributor[] = [
     slug: "lagos-island",
     region: "Lagos Island, Lekki, Ajah & environs",
     address: "No 11 Chief Akeem Shobande Street, Thomas Estate, Ajah, Lagos",
-    phone: "+234 812 407 9806, 0813 578 0652",
+    phone: "0813 578 0652",
+    whatsapp: "+234 812 407 9806",
   },
   {
     slug: "south-east-south-south",
@@ -398,12 +399,6 @@ export const DISTRIBUTORS: Distributor[] = [
     contactName: "Mercy Jayeola",
     phone: "08158495170",
     address: "House 75, Marigold Close, Dogongada Village, behind Efab Estate, Lokogoma, Abuja",
-  },
-  {
-    slug: "abuja-office",
-    region: "Abuja (office address)",
-    address: "Plot 506, Cadastral Zone, Dakibiyu — behind Christ Embassy, Dakibiyu, Jabi, Abuja",
-    notes: "Search “Community Mart” or “Lui Latte” on Google Maps.",
   },
 ];
 

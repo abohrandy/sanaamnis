@@ -6,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, MapPin, Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { Send, MapPin, Mail, CheckCircle2, Loader2, Phone } from "lucide-react";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -85,9 +85,19 @@ export default function ContactPage() {
                 <MapPin className="w-5 h-5 text-[#C9A227] shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
                   <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">
-                    Based in
+                    Our office
                   </h2>
-                  <p className="text-sm text-[#676E6A]">Victoria Island, Lagos, Nigeria</p>
+                  <p className="text-sm text-[#676E6A] leading-relaxed">
+                    Plot 506, Cadastral Zone, Dakibiyu — behind Christ Embassy, Dakibiyu,
+                    Jabi, Abuja
+                  </p>
+                  <p className="text-sm text-[#676E6A] mt-1">Closest bustop is Jabi mosholashi</p>
+                  <a
+                    href="tel:+2349137358352"
+                    className="inline-flex items-center gap-1.5 text-sm text-[#1C3322] font-semibold hover:text-[#C9A227] transition-colors mt-1"
+                  >
+                    <Phone className="w-3.5 h-3.5" aria-hidden="true" /> Call +234 913 735 8352 for directions
+                  </a>
                 </div>
               </div>
             </div>

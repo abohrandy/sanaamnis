@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
@@ -33,6 +33,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<MegaMenuId | null>(null);
+  const [isContactMenuOpen, setIsContactMenuOpen] = useState(false);
 
   const { isScrolled } = useScrollPosition();
 
@@ -46,6 +47,7 @@ export default function Header() {
       setIsMobileMenuOpen(false);
       setIsAccountOpen(false);
       setActiveMegaMenu(null);
+      setIsContactMenuOpen(false);
     },
   });
 
@@ -57,19 +59,15 @@ export default function Header() {
 
   return (
     <>
-      {/* Editorial Top Announcement Bar */}
-      <div className="bg-[#1C3322] text-[#FAF8F5] text-[10px] font-sans font-semibold uppercase tracking-[0.25em] py-2.5 text-center border-b border-gold-hairline px-4 flex items-center justify-center gap-2 z-50 relative">
-        <span>Free delivery on orders over ₦50,000</span>
-        <span className="hidden md:inline text-[#C9A227]">|</span>
-        <span className="hidden md:inline text-[#C9A227]">Nationwide across Nigeria</span>
-      </div>
-
       {/* Main Adaptive Header Shell (Transparent -> Frosted Glass on Scroll) */}
       <header
         // The mega menu opens on hover but had no matching leave handler, so moving
         // the pointer sideways off the nav left it stuck open until you pressed
         // Escape. Closing on leaving the whole header covers every exit path.
-        onMouseLeave={() => setActiveMegaMenu(null)}
+        onMouseLeave={() => {
+          setActiveMegaMenu(null);
+          setIsContactMenuOpen(false);
+        }}
         className={cn(
           "sticky top-0 z-40 w-full transition-all duration-500 ease-out",
           isScrolled
@@ -132,6 +130,54 @@ export default function Header() {
             <Link href="/about" className="hover:text-[#C9A227] transition-colors py-2">
               About
             </Link>
+
+            <div
+              className="relative py-2"
+              onMouseEnter={() => setIsContactMenuOpen(true)}
+              onFocusCapture={() => setIsContactMenuOpen(true)}
+            >
+              <Link
+                href="/contact"
+                className="hover:text-[#C9A227] transition-colors inline-flex items-center gap-1"
+                aria-expanded={isContactMenuOpen}
+                aria-haspopup="true"
+              >
+                Contact Us
+                <ChevronDown
+                  className={cn(
+                    "w-3 h-3 text-[#C9A227] transition-transform duration-300",
+                    isContactMenuOpen && "rotate-180"
+                  )}
+                />
+              </Link>
+
+              <AnimatePresence>
+                {isContactMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute left-0 top-full mt-1 w-56 rounded-[1rem] border border-[#E2E6E3] bg-[#FAF8F5] glass-alabaster shadow-ambient-md p-2 z-50 normal-case tracking-normal font-normal"
+                  >
+                    <Link
+                      href="/contact"
+                      onClick={() => setIsContactMenuOpen(false)}
+                      className="block p-3 rounded-[0.5rem] text-[11px] font-bold uppercase tracking-[0.16em] text-[#161A17] hover:bg-[#F3EFE8] hover:text-[#1C3322] transition-colors"
+                    >
+                      Contact Us
+                    </Link>
+                    <Link
+                      href="/distributors"
+                      onClick={() => setIsContactMenuOpen(false)}
+                      className="block p-3 rounded-[0.5rem] text-[11px] font-bold uppercase tracking-[0.16em] text-[#161A17] hover:bg-[#F3EFE8] hover:text-[#1C3322] transition-colors"
+                    >
+                      Distributors
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           {/* Header Action Controls */}

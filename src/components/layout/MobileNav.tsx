@@ -196,6 +196,38 @@ export function MobileNav({
                   <Leaf className="w-4 h-4 text-[#1C3322]" /> Our Ethos
                 </span>
               </Link>
+
+              {/* Contact Accordion */}
+              <div className="border-b border-[#E2E6E3]/60 py-3">
+                <button
+                  onClick={() => toggleSection("contact")}
+                  className="w-full flex items-center justify-between text-left hover:text-[#1C3322] transition-colors"
+                >
+                  <span>Contact Us</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      expandedSection === "contact" ? "rotate-180 text-[#C9A227]" : ""
+                    }`}
+                  />
+                </button>
+                <AnimatePresence>
+                  {expandedSection === "contact" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 pt-3 space-y-2 text-xs text-[#676E6A] font-normal lowercase"
+                    >
+                      <Link href="/contact" onClick={onClose} className="block py-1 capitalize hover:text-[#1C3322]">
+                        Contact us
+                      </Link>
+                      <Link href="/distributors" onClick={onClose} className="block py-1 capitalize hover:text-[#1C3322]">
+                        Distributors
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* Bottom Account & Footer */}
