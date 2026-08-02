@@ -121,8 +121,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "A full-cream coconut milk pressed from the meat of mature coconuts and bottled without thickeners or emulsifiers. Pours smooth and stays rich through cooking — built for stews, curries, smoothies and coffee alike.",
     categorySlug: "hydration",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
+    images: ["/products/coconut-milk-full-cream.jpg"],
     variants: [
       {
         id: "ee6d9cb0-a0f1-50c2-af4f-1b6c1aa0bef2",
@@ -179,7 +178,13 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Extra virgin coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
     categorySlug: "oils",
-    images: ["/products/coconut-oil-cold-pressed.jpg"],
+    images: [
+      "/products/coconut-oil-cold-pressed.jpg",
+      "/products/coconut-oil-cold-pressed-100ml.jpg",
+      "/products/coconut-oil-cold-pressed-200ml.jpg",
+      "/products/coconut-oil-cold-pressed-500ml.jpg",
+      "/products/coconut-oil-cold-pressed-1l.jpg",
+    ],
     badge: "COLD PRESSED",
     variants: [
       {
@@ -188,6 +193,7 @@ export const CATALOG: CatalogProduct[] = [
         name: "100ml Bottle",
         price: 3000,
         stock: 80,
+        imageUrl: "/products/coconut-oil-cold-pressed-100ml.jpg",
       },
       {
         id: "0cc58ae1-3e61-5aa7-a8b3-c7aaaaf6f4fe",
@@ -195,6 +201,7 @@ export const CATALOG: CatalogProduct[] = [
         name: "200ml Bottle",
         price: 6000,
         stock: 70,
+        imageUrl: "/products/coconut-oil-cold-pressed-200ml.jpg",
       },
       {
         id: "0ee7a821-4734-5314-8eb3-505605e26aa5",
@@ -202,6 +209,7 @@ export const CATALOG: CatalogProduct[] = [
         name: "500ml Bottle",
         price: 13000,
         stock: 50,
+        imageUrl: "/products/coconut-oil-cold-pressed-500ml.jpg",
       },
       {
         id: "aa60f9df-efd5-584d-aa1d-d2ef20e4f322",
@@ -209,6 +217,7 @@ export const CATALOG: CatalogProduct[] = [
         name: "1 Litre Bottle",
         price: 25000,
         stock: 30,
+        imageUrl: "/products/coconut-oil-cold-pressed-1l.jpg",
       },
     ],
   },
@@ -220,7 +229,10 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Traditionally hot-pressed coconut oil with the fuller, nuttier flavour that comes from heat extraction. A higher smoke point than our cold-pressed bottle makes it the better choice for frying, roasting and everyday Nigerian cooking. Fortified with vitamin A.",
     categorySlug: "oils",
-    images: ["/products/coconut-oil-hot-pressed.jpg"],
+    images: [
+      "/products/coconut-oil-hot-pressed.jpg",
+      "/products/coconut-oil-hot-pressed-trio.jpg",
+    ],
     variants: [
       {
         id: "9545e5d0-c1ac-5441-a59d-155e360669b2",
@@ -239,8 +251,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "A rich blend of carrot infused into our own coconut oil, carrying the beta-carotene and natural vitamin A that carrots are prized for. Traditionally used to even skin tone and add warmth and shine to hair.",
     categorySlug: "body",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
+    images: ["/products/carrot-oil.jpg", "/products/carrot-oil-lifestyle.jpg"],
     variants: [
       {
         id: "56b330c6-eff3-5f63-ad43-919d1358de2e",
@@ -266,8 +277,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "A blend of avocado and coconut oils. Avocado brings heavier, slower-absorbing lipids and vitamin E; coconut brings lauric acid and a lighter finish. Together they make a conditioning oil that suits dry skin and thick or coily hair.",
     categorySlug: "body",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
+    images: ["/products/avococo-oil.jpg", "/products/avococo-oil-trio.jpg"],
     variants: [
       {
         id: "f1eeee32-20fe-54bd-b758-424ed7cd2e62",
@@ -366,8 +376,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Coconut meat shredded fine and dried, with no sugar and no sulphites. A staple for cakes, chin chin, coconut rice and confectionery, and a straight substitute anywhere a recipe calls for desiccated coconut.",
     categorySlug: "culinary",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
+    images: ["/products/desiccated-coconut.jpg", "/products/desiccated-coconut-styled.jpg"],
     variants: [
       {
         id: "a8a768da-08b0-502c-b3ff-82d2f04d324c",
@@ -386,8 +395,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Made from coconut, mixed and moulded exactly as you would poundo yam, and eaten with the same soups. Far lower in carbohydrate than yam or cassava flour, which makes it a genuine option for anyone managing blood sugar without giving up swallow.",
     categorySlug: "culinary",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
+    images: ["/products/coconut-poundo.jpg", "/products/coconut-poundo-pair.jpg"],
     variants: [
       {
         id: "001b416d-98cc-567f-abae-53fef4c8330c",
@@ -406,8 +414,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Coconut meat milled to a fine, soft flour. Naturally gluten-free and very high in fibre, so it drinks up considerably more liquid than wheat flour — worth accounting for when you adapt a recipe. Suits keto and paleo baking.",
     categorySlug: "culinary",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
+    images: ["/products/coconut-flour.jpg", "/products/coconut-flour-single.jpg"],
     variants: [
       {
         id: "069d43aa-fbd7-549e-ba77-2fe5745d87cf",
