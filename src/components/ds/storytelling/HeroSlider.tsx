@@ -30,7 +30,7 @@ const HERO_SLIDES: HeroSlide[] = [
     eyebrow: "Made In Nigeria",
     title: "One coconut, a dozen ways",
     description:
-      "Coconut products made in Nigeria, from home-grown coconuts — water, milk, oil, flour and flakes, pressed, dried and bottled from coconuts grown along the Lagos coastal belt.",
+      "Coconut products made in Nigeria, from home-grown coconuts — water, milk, oil, flour and flakes, extracted through a natural fermentation process. Nothing is bleached.",
     ctaText: "Shop the range",
     ctaLink: "/shop",
     secondaryCtaText: "Our story",
