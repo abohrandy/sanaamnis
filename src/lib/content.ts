@@ -7,8 +7,8 @@
  *
  * Copy is deliberately practical rather than promotional. The previous version
  * claimed coconuts were "handpicked from volcanic soils" and packaged in
- * "recyclable premium glassware" — neither is true of the Lagos coastal belt or of
- * the pouches and PET bottles in the client's own photography.
+ * "recyclable premium glassware" — neither matches how the coconuts are actually
+ * sourced or the pouches and PET bottles in the client's own photography.
  *
  * Pure data, safe to import anywhere.
  */
@@ -271,7 +271,7 @@ export const ARTICLES: Article[] = [
     body: [
       {
         paragraphs: [
-          "We buy coconuts from smallholder farming families along the coastal belt of Lagos and Ogun State, rather than through the chain of intermediaries that normally sits between a Nigerian farm and a finished product.",
+          "We buy coconuts from local farming families growing organic coconut trees across Nigeria, rather than through the chain of intermediaries that normally sits between a Nigerian farm and a finished product.",
         ],
       },
       {

@@ -43,7 +43,7 @@ export default async function ShopPage() {
             categories={categories}
             bannerTitle="Every product"
             bannerSubtitle="The full range"
-            bannerDescription="Coconut water, milk and oils, plus flour, flakes and body care — all pressed and bottled from coconuts grown along the Nigerian coast."
+            bannerDescription="Coconut water, milk and oils, plus flour, flakes and body care — all pressed and bottled from organically grown coconuts sourced from local farmers across Nigeria."
           />
         </Suspense>
       </main>

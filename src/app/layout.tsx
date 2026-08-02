@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com";
 const SITE_DESCRIPTION =
-  "Coconut products made in Nigeria from home-grown coconuts — water, milk, cold-pressed oils, flour and flakes, pressed and bottled from coconuts grown along the Lagos and Ogun coast.";
+  "Coconut products made in Nigeria from home-grown coconuts — water, milk, cold-pressed oils, flour and flakes, sourced from organically grown trees tended by local farming families across Nigeria.";
 // Hosted with the site rather than hotlinked from Google Drive, which rate-limits
 // and cannot be relied on by social crawlers.
 const SOCIAL_IMAGE = "/products/range-full-dark.jpg";

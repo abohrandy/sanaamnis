@@ -44,7 +44,7 @@ export default function Footer() {
 
           <p className="text-xs leading-relaxed text-[#FAF8F5]/70 max-w-sm">
             Coconut water, milk, cold-pressed oils and kitchen staples, made in Nigeria
-            from coconuts grown along the Lagos and Ogun coast.
+            from organically grown coconuts sourced from local farmers nationwide.
           </p>
 
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] uppercase tracking-[0.18em] text-[#C9A227] pt-1">

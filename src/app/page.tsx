@@ -66,7 +66,7 @@ const PROCESS_STEPS = [
   {
     icon: Sprout,
     title: "Harvested locally",
-    body: "Coconuts are cut from groves along the Lagos and Ogun coastal belt and reach us within a day, so nothing sits waiting to be processed.",
+    body: "Coconuts come from organically grown trees, sourced from local farming families across Nigeria, and reach us within a day so nothing sits waiting to be processed.",
   },
   {
     icon: Thermometer,
@@ -221,8 +221,8 @@ export default async function Home() {
                   away.
                 </p>
                 <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
-                  We buy directly from smallholder farming families along the Lagos and
-                  Ogun coast, which keeps more of the price with the people who grow it.
+                  We buy directly from local farming families growing organic coconut
+                  trees across Nigeria, which keeps more of the price with the people who grow it.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-3">
                   <Link href="/shop">

@@ -11,20 +11,20 @@ import { Sprout, Thermometer, PackageCheck, ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Sana Amnis coconut products are made in Nigeria from home-grown coconuts, bought directly from smallholder farms in Lagos and Ogun State.",
+    "Sana Amnis coconut products are made in Nigeria from home-grown coconuts, bought directly from local farmers growing organic trees across Nigeria.",
   alternates: { canonical: "/about" },
 };
 
 // Rewritten to drop claims the rest of the site does not support — coconuts were
-// described as "handpicked from volcanic soils" (the Lagos coastal belt is not
-// volcanic) and packaging as "recyclable premium glassware" (the client's own
+// described as "handpicked from volcanic soils" (not accurate for Nigerian coconut
+// country) and packaging as "recyclable premium glassware" (the client's own
 // photography shows pouches and PET bottles). Kept to what /sustainability and
 // the product pages already state.
 const PRINCIPLES = [
   {
     icon: Sprout,
     title: "Bought direct",
-    body: "We buy from smallholder farming families along the Lagos and Ogun coast, rather than through the layers of middlemen that usually sit between a Nigerian farm and a finished product.",
+    body: "We buy from local farming families growing organic coconut trees across Nigeria, rather than through the layers of middlemen that usually sit between a Nigerian farm and a finished product.",
   },
   {
     icon: Thermometer,
@@ -68,8 +68,8 @@ export default function AboutPage() {
                 oil, or water, or flour — with the rest discarded or sold on separately.
               </p>
               <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
-                We buy coconuts directly from farming families along the coastal belt
-                of Lagos and Ogun State and process the whole fruit ourselves: water,
+                We buy coconuts directly from local farming families growing organic
+                trees across Nigeria, and process the whole fruit ourselves: water,
                 milk, oil, flour, flakes and more, all from the same batch. It means
                 more of what you pay reaches the farm, and less of the coconut goes
                 to waste.

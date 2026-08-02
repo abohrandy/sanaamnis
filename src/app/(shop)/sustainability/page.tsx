@@ -5,7 +5,7 @@ import { PolicyPage } from "@/components/layout/PolicyPage";
 export const metadata: Metadata = {
   title: "Sustainability",
   description:
-    "How Sana Amnis sources coconuts, uses the whole fruit, and works with smallholder farming families in Lagos and Ogun State.",
+    "How Sana Amnis sources coconuts, uses the whole fruit, and works with local farming families growing organic coconut trees across Nigeria.",
   alternates: { canonical: "/sustainability" },
 };
 
@@ -14,13 +14,13 @@ export default function SustainabilityPage() {
     <PolicyPage
       eyebrow="Sustainability"
       title="How we source and what we do with it"
-      intro="We buy coconuts from farms along the Nigerian coast and try to leave as little of the fruit unused as possible. This page sets out what that means in practice."
+      intro="We buy coconuts from local farms growing organic trees across Nigeria and try to leave as little of the fruit unused as possible. This page sets out what that means in practice."
       lastUpdated="July 2026"
       sections={[
         {
           heading: "Where our coconuts come from",
           body: [
-            "We buy directly from smallholder farming families along the coastal belt of Lagos and Ogun State, rather than through the layers of intermediaries that normally sit between a Nigerian farm and a finished product.",
+            "We buy directly from local farming families growing organic coconut trees across Nigeria, rather than through the layers of intermediaries that normally sit between a Nigerian farm and a finished product.",
             "Buying direct means more of what you pay reaches the people who actually grow the fruit, and it lets us know which farms our stock came from.",
           ],
         },

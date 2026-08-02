@@ -86,7 +86,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Pure Coconut Water",
     tagline: "Nature's best — bottled within hours of harvest, with no added sugar.",
     description:
-      "One hundred percent pure coconut water drawn from young green coconuts grown along the Badagry coastal belt. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
+      "One hundred percent pure coconut water drawn from young green coconuts grown by local farmers on organic trees across Nigeria. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
     categorySlug: "hydration",
     images: [
       "/products/coconut-water-range.jpg",
