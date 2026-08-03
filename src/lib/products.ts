@@ -126,11 +126,11 @@ export async function getProducts(): Promise<CatalogProduct[]> {
 export async function getProduct(slug: string): Promise<CatalogProduct | undefined> {
   try {
     const row = await db.query.products.findFirst({
-      where: (products, { eq }) => eq(products.slug, slug),
+      where: (products, { eq, and }) => and(eq(products.slug, slug), eq(products.isActive, true)),
       with: { category: true, variants: true },
     });
 
-    if (row && (row as unknown as DbProductRow).variants.length > 0) {
+    if (row && (row as unknown as DbProductRow).variants.some((v) => v.isActive)) {
       return fromDb(row as unknown as DbProductRow);
     }
   } catch (error) {
