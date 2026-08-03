@@ -183,7 +183,7 @@ export function MegaMenu({ type, onClose }: MegaMenuProps) {
             <div className="flex items-center gap-2 text-[#1C3322] dark:text-[#C9A227]">
               <BookOpen className="w-5 h-5" aria-hidden="true" />
               <span className="font-serif text-lg font-medium text-[#161A17] dark:text-[#FAF8F5]">
-                Journal
+                Blog
               </span>
             </div>
             <p className="text-xs text-[#676E6A] font-sans leading-relaxed">
@@ -195,7 +195,7 @@ export function MegaMenu({ type, onClose }: MegaMenuProps) {
               onClick={onClose}
               className="inline-flex items-center gap-2 text-xs font-sans uppercase font-bold tracking-[0.2em] text-[#1C3322] dark:text-[#C9A227]"
             >
-              Read the journal <ArrowRight className="w-3.5 h-3.5" />
+              Read the blog <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 

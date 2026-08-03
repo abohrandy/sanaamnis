@@ -24,7 +24,7 @@ const ABOUT_LINKS = [
   { href: "/about", label: "Our story" },
   { href: "/sustainability", label: "Sustainability" },
   { href: "/recipes", label: "Recipes" },
-  { href: "/blog", label: "Journal" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export default function Footer() {

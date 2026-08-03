@@ -12,7 +12,7 @@ import { getArticles } from "@/lib/blog";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Journal",
+  title: "Blog",
   description:
     "Practical guides to coconut oil, flour and water — how they behave, how to store them, and where our coconuts come from.",
   alternates: { canonical: "/blog" },
@@ -27,11 +27,11 @@ export default async function BlogPage() {
       <Header />
 
       <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-12 md:py-16 space-y-14">
-        <Breadcrumbs items={[{ label: "Journal" }]} />
+        <Breadcrumbs items={[{ label: "Blog" }]} />
 
         <header className="max-w-2xl space-y-4">
           <span className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-bold">
-            Journal
+            Blog
           </span>
           <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17] leading-[1.12]">
             Notes on what we make

@@ -23,7 +23,7 @@ type MegaMenuId = "selection" | "collections" | "recipes" | "journal";
 const MEGA_MENU_LINKS: Array<{ id: MegaMenuId; href: string; label: string }> = [
   { id: "selection", href: "/shop", label: "Shop" },
   { id: "recipes", href: "/recipes", label: "Recipes" },
-  { id: "journal", href: "/blog", label: "Journal" },
+  { id: "journal", href: "/blog", label: "Blog" },
 ];
 
 export default function Header() {

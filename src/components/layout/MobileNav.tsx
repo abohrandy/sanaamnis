@@ -175,14 +175,14 @@ export function MobileNav({
                 </span>
               </Link>
 
-              {/* Gazette Journal */}
+              {/* Blog */}
               <Link
                 href="/blog"
                 onClick={onClose}
                 className="flex items-center justify-between py-3 border-b border-[#E2E6E3]/60 hover:text-[#1C3322] transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-[#1C3322]" /> Gazette Journal
+                  <BookOpen className="w-4 h-4 text-[#1C3322]" /> Blog
                 </span>
               </Link>
 

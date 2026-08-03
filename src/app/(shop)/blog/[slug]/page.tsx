@@ -79,7 +79,7 @@ export default async function ArticlePage({
       <main className="flex-grow w-full">
         <div className="max-w-[840px] mx-auto px-4 md:px-8 py-12 md:py-16 space-y-10">
           <Breadcrumbs
-            items={[{ label: "Journal", href: "/blog" }, { label: article.title }]}
+            items={[{ label: "Blog", href: "/blog" }, { label: article.title }]}
           />
 
           <header className="space-y-5">
