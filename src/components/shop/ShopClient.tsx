@@ -71,7 +71,11 @@ export function ShopClient({
     let list = products;
 
     if (selectedCategory !== "all") {
-      list = list.filter((p) => p.categorySlug === selectedCategory);
+      list = list.filter(
+        (p) =>
+          p.categorySlug === selectedCategory ||
+          p.extraCategorySlugs?.includes(selectedCategory as CategorySlug)
+      );
     }
 
     const sorted = [...list];

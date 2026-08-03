@@ -41,6 +41,8 @@ export interface CatalogProduct {
   /** Long copy for the product page. */
   description: string;
   categorySlug: CategorySlug;
+  /** Additional categories this product should also appear under in shop filters — e.g. coconut oil belongs to both Skin & Body and Culinary Essentials. */
+  extraCategorySlugs?: CategorySlug[];
   /** First entry is the primary image. */
   images: string[];
   variants: CatalogVariant[];
@@ -178,6 +180,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Extra virgin coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
     categorySlug: "oils",
+    extraCategorySlugs: ["body", "culinary"],
     images: [
       "/products/coconut-oil-cold-pressed.jpg",
       "/products/coconut-oil-cold-pressed-100ml.jpg",
@@ -229,6 +232,7 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Traditionally hot-pressed coconut oil with the fuller, nuttier flavour that comes from heat extraction. A higher smoke point than our cold-pressed bottle makes it the better choice for frying, roasting and everyday Nigerian cooking. Fortified with vitamin A.",
     categorySlug: "oils",
+    extraCategorySlugs: ["body", "culinary"],
     images: [
       "/products/coconut-oil-hot-pressed.jpg",
       "/products/coconut-oil-hot-pressed-trio.jpg",
@@ -422,66 +426,6 @@ export const CATALOG: CatalogProduct[] = [
         name: "750g Pack",
         price: 6000,
         stock: 75,
-      },
-    ],
-  },
-  {
-    id: "ee59777a-b3a0-516f-bc59-c05a2dc4b934",
-    slug: "coconut-body-butter",
-    title: "Nourishing Coconut Body Butter",
-    tagline: "Whipped coconut lipids and shea for a restored moisture barrier.",
-    description:
-      "A deeply moisturising body cream whipped from raw coconut lipids, unrefined shea butter and vitamin E. Heavier than a lotion and built for genuinely dry skin — it restores elasticity and leaves a soft, velvety finish rather than a greasy one.",
-    categorySlug: "body",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
-    variants: [
-      {
-        id: "a59bbefa-c0dc-5fbf-b5d3-fc6ccece256d",
-        sku: "SA-BTR-200",
-        name: "200g Jar",
-        price: 18000,
-        stock: 40,
-      },
-    ],
-  },
-  {
-    id: "bee955ea-1849-5a86-91c7-194b8fee6d88",
-    slug: "restorative-coconut-hair-mask",
-    title: "Restorative Coconut Hair Mask",
-    tagline: "An intensive pre-wash treatment for stressed lengths and ends.",
-    description:
-      "A deep conditioning treatment built on raw coconut oil and botanical extracts. Worked through damp hair and left for half an hour before washing, it strengthens the shaft, reduces split ends and restores shine to hair worn down by heat or chemical processing.",
-    categorySlug: "body",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
-    variants: [
-      {
-        id: "6b457e20-0acd-5ac8-8667-154a81e896ec",
-        sku: "SA-HMK-250",
-        name: "250ml Jar",
-        price: 14000,
-        stock: 35,
-      },
-    ],
-  },
-  {
-    id: "a9ed1ff4-f7e3-5910-b958-618232274349",
-    slug: "coconut-sugar-scrub",
-    title: "Exfoliating Coconut Sugar Scrub",
-    tagline: "Unrefined coconut sugar suspended in virgin coconut oil.",
-    description:
-      "Crystals of unrefined coconut sugar suspended in virgin coconut oil. The sugar buffs away dead skin while the oil stays behind, so skin is left smooth and conditioned rather than stripped. Gentle enough for weekly use.",
-    categorySlug: "body",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
-    variants: [
-      {
-        id: "5be37769-958c-570f-b513-a1076e4e0967",
-        sku: "SA-SCR-200",
-        name: "200g Glass Jar",
-        price: 12500,
-        stock: 45,
       },
     ],
   },

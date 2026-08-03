@@ -27,6 +27,9 @@ export function categoriesInUse(products: CatalogProduct[]) {
   const counts = new Map<CategorySlug, number>();
   for (const product of products) {
     counts.set(product.categorySlug, (counts.get(product.categorySlug) ?? 0) + 1);
+    for (const extra of product.extraCategorySlugs ?? []) {
+      counts.set(extra, (counts.get(extra) ?? 0) + 1);
+    }
   }
   return (Object.keys(CATEGORIES) as CategorySlug[])
     .filter((slug) => counts.has(slug))
@@ -86,6 +89,7 @@ function fromDb(row: DbProductRow): CatalogProduct {
     tagline: seed?.tagline ?? "",
     description: row.description || seed?.description || "",
     categorySlug,
+    extraCategorySlugs: seed?.extraCategorySlugs,
     images: images.length > 0 ? images : [PLACEHOLDER_IMAGE],
     variants: variants.length > 0 ? variants : (seed?.variants ?? []),
     badge: seed?.badge,
