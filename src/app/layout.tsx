@@ -34,8 +34,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   manifest: "/manifest.json",
   icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
   title: {
     default: "Sana Amnis | Nigerian Coconut Water, Milk & Cold-Pressed Oil",

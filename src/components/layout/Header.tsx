@@ -185,7 +185,7 @@ export default function Header() {
             {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2.5 rounded-full hover:bg-[#F3EFE8] dark:hover:bg-white/10 text-[#161A17] dark:text-[#FAF8F5] hover:text-[#C9A227] transition-colors flex items-center gap-1.5"
+              className="p-2.5 rounded-full hover:bg-[#F3EFE8] dark:hover:bg-white/10 text-[#161A17] hover:text-[#C9A227] transition-colors flex items-center gap-1.5"
               title="Search (CMD+K)"
               aria-label="Search"
             >
@@ -198,7 +198,7 @@ export default function Header() {
             {/* Wishlist Trigger */}
             <button
               onClick={() => setIsWishlistOpen(true)}
-              className="p-2.5 rounded-full hover:bg-[#F3EFE8] dark:hover:bg-white/10 text-[#161A17] dark:text-[#FAF8F5] hover:text-[#C9A227] transition-colors hidden sm:block"
+              className="p-2.5 rounded-full hover:bg-[#F3EFE8] dark:hover:bg-white/10 text-[#161A17] hover:text-[#C9A227] transition-colors hidden sm:block"
               title="Wishlist"
               aria-label="Wishlist"
             >
@@ -214,14 +214,14 @@ export default function Header() {
                   title="Account Details"
                 >
                   <User className="w-4 h-4" />
-                  <span className="hidden lg:inline text-[10px] font-sans uppercase font-bold tracking-[0.18em] text-[#161A17] dark:text-[#FAF8F5]">
+                  <span className="hidden lg:inline text-[10px] font-sans uppercase font-bold tracking-[0.18em] text-[#161A17]">
                     {session.user.name.split(" ")[0]}
                   </span>
                 </button>
               ) : (
                 <Link
                   href="/login"
-                  className="p-2.5 rounded-full hover:bg-[#F3EFE8] text-[#161A17] dark:text-[#FAF8F5] hover:text-[#C9A227] transition-colors"
+                  className="p-2.5 rounded-full hover:bg-[#F3EFE8] text-[#161A17] hover:text-[#C9A227] transition-colors"
                   title="Sign In"
                 >
                   <User className="w-4 h-4" />
