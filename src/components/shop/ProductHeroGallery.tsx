@@ -29,6 +29,10 @@ export function ProductHeroGallery({
   const activeImage = gallery[index] ?? gallery[0];
   const hasMultiple = gallery.length > 1;
 
+  useEffect(() => {
+    setIndex(0);
+  }, [images]);
+
   const step = useCallback(
     (delta: number) => setIndex((i) => (i + delta + gallery.length) % gallery.length),
     [gallery.length]

@@ -59,12 +59,12 @@ function LoginForm() {
       <div className="max-w-md w-full bg-[#FAF8F5] border border-[#E2E6E3] p-8 md:p-10 shadow-ambient-lg space-y-8 rounded-[1.5rem]">
         <div className="text-center space-y-3">
           <Image
-            src="/logo_long.png"
+            src="/logo3.png"
             alt="Sana Amnis"
-            width={240}
-            height={56}
+            width={329}
+            height={217}
             priority
-            className="mx-auto h-11 w-auto object-contain"
+            className="mx-auto h-20 w-auto object-contain"
           />
           <p className="text-sm text-[#676E6A] leading-relaxed">
             {mode === "signin"

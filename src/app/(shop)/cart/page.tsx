@@ -231,7 +231,7 @@ export default function CartPage() {
             </div>
             <h3 className="font-serif text-xl font-medium text-[#161A17]">Your Shopping Bag is Empty</h3>
             <p className="text-xs text-[#676E6A] font-sans max-w-sm mx-auto leading-relaxed">
-              Discover cold-pressed extra virgin oils, coconut waters, and whipped body soufflés in our catalog.
+              Discover coconut water, milk powder, oils, kitchen staples and body care in our catalog.
             </p>
             <Link href="/shop" className="inline-block">
               <Button variant="botanical" size="md">

@@ -43,22 +43,17 @@ const CATEGORY_TILES: Array<{
   {
     slug: "hydration",
     image: "/products/coconut-water-range.jpg",
-    blurb: "Coconut water and milk, bottled fresh.",
-  },
-  {
-    slug: "oils",
-    image: "/products/coconut-oil-cold-pressed.jpg",
-    blurb: "Cold-pressed and hot-pressed, for cooking and skin.",
+    blurb: "Coconut water made in Nigeria in two verified sizes.",
   },
   {
     slug: "culinary",
-    image: "/products/coconut-flakes.jpg",
-    blurb: "Flour, flakes, powder and poundo for the kitchen.",
+    image: "/products/coconut-oil-cold-pressed.jpg",
+    blurb: "Coconut oil, flour, flakes, powder and poundo for the kitchen.",
   },
   {
     slug: "body",
-    image: "/products/coconut-milk-powder-sizes.jpg",
-    blurb: "Balms, butters and oils for skin and hair.",
+    image: "/products/avococo-oil.jpg",
+    blurb: "Avocado oil, carrot oil, lip balm and coconut oil.",
   },
 ];
 
@@ -66,17 +61,17 @@ const PROCESS_STEPS = [
   {
     icon: Sprout,
     title: "Harvested locally",
-    body: "Coconuts come from organically grown trees, sourced from local farming families across Nigeria, and reach us within a day so nothing sits waiting to be processed.",
+    body: "We source Nigerian, home-grown coconuts through local farming families across the country.",
   },
   {
     icon: Thermometer,
-    title: "Made without heat",
-    body: "Our coconut oil is extracted through a natural fermentation process — no added heat, no solvents, no bleaching.",
+    title: "Made in Nigeria",
+    body: "Our coconut range is made in Nigeria from Nigerian, home-grown coconuts.",
   },
   {
     icon: PackageCheck,
     title: "Bottled and sealed",
-    body: "Filled, sealed and labelled in small batches, then dispatched in recyclable packaging — usually within 24 hours of your order.",
+    body: "Products are filled, sealed and labelled before dispatch, with the available size shown on each product page.",
   },
 ];
 
@@ -215,14 +210,13 @@ export default async function Home() {
                   We use the whole coconut
                 </h2>
                 <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
-                  The water is bottled first. The meat becomes milk, then powder. What is
-                  left is pressed for oil, dried into flakes and chips, or milled into
-                  flour and poundo. One fruit, a dozen products, and very little thrown
-                  away.
+                  The water is bottled first. The meat becomes milk powder, flakes,
+                  flour, poundo and coconut oil. Sana Amnis brings this Nigerian coconut
+                  range to the consumer market.
                 </p>
                 <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
-                  We buy directly from local farming families growing organic coconut
-                  trees across Nigeria, which keeps more of the price with the people who grow it.
+                  We make our products in Nigeria using Nigerian, home-grown coconuts and
+                  work with local farming families across the country.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-3">
                   <Link href="/shop">

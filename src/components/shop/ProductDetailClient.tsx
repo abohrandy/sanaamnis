@@ -67,6 +67,10 @@ export default function ProductDetailClient({
     product.variants.find((v) => v.stock > 0) ?? product.variants[0]
   );
 
+  const galleryImages = activeVariant?.imageUrl
+    ? [activeVariant.imageUrl, ...product.images.filter((image) => image !== activeVariant.imageUrl)]
+    : product.images;
+
   const buyPanelRef = useRef<HTMLDivElement>(null);
 
   // Reveal the sticky bar once the real buy panel has scrolled out of view.
@@ -92,7 +96,7 @@ export default function ProductDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-7 lg:sticky lg:top-28">
           <ProductHeroGallery
-            images={product.images}
+            images={galleryImages}
             title={product.title}
             badgeText={product.badge}
           />

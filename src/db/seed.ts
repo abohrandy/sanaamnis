@@ -158,6 +158,17 @@ async function main() {
       console.log(`[seed] deactivated ${staleVariants.length} variant(s) no longer in the catalog`);
     }
 
+    // Retire categories that are no longer part of the storefront taxonomy.
+    // The FK is ON DELETE SET NULL, so historical products remain readable.
+    const catalogCategoryIds = categories.map((category) => category.id);
+    const staleCategories = await db.query.categories.findMany({
+      where: (categoriesTable, { notInArray }) => notInArray(categoriesTable.id, catalogCategoryIds),
+    });
+    if (staleCategories.length > 0) {
+      await db.delete(schema.categories).where(inArray(schema.categories.id, staleCategories.map((category) => category.id)));
+      console.log(`[seed] removed ${staleCategories.length} obsolete category(ies)`);
+    }
+
     // --- Journal, recipes & FAQs ----------------------------------------------
     // Seeds src/lib/content.ts's fallback data as the starting rows, using the
     // same deterministic-id + onConflictDoUpdate pattern as products above, so

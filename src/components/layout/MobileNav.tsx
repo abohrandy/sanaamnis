@@ -58,11 +58,11 @@ export function MobileNav({
             <div className="p-6 border-b border-[#E2E6E3] flex items-center justify-between">
               <Link href="/" onClick={onClose} className="flex items-center gap-2">
                 <Image
-                  src="/logo_long.png"
+                  src="/logo3.png"
                   alt="Sana Amnis"
-                  width={200}
-                  height={40}
-                  className="h-9 w-auto object-contain"
+                  width={329}
+                  height={217}
+                  className="h-14 w-auto object-contain"
                 />
               </Link>
               <button

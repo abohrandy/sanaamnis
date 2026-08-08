@@ -28,9 +28,9 @@ const HERO_SLIDES: HeroSlide[] = [
   {
     id: "range",
     eyebrow: "Made In Nigeria",
-    title: "One coconut, a dozen ways",
+    title: "The Nigerian coconut range",
     description:
-      "Coconut products made in Nigeria, from home-grown coconuts — water, milk, oil, flour and flakes, extracted through a natural fermentation process. Nothing is bleached.",
+      "Sana Amnis products are made in Nigeria from Nigerian, home-grown coconuts — coconut water, milk powder, oil, flour, flakes, poundo and body care.",
     ctaText: "Shop the range",
     ctaLink: "/shop",
     secondaryCtaText: "Our story",
@@ -53,10 +53,10 @@ const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: "oil",
-    eyebrow: "Cold-Pressed Coconut Oil",
-    title: "Made without heat",
+    eyebrow: "Coconut Oil",
+    title: "Choose Cold Press or Hot Press",
     description:
-      "Extracted through a natural fermentation process, so nothing is bleached, deodorised or cooked away.",
+      "One coconut oil product with verified Cold Press and Hot Press options for cooking and personal care.",
     ctaText: "Shop coconut oil",
     ctaLink: "/products/extra-virgin-coconut-oil",
     secondaryCtaText: "How we press",

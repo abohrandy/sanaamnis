@@ -54,6 +54,13 @@ type DbProductRow = {
   }>;
 };
 
+function cleanVariantName(name: string): string {
+  return name
+    .replace(/\s+(pouch|bottle|pack|stick|snack pack)$/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /**
  * Shape a database row like a catalog entry.
  *
@@ -71,7 +78,7 @@ function fromDb(row: DbProductRow): CatalogProduct {
     .map((v) => ({
       id: v.id,
       sku: v.sku,
-      name: v.name,
+      name: cleanVariantName(v.name),
       price: Number(v.price),
       stock: v.stock,
       imageUrl: v.imageUrl || undefined,

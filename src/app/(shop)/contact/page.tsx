@@ -67,25 +67,10 @@ export default function ContactPage() {
 
             <div className="space-y-6 pt-6 border-t border-[#E2E6E3]">
               <div className="flex gap-4">
-                <Mail className="w-5 h-5 text-[#C9A227] shrink-0 mt-0.5" aria-hidden="true" />
-                <div>
-                  <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">
-                    Email
-                  </h2>
-                  <a
-                    href="mailto:concierge@sanaamnis.com"
-                    className="text-sm text-[#676E6A] hover:text-[#1C3322] transition-colors"
-                  >
-                    concierge@sanaamnis.com
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
                 <MapPin className="w-5 h-5 text-[#C9A227] shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
                   <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">
-                    Our office
+                    Main Office · Community Mart Limited
                   </h2>
                   <p className="text-sm text-[#676E6A] leading-relaxed">
                     Plot 506, Cadastral Zone, Dakibiyu — behind Christ Embassy, Dakibiyu,
@@ -99,6 +84,32 @@ export default function ContactPage() {
                     <Phone className="w-3.5 h-3.5" aria-hidden="true" /> Call +234 913 735 8352 for directions
                   </a>
                 </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Mail className="w-5 h-5 text-[#C9A227] shrink-0 mt-0.5" aria-hidden="true" />
+                <div>
+                  <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">Email</h2>
+                  <a href="mailto:concierge@sanaamnis.com" className="text-sm text-[#676E6A] hover:text-[#1C3322] transition-colors">
+                    concierge@sanaamnis.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#E2E6E3]/70 space-y-3">
+                <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">Other Locations</h2>
+                <p className="text-sm text-[#676E6A] leading-relaxed">Pickup locations and distributors are listed on our distributors page.</p>
+                <a href="/distributors" className="text-sm text-[#1C3322] font-semibold underline underline-offset-4 hover:text-[#C9A227]">View locations</a>
+              </div>
+
+              <div className="pt-2 border-t border-[#E2E6E3]/70 space-y-2">
+                <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">Auditors</h2>
+                <p className="text-sm text-[#676E6A]">Details to be confirmed.</p>
+              </div>
+
+              <div className="pt-2 border-t border-[#E2E6E3]/70 space-y-2">
+                <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">Stockists & Distributors</h2>
+                <p className="text-sm text-[#676E6A]">See current locations or use the form to enquire about becoming a distributor.</p>
               </div>
             </div>
           </div>

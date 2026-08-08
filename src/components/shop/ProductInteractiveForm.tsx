@@ -82,7 +82,7 @@ export default function ProductInteractiveForm({
       {product.variants.length > 1 && (
         <fieldset className="space-y-3">
           <legend className="text-[10px] uppercase tracking-[0.2em] text-[#676E6A] font-bold mb-3">
-            Choose a size
+            Choose a size or type
           </legend>
           <div className="flex flex-wrap gap-2.5">
             {product.variants.map((variant) => {

@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, MessageCircle, User, Info } from "lucide-react";
+import { MapPin, Phone, MessageCircle, User, Info, ArrowRight } from "lucide-react";
 import { getDistributors } from "@/lib/distributors";
 import type { Distributor } from "@/lib/content";
 
@@ -139,6 +139,16 @@ export default async function DistributorsPage() {
           </Link>{" "}
           — we deliver nationwide even where there isn&apos;t a local pickup point yet.
         </p>
+
+        <section className="rounded-[1.25rem] bg-[#1C3322] text-[#FAF8F5] p-7 md:p-9 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <h2 className="font-serif text-2xl font-medium">Become a Distributor</h2>
+            <p className="text-sm text-[#FAF8F5]/75 max-w-xl">Tell us about your territory and we will follow up using the existing contact form.</p>
+          </div>
+          <Link href="/contact" className="inline-flex items-center gap-2 rounded-[0.5rem] bg-[#C9A227] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-[#161A17] hover:bg-[#E2C45D] transition-colors shrink-0">
+            Enquire now <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </section>
       </main>
 
       <Footer />

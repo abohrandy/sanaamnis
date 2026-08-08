@@ -34,17 +34,17 @@ export default function Footer() {
         <div className="col-span-2 md:col-span-4 space-y-6">
           <Link href="/" className="block w-fit" aria-label="Sana Amnis home">
             <Image
-              src="/logo_long.png"
+              src="/logo3.png"
               alt="Sana Amnis"
-              width={220}
-              height={48}
-              className="h-11 w-auto object-contain brightness-0 invert"
+              width={329}
+              height={217}
+              className="h-20 w-auto object-contain brightness-0 invert"
             />
           </Link>
 
           <p className="text-xs leading-relaxed text-[#FAF8F5]/70 max-w-sm">
-            Coconut water, milk, cold-pressed oils and kitchen staples, made in Nigeria
-            from organically grown coconuts sourced from local farmers nationwide.
+            Coconut water, milk powder, oils and kitchen staples, made in Nigeria from
+            Nigerian, home-grown coconuts.
           </p>
 
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] uppercase tracking-[0.18em] text-[#C9A227] pt-1">

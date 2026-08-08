@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Droplets, ChefHat, Sparkles, Package, ArrowRight } from "lucide-react";
+import { Droplets, ChefHat, Sparkles, ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/ds/cards/product-card";
 import { CATEGORIES, type CatalogProduct, type CategorySlug } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ interface UseCase {
  * instead of the client's own product shots, and linked to "Explore Category"
  * on `/shop?lifestyle=…`, a query parameter the shop page has never read.
  *
- * This groups the real four catalog categories under how customers actually use
+ * This groups the real three catalog categories under how customers actually use
  * them, using the client's own photography and linking to the real
  * `/shop?category=…` filter.
  */
@@ -38,10 +38,10 @@ const USE_CASES: UseCase[] = [
     icon: Droplets,
   },
   {
-    categorySlug: "oils",
-    subtitle: "For cooking, skin and hair",
+    categorySlug: "culinary",
+    subtitle: "For cooking and baking",
     description:
-      "Cold-pressed and hot-pressed coconut oil. Cold-pressed suits skin, hair and baking; hot-pressed has the higher smoke point for everyday frying.",
+      "Coconut oil, flour, flakes, milk powder and poundo for the kitchen.",
     heroImage: "/products/coconut-oil-cold-pressed.jpg",
     icon: ChefHat,
   },
@@ -49,17 +49,9 @@ const USE_CASES: UseCase[] = [
     categorySlug: "body",
     subtitle: "For skin and hair care",
     description:
-      "Balms, butters, scrubs and infused oils built on coconut lipids, for moisturising and conditioning.",
-    heroImage: "/products/coconut-milk-powder-sizes.jpg",
+      "Avocado oil, carrot oil, lip balm and coconut oil for personal care.",
+    heroImage: "/products/avococo-oil.jpg",
     icon: Sparkles,
-  },
-  {
-    categorySlug: "culinary",
-    subtitle: "Flour, flakes, powder and poundo",
-    description:
-      "Baking and cooking staples milled and dried from the same coconuts — for gluten-free baking, snacking, or a lower-carb swallow.",
-    heroImage: "/products/coconut-flakes.jpg",
-    icon: Package,
   },
 ];
 

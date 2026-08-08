@@ -88,12 +88,12 @@ export default function Header() {
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3" aria-label="Sana Amnis home">
             <Image
-              src="/logo_long.png"
+              src="/logo3.png"
               alt="Sana Amnis"
-              width={240}
-              height={56}
+              width={329}
+              height={217}
               priority
-              className="h-10 md:h-12 w-auto object-contain transition-all duration-300"
+              className="h-14 md:h-16 w-auto object-contain transition-all duration-300"
             />
           </Link>
 

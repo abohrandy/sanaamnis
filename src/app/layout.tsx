@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com";
 const SITE_DESCRIPTION =
-  "Coconut products made in Nigeria from home-grown coconuts — water, milk, cold-pressed oils, flour and flakes, sourced from organically grown trees tended by local farming families across Nigeria.";
+  "Sana Amnis coconut products made in Nigeria from Nigerian, home-grown coconuts — coconut water, milk powder, oils, flour, flakes, poundo and body care.";
 // Hosted with the site rather than hotlinked from Google Drive, which rate-limits
 // and cannot be relied on by social crawlers.
 const SOCIAL_IMAGE = "/products/range-full-dark.jpg";
@@ -85,7 +85,7 @@ const ORGANIZATION_JSON_LD = {
   "@type": "Organization",
   name: "Sana Amnis",
   url: SITE_URL,
-  logo: `${SITE_URL}/logo_long.png`,
+  logo: `${SITE_URL}/logo3.png`,
   description: SITE_DESCRIPTION,
   contactPoint: [
     {
@@ -118,5 +118,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-
