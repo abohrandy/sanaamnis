@@ -172,9 +172,11 @@ export default function ProductDetailClient({
           </h2>
         </div>
         <div className="lg:col-span-7">
-          <p className="text-sm md:text-base text-[#161A17]/80 leading-[1.85] font-sans">
-            {product.description}
-          </p>
+          <div className="space-y-4 text-sm md:text-base text-[#161A17]/80 leading-[1.85] font-sans">
+            {product.description.split("\n\n").map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
         </div>
       </section>
 

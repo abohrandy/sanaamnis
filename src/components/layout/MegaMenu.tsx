@@ -26,7 +26,7 @@ const panelMotion = {
 
 // Two real bestsellers rather than invented "Raw Virgin Coconut Oil" and "Organic
 // Coconut Water Elixir" cards that did not match anything actually sold.
-const SPOTLIGHT_SLUGS = ["extra-virgin-coconut-oil", "sana-amnis-coconut-water"];
+const SPOTLIGHT_SLUGS = ["coconut-oil", "sana-amnis-coconut-water"];
 
 export function MegaMenu({ type, onClose }: MegaMenuProps) {
   if (type === "selection" || type === "collections") {

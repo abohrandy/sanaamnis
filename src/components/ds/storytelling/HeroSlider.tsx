@@ -58,7 +58,7 @@ const HERO_SLIDES: HeroSlide[] = [
     description:
       "Extracted through a natural fermentation process, so nothing is bleached, deodorised or cooked away.",
     ctaText: "Shop coconut oil",
-    ctaLink: "/products/extra-virgin-coconut-oil",
+    ctaLink: "/products/coconut-oil",
     secondaryCtaText: "How we press",
     secondaryCtaLink: "/about",
     image: "/products/coconut-oil-cold-pressed.jpg",

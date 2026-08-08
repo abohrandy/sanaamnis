@@ -59,7 +59,7 @@ export const RECIPES: Recipe[] = [
     difficulty: "Easy",
     serves: "Serves 4",
     image: "/products/coconut-milk-powder.jpg",
-    usesProducts: ["pure-coconut-milk-powder", "extra-virgin-coconut-oil"],
+    usesProducts: ["pure-coconut-milk-powder", "coconut-oil"],
     ingredients: [
       "2 cups long-grain rice, rinsed until the water runs clear",
       "6 tbsp Sana Amnis coconut milk powder, whisked into 500ml warm water",
@@ -87,7 +87,7 @@ export const RECIPES: Recipe[] = [
     difficulty: "Simple",
     serves: "Makes 8 small pancakes",
     image: "/products/placeholder.jpg",
-    usesProducts: ["raw-coconut-flour", "extra-virgin-coconut-oil"],
+    usesProducts: ["raw-coconut-flour", "coconut-oil"],
     ingredients: [
       "60g Sana Amnis coconut flour",
       "4 eggs",
@@ -114,7 +114,7 @@ export const RECIPES: Recipe[] = [
     difficulty: "Easy",
     serves: "One treatment",
     image: "/products/coconut-oil-cold-pressed.jpg",
-    usesProducts: ["extra-virgin-coconut-oil", "avococo-oil"],
+    usesProducts: ["coconut-oil", "avococo-oil"],
     ingredients: [
       "3–4 tbsp Sana Amnis cold-pressed coconut oil (more for long or thick hair)",
       "1 tbsp Sana Amnis Avococo oil, if your ends are particularly dry",

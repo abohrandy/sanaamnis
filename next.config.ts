@@ -48,6 +48,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/products/extra-virgin-coconut-oil",
+        destination: "/products/coconut-oil",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
