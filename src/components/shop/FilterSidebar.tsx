@@ -20,7 +20,7 @@ export interface FilterSidebarProps {
 }
 
 const SORT_OPTIONS = [
-  { id: "featured", label: "Featured Sanctuary" },
+  { id: "featured", label: "Default" },
   { id: "newest", label: "Newest Harvest" },
   { id: "price_asc", label: "Price: Low to High" },
   { id: "price_desc", label: "Price: High to Low" },
@@ -43,7 +43,7 @@ export function FilterSidebar({
       {/* Sorting Section */}
       <div>
         <h4 className="text-[10px] uppercase font-bold tracking-[0.22em] text-[#C9A227] mb-3">
-          Sort Sanctuary
+          Filters
         </h4>
         <div className="space-y-1.5">
           {SORT_OPTIONS.map((option) => (
@@ -77,7 +77,7 @@ export function FilterSidebar({
                 : "text-[#161A17] hover:bg-[#F3EFE8]"
             }`}
           >
-            <span>All Formulations</span>
+            <span>All Categories</span>
           </button>
           {categories.map((cat) => (
             <button
