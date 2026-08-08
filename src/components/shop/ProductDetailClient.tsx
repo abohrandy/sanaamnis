@@ -219,8 +219,11 @@ export default function ProductDetailClient({
                 What is inside
               </h3>
               <p className="text-sm text-[#676E6A] leading-relaxed">
+                {product.slug === "coconut-poundo" && (
+                  <>Coconut poundo contains psyllium husk, a high fibre, gluten-free, plant based binder. </>
+                )}
                 {product.title} contains coconut and nothing else beyond what the label
-                states. Free from synthetic fragrance, parabens, sulphates and hexane.
+                states. {product.categorySlug !== "culinary" && "Free from synthetic fragrance, parabens, sulphates and hexane. "}
                 Never bleached, never deodorised.
               </p>
               <div className="flex flex-wrap gap-2 pt-1">

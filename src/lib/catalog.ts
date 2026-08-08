@@ -210,12 +210,30 @@ export const CATALOG: CatalogProduct[] = [
     ],
   },
   {
+    id: "5c3d75d5-8c2b-5e5f-bb0a-c4a4e760c6b6",
+    slug: "desiccated-coconut",
+    title: "Desiccated Coconut",
+    tagline: "Fine desiccated coconut for baking and everyday cooking.",
+    description:
+      "Fine desiccated coconut made from coconut meat for baking, smoothies, rice dishes and meal toppings.",
+    categorySlug: "culinary",
+    images: [
+      "/products/desiccated-coconut.jpg",
+      "/products/desiccated-coconut-single.jpg",
+      "/products/desiccated-coconut-range.jpg",
+      "/products/desiccated-coconut-styled.jpg",
+    ],
+    variants: [
+      { id: "ef0a71a3-941f-5ca4-9d2c-dad5c4d04f54", sku: "SA-DSC-100", name: "100g", price: 2000, stock: 100, imageUrl: "/products/desiccated-coconut.jpg" },
+    ],
+  },
+  {
     id: "348c9791-20f1-5f88-956b-bcda6ea8a38b",
     slug: "coconut-poundo",
     title: "Coconut Poundo",
     tagline: "A coconut-based swallow for the kitchen.",
     description:
-      "Made from coconut, mixed and moulded exactly as you would poundo yam, and eaten with the same soups. Far lower in carbohydrate than yam or cassava flour, which makes it a genuine option for anyone managing blood sugar without giving up swallow.",
+      "Made from coconut, mixed and moulded exactly as you would poundo yam and higher in fibre than any other flour, and eaten with the same soups. Far lower in carbohydrate than yam or cassava flour, which makes it a genuine option for anyone managing blood sugar without giving up swallow.",
     categorySlug: "culinary",
     images: ["/products/coconut-poundo.jpg", "/products/coconut-poundo-pair.jpg"],
     variants: [{ id: "001b416d-98cc-567f-abae-53fef4c8330c", sku: "SA-PND-750", name: "750g", price: 6500, stock: 60, imageUrl: "/products/coconut-poundo.jpg" }],
