@@ -122,12 +122,14 @@ export default function Footer() {
             </p>
             <p className="flex items-start gap-2">
               <Mail className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
-              <a
-                href="mailto:concierge@sanaamnis.com"
-                className="hover:text-[#C9A227] transition-colors break-all"
-              >
-                concierge@sanaamnis.com
-              </a>
+              <span className="space-y-1">
+                <a href="mailto:communitymart@gmail.com" className="block hover:text-[#C9A227] transition-colors break-all">
+                  communitymart@gmail.com
+                </a>
+                <a href="mailto:info@sanaamniscoconut.com" className="block hover:text-[#C9A227] transition-colors break-all">
+                  info@sanaamniscoconut.com
+                </a>
+              </span>
             </p>
           </address>
           <p className="text-[10px] uppercase tracking-[0.18em] text-[#FAF8F5]/45 pt-1">

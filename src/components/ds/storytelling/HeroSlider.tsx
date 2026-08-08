@@ -27,8 +27,8 @@ const SLIDE_DURATION = 7000;
 const HERO_SLIDES: HeroSlide[] = [
   {
     id: "range",
-    eyebrow: "Made In Nigeria",
-    title: "The Nigerian coconut range",
+    eyebrow: "Sana Amnis",
+    title: "Naturally Nourishing. Purposefully Made.",
     description:
       "Sana Amnis products are made in Nigeria from Nigerian, home-grown coconuts — coconut water, milk powder, oil, flour, flakes, poundo and body care.",
     ctaText: "Shop the range",

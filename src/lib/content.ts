@@ -311,7 +311,7 @@ export const FAQS: Faq[] = [
   {
     question: "Where do you deliver?",
     answer:
-      "Nationwide across Nigeria. Lagos orders typically arrive in 24–48 hours; other states take 3–5 working days. Orders above ₦50,000 ship free. See our shipping page for details.",
+      "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days. [Check the distributor list](/distributors) to see the distributors closest to you.",
     category: "shipping",
   },
   {

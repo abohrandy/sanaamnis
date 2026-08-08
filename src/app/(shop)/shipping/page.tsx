@@ -1,11 +1,12 @@
 import React from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PolicyPage } from "@/components/layout/PolicyPage";
 
 export const metadata: Metadata = {
   title: "Delivery",
   description:
-    "How and when Sana Amnis orders are delivered across Nigeria, what it costs, and when delivery is free.",
+    "How and when Sana Amnis orders are delivered across Nigeria and what delivery costs.",
   alternates: { canonical: "/shipping" },
 };
 
@@ -20,12 +21,7 @@ export default function ShippingPage() {
         {
           heading: "How long it takes",
           body: [
-            "Orders placed before 2pm on a working day are usually picked and dispatched the same day. Orders placed later, or at the weekend, go out on the next working day.",
-          ],
-          bullets: [
-            "Lagos — 24 to 48 hours from dispatch",
-            "Abuja, Port Harcourt and other major cities — 2 to 4 working days",
-            "Everywhere else in Nigeria — 3 to 5 working days",
+            "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
           ],
         },
         {
@@ -37,7 +33,6 @@ export default function ShippingPage() {
             "Lagos — ₦2,500",
             "Rest of Nigeria — ₦5,000",
             "Express handling — ₦1,500 on top of the rate above",
-            "Free standard delivery on orders over ₦50,000",
           ],
         },
         {
@@ -62,6 +57,12 @@ export default function ShippingPage() {
           ],
         },
       ]}
-    />
+    >
+      <p className="pb-8 text-sm text-[#161A17]/75 leading-[1.85]">
+        <Link href="/distributors" className="underline underline-offset-4 hover:text-[#1C3322]">
+          Check the distributor list to see the distributors closest to you.
+        </Link>
+      </p>
+    </PolicyPage>
   );
 }

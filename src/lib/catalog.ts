@@ -58,7 +58,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Coconut Water",
     tagline: "Pure coconut water, made in Nigeria from home-grown coconuts.",
     description:
-      "Pure coconut water drawn from young green coconuts grown by local farmers across Nigeria. No added sugar, no concentrate and no preservatives.",
+      "One hundred percent pure coconut water drawn from young green coconuts grown by local farmers on organic trees across Nigeria. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
     categorySlug: "hydration",
     images: [
       "/products/coconut-water-range.jpg",
@@ -91,7 +91,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Coconut Milk Powder",
     tagline: "Instant coconut milk powder for cooking and baking.",
     description:
-      "Coconut milk made in Nigeria from home-grown coconuts, gently spray-dried into a fine powder that reconstitutes in seconds.",
+      "Fresh coconut milk gently spray-dried into a fine powder that reconstitutes in seconds. Gives you the body of full-cream coconut milk with none of the refrigeration, so it keeps in the cupboard and measures exactly to the spoon. No added sugar.",
     categorySlug: "culinary",
     images: [
       "/products/coconut-milk-powder.jpg",
@@ -111,7 +111,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Coconut Oil",
     tagline: "Cold Press and Hot Press coconut oil for cooking and personal care.",
     description:
-      "Coconut oil made in Nigeria from home-grown coconuts. Choose Cold Press for its natural coconut character or Hot Press for cooking.",
+      "Extra virgin coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
     categorySlug: "culinary",
     extraCategorySlugs: ["body"],
     images: [
@@ -135,7 +135,8 @@ export const CATALOG: CatalogProduct[] = [
     slug: "carrot-oil",
     title: "Carrot Oil",
     tagline: "Carrot infused in coconut oil for skin and hair.",
-    description: "Carrot oil made in Nigeria for everyday personal care.",
+    description:
+      "A rich blend of carrot infused into our own coconut oil, carrying the beta-carotene and natural vitamin A that carrots are prized for. Traditionally used to even skin tone and add warmth and shine to hair.",
     categorySlug: "body",
     images: ["/products/carrot-oil.jpg", "/products/carrot-oil-lifestyle.jpg"],
     variants: [
@@ -146,9 +147,10 @@ export const CATALOG: CatalogProduct[] = [
   {
     id: "fed4bb64-a747-5580-865a-196d06b29b48",
     slug: "avococo-oil",
-    title: "Avocado Oil",
-    tagline: "Avocado oil for everyday skin and hair care.",
-    description: "Avocado oil made in Nigeria for everyday personal care.",
+    title: "Avococo Oil",
+    tagline: "Avocado and coconut, blended for deep conditioning.",
+    description:
+      "A blend of avocado and coconut oils. Avocado brings heavier, slower-absorbing lipids and vitamin E; coconut brings lauric acid and a lighter finish. Together they make a conditioning oil that suits dry skin and thick or coily hair.",
     categorySlug: "body",
     images: ["/products/avococo-oil.jpg", "/products/avococo-oil-trio.jpg"],
     variants: [{ id: "f1eeee32-20fe-54bd-b758-424ed7cd2e62", sku: "SA-AVC-100", name: "100ml", price: 4500, stock: 70, imageUrl: "/products/avococo-oil.jpg" }],
@@ -158,7 +160,8 @@ export const CATALOG: CatalogProduct[] = [
     slug: "coconut-lip-balm",
     title: "Lip Balm",
     tagline: "A coconut oil, beeswax and vitamin E balm.",
-    description: "A small balm made for everyday lip care.",
+    description:
+      "Our coconut oil in its most portable form. A small, smooth balm that melts on contact to seal moisture into dry or cracked lips, with no synthetic fragrance and nothing that tastes of plastic.",
     categorySlug: "body",
     images: [PLACEHOLDER_IMAGE],
     photographyPending: true,
@@ -169,7 +172,8 @@ export const CATALOG: CatalogProduct[] = [
     slug: "coconut-flakes",
     title: "Coconut Flakes",
     tagline: "Dehydrated coconut for snacking and baking.",
-    description: "Coconut flakes made in Nigeria from home-grown coconuts.",
+    description:
+      "Broad flakes of coconut meat dehydrated until crisp, with nothing added. Eat them straight from the pouch as a snack, scatter them over granola and yoghurt, or fold them into baking for texture.",
     categorySlug: "culinary",
     images: ["/products/coconut-flakes.jpg"],
     variants: [
@@ -184,7 +188,8 @@ export const CATALOG: CatalogProduct[] = [
     slug: "coconut-poundo",
     title: "Coconut Poundo",
     tagline: "A coconut-based swallow for the kitchen.",
-    description: "Coconut poundo made in Nigeria from home-grown coconuts.",
+    description:
+      "Made from coconut, mixed and moulded exactly as you would poundo yam, and eaten with the same soups. Far lower in carbohydrate than yam or cassava flour, which makes it a genuine option for anyone managing blood sugar without giving up swallow.",
     categorySlug: "culinary",
     images: ["/products/coconut-poundo.jpg", "/products/coconut-poundo-pair.jpg"],
     variants: [{ id: "001b416d-98cc-567f-abae-53fef4c8330c", sku: "SA-PND-750", name: "750g", price: 6500, stock: 60, imageUrl: "/products/coconut-poundo.jpg" }],
@@ -194,7 +199,8 @@ export const CATALOG: CatalogProduct[] = [
     slug: "raw-coconut-flour",
     title: "Coconut Flour",
     tagline: "Fine coconut flour for baking and cooking.",
-    description: "Coconut flour milled in Nigeria from home-grown coconuts.",
+    description:
+      "Coconut meat milled to a fine, soft flour. Naturally gluten-free and very high in fibre, so it drinks up considerably more liquid than wheat flour — worth accounting for when you adapt a recipe. Suits keto and paleo baking.",
     categorySlug: "culinary",
     images: ["/products/coconut-flour.jpg", "/products/coconut-flour-single.jpg"],
     variants: [{ id: "069d43aa-fbd7-549e-ba77-2fe5745d87cf", sku: "SA-FLR-750", name: "750g", price: 6000, stock: 75, imageUrl: "/products/coconut-flour.jpg" }],

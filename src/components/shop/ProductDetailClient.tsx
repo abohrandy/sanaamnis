@@ -42,7 +42,7 @@ const FAQS = [
   },
   {
     q: "Where do you deliver, and how long does it take?",
-    a: "We deliver nationwide across Nigeria. Lagos orders typically arrive within 24–48 hours; other states take 3–5 working days. Orders above ₦50,000 ship free.",
+    a: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days. [Check the distributor list](/distributors) to see the distributors closest to you.",
   },
 ];
 
@@ -151,8 +151,11 @@ export default function ProductDetailClient({
             <ProductInteractiveForm product={product} onVariantChange={setActiveVariant} />
 
             <p className="text-[11px] text-[#676E6A] leading-relaxed">
-              Free delivery on orders above {formatNaira(50000)}. Lagos in 24–48 hours,
-              nationwide in 3–5 working days.
+              We offer 24 to 48 hours delivery of orders in cities where our distributors
+              are domicile. Orders outside these cities take 3 to 5 working days.{" "}
+              <Link href="/distributors" className="underline underline-offset-4 hover:text-[#1C3322]">
+                Check the distributor list to see the distributors closest to you.
+              </Link>
             </p>
           </div>
         </div>
@@ -266,7 +269,11 @@ export default function ProductDetailClient({
               <p className="text-sm text-[#676E6A] leading-relaxed">
                 Orders are dispatched in protective, recyclable packaging. Lagos deliveries
                 arrive within 24–48 hours and the rest of Nigeria within 3–5 working days.
-                Orders above {formatNaira(50000)} ship free.
+                We offer 24 to 48 hours delivery of orders in cities where our distributors
+                are domicile. Orders outside these cities take 3 to 5 working days.{" "}
+                <Link href="/distributors" className="underline underline-offset-4 hover:text-[#1C3322]">
+                  Check the distributor list to see the distributors closest to you.
+                </Link>
               </p>
               <p className="text-sm text-[#676E6A] leading-relaxed">
                 Unopened items can be returned within 14 days of delivery for a full refund.

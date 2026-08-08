@@ -42,9 +42,9 @@ export default function CartPage() {
   const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - rawSubtotal, 0);
 
   const deliveryEstimates = {
-    lagos: "24 Hours Express (Lagos Metropolis)",
-    abuja: "48 Hours Courier (Abuja FCT)",
-    ph: "48 Hours Courier (Port Harcourt)",
+    lagos: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
+    abuja: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
+    ph: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
   };
 
   if (!hydrated) {
@@ -77,16 +77,16 @@ export default function CartPage() {
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* Items Column */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Free Shipping Progress Indicator */}
-              <div className="p-4 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm">
-                {remainingForFreeShipping > 0 ? (
+              {/* Delivery information */}
+              <div className="hidden p-4 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm">
+                {false ? (
                   <p className="text-xs font-sans text-[#161A17] mb-2 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" />
-                    Add <span className="font-bold text-[#1C3322]">₦{remainingForFreeShipping.toLocaleString()}</span> for Complimentary Express Delivery
+                    Delivery charges are calculated at checkout.
                   </p>
                 ) : (
                   <p className="text-xs font-sans text-[#1C3322] font-semibold mb-2 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-[#C9A227]" /> Complimentary Luxury Express Shipping Unlocked
+                    <ShieldCheck className="w-4 h-4 text-[#C9A227]" /> Delivery charges are calculated at checkout.
                   </p>
                 )}
                 <div className="w-full h-2 bg-[#E2E6E3] rounded-full overflow-hidden">

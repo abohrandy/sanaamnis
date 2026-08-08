@@ -6,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, MapPin, Mail, CheckCircle2, Loader2, Phone } from "lucide-react";
+import { Send, MapPin, Mail, CheckCircle2, Loader2, Phone, MessageCircle } from "lucide-react";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -74,15 +74,17 @@ export default function ContactPage() {
                   </h2>
                   <p className="text-sm text-[#676E6A] leading-relaxed">
                     Plot 506, Cadastral Zone, Dakibiyu — behind Christ Embassy, Dakibiyu,
-                    Jabi, Abuja
+                    Jabi, Abuja, FCT, Nigeria
                   </p>
-                  <p className="text-sm text-[#676E6A] mt-1">Closest bustop is Jabi mosholashi</p>
-                  <a
-                    href="tel:+2349137358352"
-                    className="inline-flex items-center gap-1.5 text-sm text-[#1C3322] font-semibold hover:text-[#C9A227] transition-colors mt-1"
-                  >
-                    <Phone className="w-3.5 h-3.5" aria-hidden="true" /> Call +234 913 735 8352 for directions
-                  </a>
+                  <p className="text-sm text-[#676E6A] mt-1">Closest Bus Stop: Jabi Mosholashi</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <a href="tel:+2349137358352" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[0.5rem] bg-[#1C3322] text-[#FAF8F5] text-[11px] font-bold uppercase tracking-[0.12em] hover:bg-[#2D4E35] transition-colors">
+                      <Phone className="w-3.5 h-3.5" aria-hidden="true" /> Call
+                    </a>
+                    <a href="https://wa.me/2349137358352" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[0.5rem] border border-[#E2E6E3] text-[#161A17] text-[11px] font-bold uppercase tracking-[0.12em] hover:border-[#1C3322] transition-colors">
+                      <MessageCircle className="w-3.5 h-3.5 text-[#C9A227]" aria-hidden="true" /> WhatsApp
+                    </a>
+                  </div>
                 </div>
               </div>
 

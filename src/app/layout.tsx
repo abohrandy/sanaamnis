@@ -33,6 +33,10 @@ const SOCIAL_IMAGE = "/products/range-full-dark.jpg";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
   title: {
     default: "Sana Amnis | Nigerian Coconut Water, Milk & Cold-Pressed Oil",
     template: "%s | Sana Amnis",

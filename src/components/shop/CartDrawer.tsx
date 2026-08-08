@@ -47,9 +47,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - totalAmount, 0);
 
   const deliveryEstimates = {
-    lagos: "24 Hours Express (Lagos Metropolis)",
-    abuja: "48 Hours Courier (Abuja FCT)",
-    ph: "48 Hours Courier (Port Harcourt)",
+    lagos: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
+    abuja: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
+    ph: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
   };
 
   return (
@@ -95,16 +95,16 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </button>
             </div>
 
-            {/* Free Shipping Progress Bar */}
-            <div className="bg-[#F3EFE8] px-6 py-3.5 border-b border-[#E2E6E3]">
-              {remainingForFreeShipping > 0 ? (
+            {/* Delivery information */}
+            <div className="hidden bg-[#F3EFE8] px-6 py-3.5 border-b border-[#E2E6E3]">
+              {false ? (
                 <p className="text-xs font-sans text-[#161A17] mb-1.5 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" />
-                  Add <span className="font-bold text-[#1C3322]">₦{remainingForFreeShipping.toLocaleString()}</span> for Complimentary Express Shipping
+                  Delivery charges are calculated at checkout.
                 </p>
               ) : (
                 <p className="text-xs font-sans text-[#1C3322] font-semibold mb-1.5 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#C9A227]" /> Complimentary Luxury Express Shipping Unlocked
+                  <ShieldCheck className="w-4 h-4 text-[#C9A227]" /> Delivery charges are calculated at checkout.
                 </p>
               )}
               <div className="w-full h-1.5 bg-[#E2E6E3] rounded-full overflow-hidden">
