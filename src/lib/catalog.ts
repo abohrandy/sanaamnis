@@ -132,7 +132,7 @@ export const CATALOG: CatalogProduct[] = [
     id: "e3c718b9-a87d-5fc0-960c-5227539674b4",
     slug: "coconut-oil",
     title: "Coconut Oil",
-    tagline: "Cold Press and Hot Press coconut oil for cooking and personal care.",
+    tagline: "Cold Press and Hot Press coconut oil for cooking.",
     description:
       "Coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A.\n\nWe also have hot pressed coconut oil that is produced through heat extraction and it can be used for cooking and skincare too.",
     categorySlug: "culinary",
