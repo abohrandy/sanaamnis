@@ -162,7 +162,7 @@ export default function ProductInteractiveForm({
           className="w-full flex items-center justify-center gap-2.5"
         >
           <ShoppingBag className="w-4 h-4" />
-          {soldOut ? "Sold Out" : `Add to Bag — ${formatNaira(selected.price * quantity)}`}
+          {soldOut ? "Sold Out" : `Add to Cart — ${formatNaira(selected.price * quantity)}`}
         </Button>
 
         <AnimatePresence>
@@ -176,13 +176,13 @@ export default function ProductInteractiveForm({
             >
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1C3322]">
                 <Check className="w-3.5 h-3.5 text-[#C9A227]" />
-                Added to your bag
+                Added to your cart
               </span>
               <Link
                 href="/cart"
                 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1C3322] underline underline-offset-4 hover:text-[#C9A227] transition-colors"
               >
-                View bag
+                View cart
               </Link>
             </motion.div>
           )}

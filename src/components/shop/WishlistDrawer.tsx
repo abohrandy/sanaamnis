@@ -157,7 +157,7 @@ export function WishlistDrawer({ isOpen, onClose }: WishlistDrawerProps) {
                             onClick={() => moveToBag(item.slug, item.productId)}
                             className="flex items-center gap-1.5 px-3 py-2 rounded-[0.5rem] bg-[#1C3322] text-[#FAF8F5] text-[10px] font-bold uppercase tracking-[0.14em] hover:bg-[#2D4E35] transition-colors cursor-pointer"
                           >
-                            <ShoppingBag className="w-3 h-3" /> Add to bag
+                            <ShoppingBag className="w-3 h-3" /> Add to cart
                           </button>
                           <button
                             type="button"

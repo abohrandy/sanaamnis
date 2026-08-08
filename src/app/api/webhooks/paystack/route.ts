@@ -107,7 +107,6 @@ export async function POST(request: Request) {
             <p style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #C9A227; margin: 0 0 20px;">Order confirmed</p>
             <hr style="border: 0; border-top: 1px solid #E2E6E3;" />
             <p>Thank you — we have received your payment of <strong>${formatNaira(paidNaira)}</strong> for order <strong>${orderNumber}</strong>.</p>
-            <p>We are packing your order now. Lagos deliveries usually arrive within 24–48 hours; elsewhere in Nigeria takes 3–5 working days.</p>
             <p style="margin-top: 24px; font-size: 13px; color: #676E6A;">
               Questions? Reply to this email or write to concierge@sanaamnis.com.
             </p>

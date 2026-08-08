@@ -239,7 +239,7 @@ export default function Header() {
             <button
               onClick={() => setIsCartOpen(true)}
               className="p-2.5 rounded-full bg-[#1C3322] text-[#FAF8F5] relative hover:bg-[#2D4E35] transition-all duration-300 shadow-ambient-sm cursor-pointer ml-1"
-              aria-label={`Shopping bag with ${cartItemsCount} items`}
+              aria-label={`Shopping cart with ${cartItemsCount} items`}
             >
               <ShoppingBag className="w-4 h-4" />
               {cartItemsCount > 0 && (

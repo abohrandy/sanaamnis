@@ -118,15 +118,14 @@ export const CATALOG: CatalogProduct[] = [
     categorySlug: "culinary",
     images: [
       "/products/coconut-milk-powder-supplied.jpg",
-      "/products/coconut-milk-powder.jpg",
       "/products/coconut-milk-powder-sizes.jpg",
-      "/products/coconut-milk-powder-pair.jpg",
+      "/products/coconut-milk-powder.jpg",
     ],
     badge: "NEW",
     variants: [
-      { id: "6d396826-aed2-5b9a-a316-efcc7b8ae204", sku: "SA-CMP-100", name: "100g", price: 5000, stock: 80, imageUrl: "/products/coconut-milk-powder.jpg" },
+      { id: "6d396826-aed2-5b9a-a316-efcc7b8ae204", sku: "SA-CMP-100", name: "100g", price: 5000, stock: 80, imageUrl: "/products/coconut-milk-powder-supplied.jpg" },
       { id: "35763316-68a3-5d4d-8a47-1dcc3aff35d8", sku: "SA-CMP-500", name: "500g", price: 22000, stock: 60, imageUrl: "/products/coconut-milk-powder-sizes.jpg" },
-      { id: "b96b58bf-56ee-5618-88b5-c9f68ff72028", sku: "SA-CMP-1000", name: "1kg", price: 42000, stock: 40, imageUrl: "/products/coconut-milk-powder-pair.jpg" },
+      { id: "b96b58bf-56ee-5618-88b5-c9f68ff72028", sku: "SA-CMP-1000", name: "1kg", price: 42000, stock: 40, imageUrl: "/products/coconut-milk-powder.jpg" },
     ],
   },
   {
@@ -144,7 +143,6 @@ export const CATALOG: CatalogProduct[] = [
       "/products/coconut-oil-cold-pressed-500ml.jpg",
       "/products/coconut-oil-cold-pressed-1l.jpg",
       "/products/coconut-oil-hot-pressed.jpg",
-      "/products/coconut-oil-hot-pressed-trio.jpg",
     ],
     badge: "COLD + HOT PRESS",
     variants: [

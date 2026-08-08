@@ -394,7 +394,7 @@ export const DISTRIBUTORS: Distributor[] = [
   },
   {
     slug: "abuja-pickup",
-    region: "Abuja pickup locations",
+    region: "Abuja pickup location",
     areasCovered: "Apo, Garki, Guzape, Gudu, Durumi",
     contactName: "Mercy Jayeola",
     phone: "08158495170",

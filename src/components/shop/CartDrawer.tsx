@@ -80,7 +80,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <ShoppingBag className="w-4 h-4 text-[#C9A227]" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-lg font-medium text-[#161A17]">Your Bag</h3>
+                  <h3 className="font-serif text-lg font-medium text-[#161A17]">Your Cart</h3>
                   <p className="text-[10px] uppercase tracking-[0.18em] text-[#676E6A]">
                     {items.length} {items.length === 1 ? "item" : "items"}
                   </p>
@@ -124,7 +124,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <div className="w-16 h-16 rounded-full bg-[#F3EFE8] flex items-center justify-center">
                     <ShoppingBag className="w-8 h-8 text-[#676E6A] stroke-[1.2]" />
                   </div>
-                  <h4 className="font-serif text-lg font-medium text-[#161A17]">Your Bag is Empty</h4>
+                  <h4 className="font-serif text-lg font-medium text-[#161A17]">Your Cart is Empty</h4>
                   <p className="text-xs text-[#676E6A] font-sans max-w-[240px] leading-relaxed">
                     Explore our coconut products and body care to complete your order.
                   </p>

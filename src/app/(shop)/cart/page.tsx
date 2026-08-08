@@ -66,7 +66,7 @@ export default function CartPage() {
         <div className="max-w-2xl space-y-3">
           <Badge variant="gold">SANCTUARY INVENTORY</Badge>
           <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17]">
-            Shopping Bag
+            Shopping Cart
           </h1>
           <p className="text-xs text-[#676E6A] font-sans">
             Review your reserved cold-pressed elixirs, configure gift preferences, and calculate logistics delivery.
@@ -229,7 +229,7 @@ export default function CartPage() {
             <div className="w-16 h-16 rounded-full bg-[#F3EFE8] flex items-center justify-center mx-auto">
               <ShoppingBag className="w-8 h-8 text-[#676E6A] stroke-[1.2]" />
             </div>
-            <h3 className="font-serif text-xl font-medium text-[#161A17]">Your Shopping Bag is Empty</h3>
+            <h3 className="font-serif text-xl font-medium text-[#161A17]">Your Shopping Cart is Empty</h3>
             <p className="text-xs text-[#676E6A] font-sans max-w-sm mx-auto leading-relaxed">
               Discover coconut water, milk powder, oils, kitchen staples and body care in our catalog.
             </p>

@@ -31,7 +31,7 @@ const COPY: Record<Exclude<OrderState, "loading">, { badge: string; title: strin
 
 const STEPS = [
   { icon: Package, title: "Packed", body: "We pick and seal your order, usually the same working day." },
-  { icon: Truck, title: "Dispatched", body: "Lagos in 24–48 hours, elsewhere in Nigeria in 3–5 working days." },
+  { icon: Truck, title: "Dispatched", body: "Delivery timing depends on your city and distributor availability." },
   { icon: CheckCircle2, title: "Delivered", body: "Something not right? Tell us within 14 days and we will fix it." },
 ];
 

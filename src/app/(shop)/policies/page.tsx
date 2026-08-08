@@ -36,7 +36,7 @@ export default function PoliciesPage() {
         {
           heading: "Cookies and local storage",
           body: [
-            "We use a session cookie to keep you signed in. Your shopping bag and saved items are stored in your browser's local storage, not on our servers, until you check out.",
+            "We use a session cookie to keep you signed in. Your shopping cart and saved items are stored in your browser's local storage, not on our servers, until you check out.",
             "We do not run third-party advertising trackers on this site.",
           ],
         },

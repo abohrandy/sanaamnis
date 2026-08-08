@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Some items in your bag are no longer available. Please refresh the page and try again.",
+          "Some items in your cart are no longer available. Please refresh the page and try again.",
         unknownVariants: unknown,
       },
       { status: 409 }

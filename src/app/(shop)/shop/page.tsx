@@ -11,7 +11,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Shop all products",
   description:
-    "Coconut water, milk powder, oils, flour, flakes, poundo and body care — made in Nigeria from Nigerian, home-grown coconuts.",
+    "Coconut water, milk powder, oils, flour, flakes, poundo and body care — made in Nigeria from home-grown coconuts.",
   alternates: { canonical: "/shop" },
 };
 
@@ -43,7 +43,7 @@ export default async function ShopPage() {
             categories={categories}
             bannerTitle="Every product"
             bannerSubtitle="The full range"
-            bannerDescription="Coconut water, milk powder, oils, flour, flakes, poundo and body care — made in Nigeria from Nigerian, home-grown coconuts."
+            bannerDescription="Coconut water, milk powder, oils, flour, flakes, poundo and body care — made in Nigeria from home-grown coconuts."
           />
         </Suspense>
       </main>

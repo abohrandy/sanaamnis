@@ -267,8 +267,7 @@ export default function ProductDetailClient({
                 Shipping and returns
               </h3>
               <p className="text-sm text-[#676E6A] leading-relaxed">
-                Orders are dispatched in protective, recyclable packaging. Lagos deliveries
-                arrive within 24–48 hours and the rest of Nigeria within 3–5 working days.
+                Orders are dispatched in protective, recyclable packaging.
                 We offer 24 to 48 hours delivery of orders in cities where our distributors
                 are domicile. Orders outside these cities take 3 to 5 working days.{" "}
                 <Link href="/distributors" className="underline underline-offset-4 hover:text-[#1C3322]">

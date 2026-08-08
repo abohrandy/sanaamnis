@@ -103,7 +103,7 @@ export default function CheckoutPage() {
             href="/cart"
             className="inline-flex items-center text-xs font-sans uppercase tracking-[0.18em] text-[#676E6A] hover:text-[#1C3322] transition-colors gap-2"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Shopping Bag
+            <ArrowLeft className="w-4 h-4" /> Back to Shopping Cart
           </Link>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E2E6E3] pb-8">
@@ -117,7 +117,7 @@ export default function CheckoutPage() {
             {/* 3-Step Multi-Step Progress Indicator */}
             <div className="flex items-center gap-2 text-xs font-sans uppercase font-bold tracking-[0.15em]">
               <span className="flex items-center gap-1.5 text-[#1C3322]">
-                <CheckCircle2 className="w-4 h-4 text-[#C9A227]" /> 1. Bag
+                <CheckCircle2 className="w-4 h-4 text-[#C9A227]" /> 1. Cart
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-[#676E6A]" />
               <span className="flex items-center gap-1.5 text-[#1C3322] border-b-2 border-[#1C3322] pb-0.5">
@@ -138,7 +138,7 @@ export default function CheckoutPage() {
             </div>
             <h3 className="font-serif text-xl font-medium text-[#161A17]">Your Cart is Empty</h3>
             <p className="text-xs text-[#676E6A] font-sans max-w-sm mx-auto leading-relaxed">
-              You currently have no cold-pressed formulations reserved in your bag.
+              You currently have no products reserved in your cart.
             </p>
             <Link href="/shop" className="inline-block">
               <Button variant="botanical" size="md">

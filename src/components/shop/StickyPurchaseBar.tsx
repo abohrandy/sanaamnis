@@ -17,7 +17,7 @@ export interface StickyPurchaseBarProps {
 }
 
 /**
- * Appears once the main buy panel scrolls out of view, so price and add-to-bag
+ * Appears once the main buy panel scrolls out of view, so price and add-to-cart
  * stay reachable down a long product page.
  */
 export function StickyPurchaseBar({ product, variant, isVisible }: StickyPurchaseBarProps) {
@@ -77,7 +77,7 @@ export function StickyPurchaseBar({ product, variant, isVisible }: StickyPurchas
                   href="/cart"
                   className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.14em] text-[#1C3322] underline underline-offset-4 hover:text-[#C9A227] transition-colors"
                 >
-                  View bag
+                  View cart
                 </Link>
               )}
               <Button
@@ -96,7 +96,7 @@ export function StickyPurchaseBar({ product, variant, isVisible }: StickyPurchas
                   <>
                     <ShoppingBag className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">
-                      {soldOut ? "Sold Out" : "Add to Bag"}
+                      {soldOut ? "Sold Out" : "Add to Cart"}
                     </span>
                     <span className="sm:hidden">{soldOut ? "Sold Out" : "Add"}</span>
                   </>
