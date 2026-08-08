@@ -126,7 +126,7 @@ export default async function Home() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {featured.map((product, i) => (
                   <ProductCard
                     key={product.id}
@@ -278,7 +278,7 @@ export default async function Home() {
                 {
                   icon: Truck,
                   title: "Nationwide delivery",
-                  body: "Lagos in 24–48 hours, everywhere else in 3–5 working days. Free above ₦50,000.",
+                  body: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
                   href: "/shipping",
                   cta: "Delivery details",
                 },
