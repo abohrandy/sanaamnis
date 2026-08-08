@@ -29,7 +29,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         "rounded-full glass-alabaster text-[#161A17] hover:bg-[#1C3322] hover:text-[#FAF8F5] transition-colors p-2.5 shadow-ambient-sm border border-[#E2E6E3]",
       primary: "bg-[#1C3322] text-[#FAF8F5] hover:bg-[#2D4E35] shadow-ambient-sm hover-lift-luxury",
       secondary: "bg-[#F3EFE8] text-[#161A17] hover:bg-[#EADBCE] border border-[#E2E6E3]",
-      outline: "border border-[#E2E6E3] bg-transparent text-[#161A17] hover:bg-[#F3EFE8] hover:border-[#1C3322] dark:text-[#FAF8F5]",
+      outline: "border border-[#E2E6E3] bg-transparent text-[#161A17] hover:bg-[#F3EFE8] hover:border-[#1C3322]",
     };
 
     const sizes = {
@@ -59,5 +59,4 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = "Button";
-
 

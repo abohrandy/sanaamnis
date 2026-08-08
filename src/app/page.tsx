@@ -66,7 +66,7 @@ const PROCESS_STEPS = [
   {
     icon: Thermometer,
     title: "Made in Nigeria",
-    body: "Our coconut range is made in Nigeria from Nigerian, home-grown coconuts.",
+    body: "Our coconut range is made in Nigeria from home-grown coconuts.",
   },
   {
     icon: PackageCheck,
@@ -126,7 +126,7 @@ export default async function Home() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {featured.map((product, i) => (
                   <ProductCard
                     key={product.id}
@@ -215,7 +215,7 @@ export default async function Home() {
                   range to the consumer market.
                 </p>
                 <p className="text-sm md:text-base text-[#161A17]/75 leading-[1.85]">
-                  We make our products in Nigeria using Nigerian, home-grown coconuts and
+                  We make our products in Nigeria using home-grown coconuts and
                   work with local farming families across the country.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-3">

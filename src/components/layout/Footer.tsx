@@ -30,8 +30,8 @@ const ABOUT_LINKS = [
 export default function Footer() {
   return (
     <footer className="mt-auto bg-[#161A17] text-[#FAF8F5] border-t border-gold-hairline">
-      <div className="max-w-7xl mx-auto px-6 py-16 md:py-20 grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-12">
-        <div className="col-span-2 md:col-span-4 space-y-6">
+      <div className="max-w-7xl mx-auto px-6 py-16 md:py-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-8 xl:grid-cols-12 gap-10 md:gap-12">
+        <div className="col-span-1 sm:col-span-2 md:col-span-3 xl:col-span-4 space-y-6">
           <Link href="/" className="block w-fit" aria-label="Sana Amnis home">
             <Image
               src="/logo3.png"
@@ -57,7 +57,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        <nav className="col-span-1 md:col-span-2 space-y-4" aria-labelledby="footer-shop">
+        <nav className="col-span-1 md:col-span-1 xl:col-span-2 space-y-4" aria-labelledby="footer-shop">
           <h2
             id="footer-shop"
             className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold"
@@ -75,7 +75,7 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <nav className="col-span-1 md:col-span-2 space-y-4" aria-labelledby="footer-care">
+        <nav className="col-span-1 md:col-span-1 xl:col-span-2 space-y-4" aria-labelledby="footer-care">
           <h2
             id="footer-care"
             className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold"
@@ -93,7 +93,7 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <nav className="col-span-1 md:col-span-2 space-y-4" aria-labelledby="footer-about">
+        <nav className="col-span-1 md:col-span-1 xl:col-span-2 space-y-4" aria-labelledby="footer-about">
           <h2
             id="footer-about"
             className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold"
@@ -111,14 +111,14 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <div className="col-span-2 space-y-4">
+        <div className="col-span-1 sm:col-span-2 md:col-span-2 xl:col-span-2 space-y-4">
           <h2 className="text-[10px] uppercase tracking-[0.25em] text-[#C9A227] font-semibold">
             Get in touch
           </h2>
           <address className="not-italic space-y-2.5 text-xs text-[#FAF8F5]/70 leading-relaxed">
             <p className="flex items-start gap-2">
               <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
-              Plot 506, Cadastral Zone, Dakibiyu, Jabi, Abuja
+              Plot 506, Cadastral Zone, Dakibiyu, Jabi, Abuja, FCT, Nigeria
             </p>
             <p className="flex items-start gap-2">
               <Mail className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
