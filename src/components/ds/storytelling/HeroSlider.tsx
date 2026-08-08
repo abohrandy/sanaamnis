@@ -36,7 +36,7 @@ const HERO_SLIDES: HeroSlide[] = [
     secondaryCtaText: "Our story",
     secondaryCtaLink: "/about",
     image: "/products/range-full-dark.jpg",
-    objectPosition: "center 60%",
+    objectPosition: "center bottom",
   },
   {
     id: "water",
@@ -49,20 +49,20 @@ const HERO_SLIDES: HeroSlide[] = [
     secondaryCtaText: "See all drinks",
     secondaryCtaLink: "/shop?category=hydration",
     image: "/products/coconut-water-range.jpg",
-    objectPosition: "center 45%",
+    objectPosition: "center bottom",
   },
   {
     id: "oil",
-    eyebrow: "Coconut Oil",
-    title: "Choose Cold Press or Hot Press",
+    eyebrow: "Cold-Pressed Coconut Oil",
+    title: "Made without heat",
     description:
-      "One coconut oil product with verified Cold Press and Hot Press options for cooking and personal care.",
+      "Extracted through a natural fermentation process, so nothing is bleached, deodorised or cooked away.",
     ctaText: "Shop coconut oil",
     ctaLink: "/products/extra-virgin-coconut-oil",
     secondaryCtaText: "How we press",
     secondaryCtaLink: "/about",
     image: "/products/coconut-oil-cold-pressed.jpg",
-    objectPosition: "center 40%",
+    objectPosition: "center bottom",
   },
 ];
 
