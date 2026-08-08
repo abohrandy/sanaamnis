@@ -126,7 +126,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
                   <h4 className="font-serif text-lg font-medium text-[#161A17]">Your Bag is Empty</h4>
                   <p className="text-xs text-[#676E6A] font-sans max-w-[240px] leading-relaxed">
-                    Explore our cold-pressed organic formulations to curate your wellness ritual.
+                    Explore our coconut products and body care to complete your order.
                   </p>
                   <Button variant="botanical" size="md" onClick={onClose}>
                     Explore Selection

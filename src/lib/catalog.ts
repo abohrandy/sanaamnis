@@ -58,7 +58,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Coconut Water",
     tagline: "Coconut water, made in Nigeria from home-grown coconuts.",
     description:
-      "One hundred percent coconut water drawn from young green coconuts grown by local farmers on organic trees across Nigeria. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
+      "Coconut water drawn from young green coconuts grown by local farmers across Nigeria. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
     categorySlug: "hydration",
     images: [
       "/products/coconut-water-range.jpg",
@@ -112,7 +112,7 @@ export const CATALOG: CatalogProduct[] = [
     id: "45dd19f8-9d31-5250-a9a7-16d184da7dc4",
     slug: "pure-coconut-milk-powder",
     title: "Coconut Milk Powder",
-    tagline: "Instant coconut milk powder for cooking and baking.",
+    tagline: "Coconut milk powder for cooking and baking.",
     description:
       "Fresh coconut milk gently spray-dried into a fine powder that reconstitutes in seconds. Gives you the body of full-cream coconut milk with none of the refrigeration, so it keeps in the cupboard and measures exactly to the spoon. No added sugar.",
     categorySlug: "culinary",
@@ -135,7 +135,7 @@ export const CATALOG: CatalogProduct[] = [
     title: "Coconut Oil",
     tagline: "Cold Press and Hot Press coconut oil for cooking and personal care.",
     description:
-      "Extra virgin coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
+      "Coconut oil made in Nigeria from home-grown coconuts, extracted through a natural fermentation process so none of the lauric acid or natural polyphenols are cooked away. Unrefined, unbleached, hexane-free and fortified with vitamin A. Equally at home in a frying pan or on your skin.",
     categorySlug: "culinary",
     extraCategorySlugs: ["body"],
     images: [

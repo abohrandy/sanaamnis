@@ -271,7 +271,7 @@ export const ARTICLES: Article[] = [
     body: [
       {
         paragraphs: [
-          "We buy coconuts from local farming families growing organic coconut trees across Nigeria, rather than through the chain of intermediaries that normally sits between a Nigerian farm and a finished product.",
+          "We buy coconuts from local farming families across Nigeria, rather than through the chain of intermediaries that normally sits between a Nigerian farm and a finished product.",
         ],
       },
       {
@@ -289,7 +289,7 @@ export const ARTICLES: Article[] = [
       {
         heading: "What we have not done yet",
         paragraphs: [
-          "We do not hold organic certification and we do not claim it. Our coconuts are grown without synthetic pesticide programmes, but certification is a formal process we have not completed.",
+          "We do not hold the relevant certification and we do not claim it. Our coconuts are grown without synthetic pesticide programmes, but certification is a formal process we have not completed.",
           "We also cannot yet publish an audited figure for the share of each sale that reaches farmers. When we can, we will.",
         ],
       },

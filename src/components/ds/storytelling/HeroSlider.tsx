@@ -40,7 +40,7 @@ const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: "water",
-    eyebrow: "Pure Coconut Water",
+    eyebrow: "Coconut Water",
     title: "Hydration, straight from the nut",
     description:
       "Drawn from young green coconuts and bottled as it comes. No added sugar, no concentrate, no preservatives.",

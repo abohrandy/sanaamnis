@@ -16,8 +16,8 @@ export interface CollectionBannerProps {
 
 export function CollectionBanner({
   title = "The Botanical Selection",
-  subtitle = "100% COLD-PRESSED ORGANIC FORMULATIONS",
-  description = "Explore our unrefined organic coconut elixirs, cold-pressed nectars, and artisanal body formulations sourced directly from local farmers across Nigeria.",
+  subtitle = "COLD-PRESSED COCONUT PRODUCTS",
+  description = "Explore our coconut products and body care, sourced directly from local farmers across Nigeria.",
   itemCount,
   // The shop page never passes an image, so this default is what customers
   // actually see — it was a generic Unsplash stock photo unrelated to the brand.

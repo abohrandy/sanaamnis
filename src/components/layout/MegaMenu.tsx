@@ -105,7 +105,7 @@ export function MegaMenu({ type, onClose }: MegaMenuProps) {
                 Bought direct from the farm
               </h4>
               <p className="text-xs text-[#FAF8F5]/80 font-sans leading-relaxed">
-                We buy coconuts from local farming families growing organic trees across
+                We buy coconuts from local farming families growing trees across
                 Nigeria, and process the whole fruit ourselves.
               </p>
             </div>
