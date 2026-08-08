@@ -41,7 +41,7 @@ export function MegaMenu({ type, onClose }: MegaMenuProps) {
             <span className="text-[10px] uppercase tracking-[0.25em] font-sans font-bold text-[#C9A227] block">
               Shop by category
             </span>
-            <ul className="space-y-3 font-sans text-xs uppercase tracking-[0.18em] font-semibold text-[#161A17] dark:text-[#FAF8F5]">
+            <ul className="space-y-3 font-sans text-xs uppercase tracking-[0.18em] font-semibold text-[#1C3322]">
               <li>
                 <Link
                   href="/shop"

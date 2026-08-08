@@ -56,9 +56,9 @@ export const CATALOG: CatalogProduct[] = [
     id: "b02e6a54-39c4-595e-bff6-937beb679466",
     slug: "sana-amnis-coconut-water",
     title: "Coconut Water",
-    tagline: "Pure coconut water, made in Nigeria from home-grown coconuts.",
+    tagline: "Coconut water, made in Nigeria from home-grown coconuts.",
     description:
-      "One hundred percent pure coconut water drawn from young green coconuts grown by local farmers on organic trees across Nigeria. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
+      "One hundred percent coconut water drawn from young green coconuts grown by local farmers on organic trees across Nigeria. Naturally rich in potassium, magnesium and the electrolyte salts your body loses through heat and exertion. No added sugar, no concentrate, no preservatives — simply the water as it comes from the nut.",
     categorySlug: "hydration",
     images: [
       "/products/coconut-water-range.jpg",
@@ -86,6 +86,29 @@ export const CATALOG: CatalogProduct[] = [
     ],
   },
   {
+    id: "bdc58302-d353-55c5-a193-79d0a265b5a0",
+    slug: "coconut-milk-full-cream",
+    title: "Full Cream Coconut Milk",
+    tagline: "Rich, ready-to-pour coconut milk pressed from fresh mature coconuts.",
+    description:
+      "A full-cream coconut milk pressed from the meat of mature coconuts and bottled without thickeners or emulsifiers. Pours smooth and stays rich through cooking — built for stews, curries, smoothies and coffee alike.",
+    categorySlug: "culinary",
+    images: [
+      "/products/full-cream-coconut-milk.jpg",
+      "/products/full-cream-coconut-milk-range.jpg",
+    ],
+    variants: [
+      {
+        id: "ee6d9cb0-a0f1-50c2-af4f-1b6c1aa0bef2",
+        sku: "SA-CM-500",
+        name: "500ml",
+        price: 5000,
+        stock: 90,
+        imageUrl: "/products/full-cream-coconut-milk.jpg",
+      },
+    ],
+  },
+  {
     id: "45dd19f8-9d31-5250-a9a7-16d184da7dc4",
     slug: "pure-coconut-milk-powder",
     title: "Coconut Milk Powder",
@@ -94,6 +117,7 @@ export const CATALOG: CatalogProduct[] = [
       "Fresh coconut milk gently spray-dried into a fine powder that reconstitutes in seconds. Gives you the body of full-cream coconut milk with none of the refrigeration, so it keeps in the cupboard and measures exactly to the spoon. No added sugar.",
     categorySlug: "culinary",
     images: [
+      "/products/coconut-milk-powder-supplied.jpg",
       "/products/coconut-milk-powder.jpg",
       "/products/coconut-milk-powder-sizes.jpg",
       "/products/coconut-milk-powder-pair.jpg",
@@ -163,9 +187,13 @@ export const CATALOG: CatalogProduct[] = [
     description:
       "Our coconut oil in its most portable form. A small, smooth balm that melts on contact to seal moisture into dry or cracked lips, with no synthetic fragrance and nothing that tastes of plastic.",
     categorySlug: "body",
-    images: [PLACEHOLDER_IMAGE],
-    photographyPending: true,
-    variants: [{ id: "e7cd0526-945d-57ee-bc22-a67a1e56fe86", sku: "SA-LIP-05", name: "5g", price: 1500, stock: 200 }],
+    images: [
+      "/products/lip-balm.jpg",
+      "/products/lip-balm-range.jpg",
+      "/products/lip-balm-lifestyle.jpg",
+      "/products/lip-balm-closeup.jpg",
+    ],
+    variants: [{ id: "e7cd0526-945d-57ee-bc22-a67a1e56fe86", sku: "SA-LIP-05", name: "5g", price: 1500, stock: 200, imageUrl: "/products/lip-balm.jpg" }],
   },
   {
     id: "966a4c2f-188b-5635-8e33-b7a6adde6122",
