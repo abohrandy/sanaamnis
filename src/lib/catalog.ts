@@ -16,6 +16,11 @@ export interface CatalogCategory {
   name: string;
 }
 
+export interface CatalogUsageStep {
+  title: string;
+  description: string;
+}
+
 export interface CatalogProduct {
   id: string;
   slug: string;
@@ -28,6 +33,7 @@ export interface CatalogProduct {
   variants: CatalogVariant[];
   badge?: string;
   photographyPending?: boolean;
+  usageSteps: CatalogUsageStep[];
 }
 
 export type CategorySlug = "hydration" | "culinary" | "body";
@@ -66,6 +72,11 @@ export const CATALOG: CatalogProduct[] = [
       "/products/coconut-water-bottle-500ml.jpg",
     ],
     badge: "NO ADDED SUGAR",
+    usageSteps: [
+      { title: "Chilled, straight up", description: "Best served cold, straight from the fridge, as a light everyday drink." },
+      { title: "Post-workout", description: "Replace lost electrolytes after exercise or time in the sun instead of a sports drink." },
+      { title: "Once opened", description: "Refrigerate and drink within 48 hours — there are no preservatives to extend it." },
+    ],
     variants: [
       {
         id: "def59067-c0eb-5884-b1d1-0585c3529edb",
@@ -97,6 +108,11 @@ export const CATALOG: CatalogProduct[] = [
       "/products/full-cream-coconut-milk.jpg",
       "/products/full-cream-coconut-milk-range.jpg",
     ],
+    usageSteps: [
+      { title: "Shake before pouring", description: "The cream can settle — shake the bottle to bring it back to a smooth, even pour." },
+      { title: "Stews and curries", description: "Stir in during cooking for body and richness in soups, stews and curries." },
+      { title: "Coffee and smoothies", description: "Use in place of dairy milk for a fuller, coconut-forward coffee or smoothie." },
+    ],
     variants: [
       {
         id: "ee6d9cb0-a0f1-50c2-af4f-1b6c1aa0bef2",
@@ -122,6 +138,11 @@ export const CATALOG: CatalogProduct[] = [
       "/products/coconut-milk-powder.jpg",
     ],
     badge: "NEW",
+    usageSteps: [
+      { title: "Reconstitute", description: "Whisk with warm water to the thickness you need — closer to milk or closer to cream." },
+      { title: "Baking and sauces", description: "Measure straight from the tub, no fridge space needed, for a precise cup or spoon." },
+      { title: "Store dry", description: "Keep the lid sealed in a cool cupboard between uses to keep it free-flowing." },
+    ],
     variants: [
       { id: "6d396826-aed2-5b9a-a316-efcc7b8ae204", sku: "SA-CMP-100", name: "100g", price: 5000, stock: 80, imageUrl: "/products/coconut-milk-powder-supplied.jpg" },
       { id: "35763316-68a3-5d4d-8a47-1dcc3aff35d8", sku: "SA-CMP-500", name: "500g", price: 22000, stock: 60, imageUrl: "/products/coconut-milk-powder-sizes.jpg" },
@@ -145,6 +166,11 @@ export const CATALOG: CatalogProduct[] = [
       "/products/coconut-oil-hot-pressed.jpg",
     ],
     badge: "COLD + HOT PRESS",
+    usageSteps: [
+      { title: "In the kitchen", description: "Cook, bake and fry with it, or stir a spoonful into coffee, smoothies and porridge." },
+      { title: "On skin", description: "Warm a little between clean palms and press onto damp skin straight after a shower." },
+      { title: "Through hair", description: "Work through scalp and damp ends 30 minutes before washing as a pre-shampoo treatment." },
+    ],
     variants: [
       { id: "8b1ea61d-8b9f-55b9-9a39-0909eff7765a", sku: "SA-CO-CP-100", name: "Cold Press · 100ml", price: 3000, stock: 80, imageUrl: "/products/coconut-oil-cold-pressed-100ml.jpg" },
       { id: "0ee7a821-4734-5314-8eb3-505605e26aa5", sku: "SA-CO-CP-500", name: "Cold Press · 500ml", price: 13000, stock: 50, imageUrl: "/products/coconut-oil-cold-pressed-500ml.jpg" },
@@ -161,6 +187,11 @@ export const CATALOG: CatalogProduct[] = [
       "A rich blend of carrot infused into our own coconut oil, carrying the beta-carotene and natural vitamin A that carrots are prized for. Traditionally used to even skin tone and add warmth and shine to hair.",
     categorySlug: "body",
     images: ["/products/carrot-oil.jpg", "/products/carrot-oil-lifestyle.jpg"],
+    usageSteps: [
+      { title: "Even skin tone", description: "Massage a small amount into face or body after a shower, while skin is still damp." },
+      { title: "Shine and warmth in hair", description: "Work a few drops through mid-lengths and ends to add gloss without weighing hair down." },
+      { title: "Patch test first", description: "Carotenoids can lightly tint very fair skin with heavy daily use — trial on a small area first." },
+    ],
     variants: [
       { id: "56b330c6-eff3-5f63-ad43-919d1358de2e", sku: "SA-CRT-100", name: "100ml", price: 3500, stock: 70, imageUrl: "/products/carrot-oil.jpg" },
       { id: "1cc01abb-1d7a-5b1e-9c02-18c774d67349", sku: "SA-CRT-200", name: "200ml", price: 7000, stock: 50, imageUrl: "/products/carrot-oil-lifestyle.jpg" },
@@ -175,6 +206,11 @@ export const CATALOG: CatalogProduct[] = [
       "A blend of avocado and coconut oils. Avocado brings heavier, slower-absorbing lipids and vitamin E; coconut brings lauric acid and a lighter finish. Together they make a conditioning oil that suits dry skin and thick or coily hair.",
     categorySlug: "body",
     images: ["/products/avococo-oil.jpg", "/products/avococo-oil-trio.jpg"],
+    usageSteps: [
+      { title: "Dry skin relief", description: "Smooth over elbows, knees and other dry patches after bathing to lock in moisture." },
+      { title: "Deep conditioning", description: "Apply generously to thick or coily hair and leave in for 20-30 minutes before washing." },
+      { title: "Daily hand and cuticle care", description: "Rub a small amount into hands and cuticles as needed through the day." },
+    ],
     variants: [{ id: "f1eeee32-20fe-54bd-b758-424ed7cd2e62", sku: "SA-AVC-100", name: "100ml", price: 4500, stock: 70, imageUrl: "/products/avococo-oil.jpg" }],
   },
   {
@@ -191,6 +227,11 @@ export const CATALOG: CatalogProduct[] = [
       "/products/lip-balm-lifestyle.jpg",
       "/products/lip-balm-closeup.jpg",
     ],
+    usageSteps: [
+      { title: "Apply as needed", description: "Swipe a thin layer over lips whenever they feel dry or tight." },
+      { title: "Before bed", description: "Apply a slightly thicker layer at night to wake up to softer, less cracked lips." },
+      { title: "Keep it close", description: "Small enough for a pocket or bag, so it's on hand through weather changes." },
+    ],
     variants: [{ id: "e7cd0526-945d-57ee-bc22-a67a1e56fe86", sku: "SA-LIP-05", name: "5g", price: 1500, stock: 200, imageUrl: "/products/lip-balm.jpg" }],
   },
   {
@@ -202,6 +243,11 @@ export const CATALOG: CatalogProduct[] = [
       "Broad flakes of coconut meat dehydrated until crisp, with nothing added. Eat them straight from the pouch as a snack, scatter them over granola and yoghurt, or fold them into baking for texture.",
     categorySlug: "culinary",
     images: ["/products/coconut-flakes.jpg"],
+    usageSteps: [
+      { title: "Straight from the pouch", description: "Eat as a crisp, naturally sweet snack on its own." },
+      { title: "Over breakfast", description: "Scatter over granola, oats or yoghurt for crunch." },
+      { title: "In baking", description: "Fold into cakes, cookies and bars for texture and toasted flavour." },
+    ],
     variants: [
       { id: "0f786e66-cfdc-5574-a16d-c11ce804d127", sku: "SA-FLK-50", name: "50g", price: 1500, stock: 120, imageUrl: "/products/coconut-flakes.jpg" },
       { id: "88320a11-2f30-53f7-856b-7534375df355", sku: "SA-FLK-100", name: "100g", price: 2500, stock: 100, imageUrl: "/products/coconut-flakes.jpg" },
@@ -223,6 +269,11 @@ export const CATALOG: CatalogProduct[] = [
       "/products/desiccated-coconut-range.jpg",
       "/products/desiccated-coconut-styled.jpg",
     ],
+    usageSteps: [
+      { title: "Baking", description: "Fold into cakes, cookies and pastry for a fine, even coconut texture." },
+      { title: "Smoothies", description: "Blend a spoonful in for extra body and a light coconut flavour." },
+      { title: "Rice dishes and toppings", description: "Stir into rice as it cooks, or sprinkle over meals as a finishing touch." },
+    ],
     variants: [
       { id: "ef0a71a3-941f-5ca4-9d2c-dad5c4d04f54", sku: "SA-DSC-100", name: "100g", price: 2000, stock: 100, imageUrl: "/products/desiccated-coconut.jpg" },
     ],
@@ -236,6 +287,11 @@ export const CATALOG: CatalogProduct[] = [
       "Made from coconut, mixed and moulded exactly as you would poundo yam and higher in fibre than any other flour, and eaten with the same soups. Far lower in carbohydrate than yam or cassava flour, which makes it a genuine option for anyone managing blood sugar without giving up swallow.",
     categorySlug: "culinary",
     images: ["/products/coconut-poundo.jpg", "/products/coconut-poundo-pair.jpg"],
+    usageSteps: [
+      { title: "Mix and mould", description: "Stir into hot water the same way you would poundo yam, until it forms a smooth, stretchy swallow." },
+      { title: "Serve with soup", description: "Pair with any soup you would normally eat with poundo — egusi, ogbono, vegetable and more." },
+      { title: "Portion to taste", description: "Adjust the water-to-powder ratio to get the softness or firmness you prefer." },
+    ],
     variants: [{ id: "001b416d-98cc-567f-abae-53fef4c8330c", sku: "SA-PND-750", name: "750g", price: 6500, stock: 60, imageUrl: "/products/coconut-poundo.jpg" }],
   },
   {
@@ -247,6 +303,11 @@ export const CATALOG: CatalogProduct[] = [
       "Coconut meat milled to a fine, soft flour. Naturally gluten-free and very high in fibre, so it drinks up considerably more liquid than wheat flour — worth accounting for when you adapt a recipe. Suits keto and paleo baking.",
     categorySlug: "culinary",
     images: ["/products/coconut-flour.jpg", "/products/coconut-flour-single.jpg"],
+    usageSteps: [
+      { title: "Adapting a recipe", description: "Use less than you would wheat flour and add extra egg or liquid — coconut flour absorbs far more moisture." },
+      { title: "Keto and paleo baking", description: "Suits low-carb, gluten-free baking such as flatbreads, pancakes and cookies." },
+      { title: "Sift before use", description: "Sift to break up clumps for a smoother batter or dough." },
+    ],
     variants: [{ id: "069d43aa-fbd7-549e-ba77-2fe5745d87cf", sku: "SA-FLR-750", name: "750g", price: 6000, stock: 75, imageUrl: "/products/coconut-flour.jpg" }],
   },
 ];

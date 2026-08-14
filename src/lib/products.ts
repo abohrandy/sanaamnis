@@ -101,6 +101,7 @@ function fromDb(row: DbProductRow): CatalogProduct {
     variants: variants.length > 0 ? variants : (seed?.variants ?? []),
     badge: seed?.badge,
     photographyPending: seed?.photographyPending,
+    usageSteps: seed?.usageSteps ?? [],
   };
 }
 

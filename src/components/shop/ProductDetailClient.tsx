@@ -234,33 +234,23 @@ export default function ProductDetailClient({
             </div>
           )}
 
-          {activeTab === "usage" && (
+          {activeTab === "usage" && product.usageSteps.length === 0 && (
+            <p className="text-sm text-[#676E6A] leading-relaxed max-w-3xl">
+              Use {product.title.toLowerCase()} as you would any {categoryName.toLowerCase()} product from our range.
+            </p>
+          )}
+
+          {activeTab === "usage" && product.usageSteps.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[
-                {
-                  n: "01",
-                  t: "In the kitchen",
-                  d: "Cook, bake and fry with it, or stir a spoonful into coffee, smoothies and porridge.",
-                },
-                {
-                  n: "02",
-                  t: "On skin",
-                  d: "Warm a little between clean palms and press onto damp skin straight after a shower.",
-                },
-                {
-                  n: "03",
-                  t: "Through hair",
-                  d: "Work through scalp and damp ends 30 minutes before washing as a pre-shampoo treatment.",
-                },
-              ].map((step) => (
+              {product.usageSteps.map((step, index) => (
                 <div
-                  key={step.n}
+                  key={step.title}
                   className="p-5 rounded-[1rem] bg-[#F3EFE8] border border-[#E2E6E3]"
                 >
                   <span className="font-serif text-lg text-[#C9A227] font-bold block mb-1.5">
-                    {step.n}. {step.t}
+                    {String(index + 1).padStart(2, "0")}. {step.title}
                   </span>
-                  <p className="text-xs text-[#676E6A] leading-relaxed">{step.d}</p>
+                  <p className="text-xs text-[#676E6A] leading-relaxed">{step.description}</p>
                 </div>
               ))}
             </div>
