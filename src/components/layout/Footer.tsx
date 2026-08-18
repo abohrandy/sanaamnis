@@ -18,6 +18,7 @@ const CARE_LINKS = [
   { href: "/distributors", label: "Pickup locations" },
   { href: "/returns", label: "Returns" },
   { href: "/faq", label: "FAQs" },
+  { href: "/coconut-water-faq", label: "Coconut Water FAQ" },
 ];
 
 const ABOUT_LINKS = [
