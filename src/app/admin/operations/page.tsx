@@ -124,8 +124,8 @@ export default function AdminOperationsPage() {
       header: "Order",
       accessor: (item: AdminOrder) => (
         <button onClick={() => setExpandedOrder(expandedOrder === item.id ? null : item.id)} className="text-left cursor-pointer">
-          <span className="font-serif font-bold text-sm text-white block">{item.orderNumber}</span>
-          <span className="text-[10px] text-neutral-400">{new Date(item.createdAt).toLocaleDateString()}</span>
+          <span className="font-serif font-bold text-sm text-foreground block">{item.orderNumber}</span>
+          <span className="text-[10px] text-muted-foreground">{new Date(item.createdAt).toLocaleDateString()}</span>
         </button>
       ),
     },
@@ -134,7 +134,7 @@ export default function AdminOperationsPage() {
       accessor: (item: AdminOrder) => (
         <div>
           <span className="block">{item.customerName || "Guest"}</span>
-          <span className="text-[10px] text-neutral-400">{item.customerEmail || "—"}</span>
+          <span className="text-[10px] text-muted-foreground">{item.customerEmail || "—"}</span>
         </div>
       ),
     },
@@ -189,17 +189,17 @@ export default function AdminOperationsPage() {
       label: "Orders",
       content: (
         <div className="space-y-6">
-          <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+          <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
             Orders ({orders.length})
           </h3>
           <Table columns={orderColumns} data={orders} loading={ordersQuery.isLoading} />
           {expanded && (
-            <div className="p-5 bg-neutral-900 border border-neutral-800 space-y-3">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">{expanded.orderNumber} — items</h4>
+            <div className="p-5 bg-card border border-border space-y-3">
+              <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">{expanded.orderNumber} — items</h4>
               {expanded.items.map((item, i) => (
-                <div key={i} className="flex justify-between text-xs text-neutral-300 py-1.5 border-b border-neutral-800 last:border-0">
+                <div key={i} className="flex justify-between text-xs text-muted-foreground py-1.5 border-b border-border last:border-0">
                   <span>{item.productTitle} — {item.variantName} × {item.quantity}</span>
-                  <span className="font-serif text-white">{naira(item.priceAtPurchase * item.quantity)}</span>
+                  <span className="font-serif text-foreground">{naira(item.priceAtPurchase * item.quantity)}</span>
                 </div>
               ))}
             </div>
@@ -213,13 +213,13 @@ export default function AdminOperationsPage() {
       content: (
         <div className="space-y-10">
           <div className="space-y-4">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
               Order activity ({activity.length}) — grouped by email, checkout doesn&apos;t require an account
             </h3>
             <Table columns={activityColumns} data={activity} loading={customersQuery.isLoading} />
           </div>
           <div className="space-y-4">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
               Registered accounts ({accounts.length})
             </h3>
             <Table columns={accountColumns} data={accounts} loading={customersQuery.isLoading} />
@@ -232,7 +232,7 @@ export default function AdminOperationsPage() {
       label: "Newsletter",
       content: (
         <div className="space-y-6">
-          <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans">
+          <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
             Subscribers ({subscribers.length})
           </h3>
           <Table columns={subscriberColumns} data={subscribers} loading={subscribersQuery.isLoading} />
@@ -245,8 +245,8 @@ export default function AdminOperationsPage() {
     <div className="space-y-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Operations</h1>
-          <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+          <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground mb-2">Operations</h1>
+          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider font-sans">
             Real orders, customers and subscribers
           </p>
         </div>

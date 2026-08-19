@@ -337,8 +337,8 @@ export default function AdminContentPage() {
       header: "Title",
       accessor: (item: AdminPost) => (
         <button onClick={() => openEditPost(item)} className="text-left cursor-pointer">
-          <span className="font-serif text-sm font-semibold text-white block">{item.title}</span>
-          <span className="text-[10px] text-neutral-400">/blog/{item.slug}</span>
+          <span className="font-serif text-sm font-semibold text-foreground block">{item.title}</span>
+          <span className="text-[10px] text-muted-foreground">/blog/{item.slug}</span>
         </button>
       ),
     },
@@ -348,7 +348,7 @@ export default function AdminContentPage() {
       header: "Actions",
       accessor: (item: AdminPost) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => openEditPost(item)} className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="sm" onClick={() => openEditPost(item)} className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted">
             <Edit className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => confirm(`Delete "${item.title}"?`) && deletePost.mutate(item.id)} className="p-2 text-destructive hover:bg-destructive/10">
@@ -364,8 +364,8 @@ export default function AdminContentPage() {
       header: "Title",
       accessor: (item: AdminRecipe) => (
         <button onClick={() => openEditRecipe(item)} className="text-left cursor-pointer">
-          <span className="font-serif text-sm font-semibold text-white block">{item.title}</span>
-          <span className="text-[10px] text-neutral-400">/recipes/{item.slug}</span>
+          <span className="font-serif text-sm font-semibold text-foreground block">{item.title}</span>
+          <span className="text-[10px] text-muted-foreground">/recipes/{item.slug}</span>
         </button>
       ),
     },
@@ -375,7 +375,7 @@ export default function AdminContentPage() {
       header: "Actions",
       accessor: (item: AdminRecipe) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => openEditRecipe(item)} className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="sm" onClick={() => openEditRecipe(item)} className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted">
             <Edit className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => confirm(`Delete "${item.title}"?`) && deleteRecipe.mutate(item.id)} className="p-2 text-destructive hover:bg-destructive/10">
@@ -404,8 +404,8 @@ export default function AdminContentPage() {
       header: "Region",
       accessor: (item: AdminDistributor) => (
         <button onClick={() => openEditDist(item)} className="text-left cursor-pointer">
-          <span className="font-serif text-sm font-semibold text-white block">{item.region}</span>
-          {item.contactName && <span className="text-[10px] text-neutral-400">{item.contactName}</span>}
+          <span className="font-serif text-sm font-semibold text-foreground block">{item.region}</span>
+          {item.contactName && <span className="text-[10px] text-muted-foreground">{item.contactName}</span>}
         </button>
       ),
     },
@@ -415,7 +415,7 @@ export default function AdminContentPage() {
       header: "Actions",
       accessor: (item: AdminDistributor) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => openEditDist(item)} className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800">
+          <Button variant="ghost" size="sm" onClick={() => openEditDist(item)} className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted">
             <Edit className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => confirm(`Remove "${item.region}"?`) && deleteDist.mutate(item.id)} className="p-2 text-destructive hover:bg-destructive/10">
@@ -432,8 +432,8 @@ export default function AdminContentPage() {
       label: "Journal",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">Articles ({posts.length})</h3>
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">Articles ({posts.length})</h3>
             <Button
               size="sm"
               onClick={() => {
@@ -441,7 +441,7 @@ export default function AdminContentPage() {
                 resetPostForm();
                 setPostModal("add");
               }}
-              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
+              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2"
             >
               <Plus className="w-4 h-4" /> New Article
             </Button>
@@ -455,8 +455,8 @@ export default function AdminContentPage() {
       label: "Recipes",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">Recipes ({recipeList.length})</h3>
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">Recipes ({recipeList.length})</h3>
             <Button
               size="sm"
               onClick={() => {
@@ -464,7 +464,7 @@ export default function AdminContentPage() {
                 resetRecipeForm();
                 setRecipeModal("add");
               }}
-              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
+              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2"
             >
               <Plus className="w-4 h-4" /> New Recipe
             </Button>
@@ -478,9 +478,9 @@ export default function AdminContentPage() {
       label: "FAQs",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">FAQs ({faqList.length})</h3>
-            <Button size="sm" onClick={() => setFaqModal(true)} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">FAQs ({faqList.length})</h3>
+            <Button size="sm" onClick={() => setFaqModal(true)} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Add FAQ
             </Button>
           </div>
@@ -493,8 +493,8 @@ export default function AdminContentPage() {
       label: "Pickup Locations",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">Locations ({distributorList.length})</h3>
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">Locations ({distributorList.length})</h3>
             <Button
               size="sm"
               onClick={() => {
@@ -502,7 +502,7 @@ export default function AdminContentPage() {
                 resetDistForm();
                 setDistModal("add");
               }}
-              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2"
+              className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2"
             >
               <Plus className="w-4 h-4" /> Add Location
             </Button>
@@ -516,8 +516,8 @@ export default function AdminContentPage() {
   return (
     <div className="space-y-10 relative">
       <div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Content</h1>
-        <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground mb-2">Content</h1>
+        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider font-sans">
           Journal, recipes and FAQs — changes apply to the live storefront immediately.
         </p>
       </div>
@@ -527,11 +527,11 @@ export default function AdminContentPage() {
       {/* Article Modal */}
       {postModal && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
-          <div className="max-w-2xl w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-5 relative my-auto">
-            <button onClick={() => setPostModal(null)} className="absolute top-5 right-5 text-neutral-400 hover:text-white">
+          <div className="max-w-2xl w-full bg-card border border-border p-8 shadow-2xl space-y-5 relative my-auto">
+            <button onClick={() => setPostModal(null)} className="absolute top-5 right-5 text-muted-foreground hover:text-foreground">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="font-serif text-xl font-semibold text-white border-b border-neutral-800 pb-4">
+            <h3 className="font-serif text-xl font-semibold text-foreground border-b border-border pb-4">
               {editingPost ? "Edit Article" : "New Article"}
             </h3>
             <form
@@ -547,18 +547,18 @@ export default function AdminContentPage() {
               <MediaDropzone label="Cover image or video" value={postImage} onChange={setPostImage} />
               <Input label="Excerpt" value={postExcerpt} onChange={(e) => setPostExcerpt(e.target.value)} placeholder="One sentence for the listing card" />
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">Content</label>
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">Content</label>
                 <RichTextEditor value={postContent} onChange={setPostContent} />
               </div>
-              <label className="flex items-center gap-2 text-xs text-neutral-300">
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
                 <input type="checkbox" checked={postPublished} onChange={(e) => setPostPublished(e.target.checked)} />
                 Published (unchecked saves as a draft)
               </label>
               <div className="pt-2 flex gap-3">
-                <Button type="button" variant="outline" onClick={() => setPostModal(null)} className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white">
+                <Button type="button" variant="outline" onClick={() => setPostModal(null)} className="flex-1 rounded-none border-border text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>
-                <Button type="submit" loading={savePost.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
+                <Button type="submit" loading={savePost.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider">
                   {editingPost ? "Save Changes" : "Publish"}
                 </Button>
               </div>
@@ -570,11 +570,11 @@ export default function AdminContentPage() {
       {/* Recipe Modal */}
       {recipeModal && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
-          <div className="max-w-2xl w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-5 relative my-auto">
-            <button onClick={() => setRecipeModal(null)} className="absolute top-5 right-5 text-neutral-400 hover:text-white">
+          <div className="max-w-2xl w-full bg-card border border-border p-8 shadow-2xl space-y-5 relative my-auto">
+            <button onClick={() => setRecipeModal(null)} className="absolute top-5 right-5 text-muted-foreground hover:text-foreground">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="font-serif text-xl font-semibold text-white border-b border-neutral-800 pb-4">
+            <h3 className="font-serif text-xl font-semibold text-foreground border-b border-border pb-4">
               {editingRecipe ? "Edit Recipe" : "New Recipe"}
             </h3>
             <form
@@ -603,20 +603,20 @@ export default function AdminContentPage() {
                 <Input label="Servings" required value={rServings} onChange={(e) => setRServings(e.target.value)} placeholder="Serves 4" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">Ingredients — one per line</label>
-                <textarea required rows={5} value={rIngredients} onChange={(e) => setRIngredients(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary resize-y" />
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">Ingredients — one per line</label>
+                <textarea required rows={5} value={rIngredients} onChange={(e) => setRIngredients(e.target.value)} className="w-full bg-background border border-border p-3 text-xs text-foreground outline-none focus:border-primary resize-y" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">Steps — one per line</label>
-                <textarea required rows={5} value={rSteps} onChange={(e) => setRSteps(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary resize-y" />
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">Steps — one per line</label>
+                <textarea required rows={5} value={rSteps} onChange={(e) => setRSteps(e.target.value)} className="w-full bg-background border border-border p-3 text-xs text-foreground outline-none focus:border-primary resize-y" />
               </div>
               <Input label="Tip (optional)" value={rTip} onChange={(e) => setRTip(e.target.value)} />
               <Input label="Related product slugs (comma-separated, optional)" value={rUses} onChange={(e) => setRUses(e.target.value)} placeholder="extra-virgin-coconut-oil, sana-amnis-coconut-water" />
               <div className="pt-2 flex gap-3">
-                <Button type="button" variant="outline" onClick={() => setRecipeModal(null)} className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white">
+                <Button type="button" variant="outline" onClick={() => setRecipeModal(null)} className="flex-1 rounded-none border-border text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>
-                <Button type="submit" loading={saveRecipe.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
+                <Button type="submit" loading={saveRecipe.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider">
                   {editingRecipe ? "Save Changes" : "Publish"}
                 </Button>
               </div>
@@ -628,11 +628,11 @@ export default function AdminContentPage() {
       {/* FAQ Modal */}
       {faqModal && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50">
-          <div className="max-w-lg w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-4 relative">
-            <button onClick={() => setFaqModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
+          <div className="max-w-lg w-full bg-card border border-border p-8 shadow-2xl space-y-4 relative">
+            <button onClick={() => setFaqModal(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
               <X className="w-4 h-4" />
             </button>
-            <h3 className="font-serif text-lg text-white">Add FAQ</h3>
+            <h3 className="font-serif text-lg text-foreground">Add FAQ</h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -642,10 +642,10 @@ export default function AdminContentPage() {
             >
               <Input label="Question" required value={faqQuestion} onChange={(e) => setFaqQuestion(e.target.value)} />
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">
                   Answer — optionally include one link as [label](/path)
                 </label>
-                <textarea required rows={4} value={faqAnswer} onChange={(e) => setFaqAnswer(e.target.value)} className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary resize-y" />
+                <textarea required rows={4} value={faqAnswer} onChange={(e) => setFaqAnswer(e.target.value)} className="w-full bg-background border border-border p-3 text-xs text-foreground outline-none focus:border-primary resize-y" />
               </div>
               <Input label="Category" value={faqCategory} onChange={(e) => setFaqCategory(e.target.value)} />
               <Button type="submit" loading={createFaq.isPending} className="w-full rounded-none mt-2">
@@ -659,11 +659,11 @@ export default function AdminContentPage() {
       {/* Distributor Modal */}
       {distModal && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
-          <div className="max-w-lg w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-4 relative my-auto">
-            <button onClick={() => setDistModal(null)} className="absolute top-5 right-5 text-neutral-400 hover:text-white">
+          <div className="max-w-lg w-full bg-card border border-border p-8 shadow-2xl space-y-4 relative my-auto">
+            <button onClick={() => setDistModal(null)} className="absolute top-5 right-5 text-muted-foreground hover:text-foreground">
               <X className="w-5 h-5" />
             </button>
-            <h3 className="font-serif text-xl font-semibold text-white border-b border-neutral-800 pb-4">
+            <h3 className="font-serif text-xl font-semibold text-foreground border-b border-border pb-4">
               {editingDist ? "Edit Location" : "New Pickup Location"}
             </h3>
             <form
@@ -683,15 +683,15 @@ export default function AdminContentPage() {
               </div>
               <Input label="WhatsApp number (optional)" value={distWhatsapp} onChange={(e) => setDistWhatsapp(e.target.value)} />
               <Input label="Notes (optional)" value={distNotes} onChange={(e) => setDistNotes(e.target.value)} placeholder="e.g. Search “Community Mart” on Maps" />
-              <label className="flex items-center gap-2 text-xs text-neutral-300">
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
                 <input type="checkbox" checked={distPublished} onChange={(e) => setDistPublished(e.target.checked)} />
                 Published (unchecked hides it from the site)
               </label>
               <div className="pt-2 flex gap-3">
-                <Button type="button" variant="outline" onClick={() => setDistModal(null)} className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white">
+                <Button type="button" variant="outline" onClick={() => setDistModal(null)} className="flex-1 rounded-none border-border text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>
-                <Button type="submit" loading={saveDist.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
+                <Button type="submit" loading={saveDist.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider">
                   {editingDist ? "Save Changes" : "Add Location"}
                 </Button>
               </div>

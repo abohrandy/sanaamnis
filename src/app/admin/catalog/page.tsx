@@ -305,16 +305,16 @@ export default function AdminCatalogPage() {
           onClick={() => openEditProduct(item)}
           className="flex items-center gap-3 py-1 text-left cursor-pointer group/item"
         >
-          <div className="relative w-10 h-10 bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shrink-0 group-hover/item:border-primary transition-colors">
+          <div className="relative w-10 h-10 bg-card border border-border rounded-lg overflow-hidden shrink-0 group-hover/item:border-primary transition-colors">
             {item.variants[0]?.imageUrl && (
               <Image src={item.variants[0].imageUrl} alt="" fill sizes="40px" className="object-cover" />
             )}
           </div>
           <div>
-            <h4 className="font-serif text-sm font-semibold text-white group-hover/item:text-primary transition-colors">
+            <h4 className="font-serif text-sm font-semibold text-foreground group-hover/item:text-primary transition-colors">
               {item.title}
             </h4>
-            <span className="text-[10px] text-neutral-400 font-sans block">
+            <span className="text-[10px] text-muted-foreground font-sans block">
               {item.variants.length} {item.variants.length === 1 ? "variant" : "variants"}
             </span>
           </div>
@@ -329,7 +329,7 @@ export default function AdminCatalogPage() {
         if (prices.length === 0) return "—";
         const min = Math.min(...prices);
         const max = Math.max(...prices);
-        return <span className="font-serif font-semibold text-white">{min === max ? naira(min) : `${naira(min)}–${naira(max)}`}</span>;
+        return <span className="font-serif font-semibold text-foreground">{min === max ? naira(min) : `${naira(min)}–${naira(max)}`}</span>;
       },
     },
     {
@@ -351,14 +351,14 @@ export default function AdminCatalogPage() {
       header: "Actions",
       accessor: (item: AdminProduct) => (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => openEditProduct(item)} className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800" title="Edit">
+          <Button variant="ghost" size="sm" onClick={() => openEditProduct(item)} className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted" title="Edit">
             <Edit className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => toggleProductActive.mutate({ id: item.id, isActive: !item.isActive })}
-            className="p-2 text-neutral-300 hover:text-white hover:bg-neutral-800"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted"
             title={item.isActive ? "Archive" : "Restore"}
           >
             {item.isActive ? <Archive className="w-4 h-4" /> : <ArchiveRestore className="w-4 h-4" />}
@@ -421,11 +421,11 @@ export default function AdminCatalogPage() {
       label: "Products",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
               Products ({products.length})
             </h3>
-            <Button size="sm" onClick={openAddProduct} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
+            <Button size="sm" onClick={openAddProduct} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Add Product
             </Button>
           </div>
@@ -438,11 +438,11 @@ export default function AdminCatalogPage() {
       label: "Categories",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
-            <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
               Categories ({categories.length})
             </h3>
-            <Button size="sm" onClick={() => setActiveModal("category")} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
+            <Button size="sm" onClick={() => setActiveModal("category")} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Add Category
             </Button>
           </div>
@@ -455,16 +455,16 @@ export default function AdminCatalogPage() {
       label: "Coupons",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-neutral-900/60 p-4 border border-neutral-800">
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
             <div>
-              <h3 className="text-xs uppercase tracking-widest text-neutral-300 font-bold font-sans">
+              <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
                 Coupons ({coupons.length})
               </h3>
-              <p className="text-[11px] text-neutral-400 mt-1">
+              <p className="text-[11px] text-muted-foreground mt-1">
                 Codes are stored and validated only — checkout doesn&apos;t apply a discount from them yet.
               </p>
             </div>
-            <Button size="sm" onClick={() => setActiveModal("coupon")} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider px-4 py-2">
+            <Button size="sm" onClick={() => setActiveModal("coupon")} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
               <Plus className="w-4 h-4" /> Create Coupon
             </Button>
           </div>
@@ -477,8 +477,8 @@ export default function AdminCatalogPage() {
   return (
     <div className="space-y-10 relative">
       <div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Catalog</h1>
-        <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground mb-2">Catalog</h1>
+        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider font-sans">
           Products, categories and coupons — changes apply to the live storefront immediately.
         </p>
       </div>
@@ -488,13 +488,13 @@ export default function AdminCatalogPage() {
       {/* Product Add/Edit Modal */}
       {(activeModal === "add-product" || activeModal === "edit-product") && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
-          <div className="max-w-2xl w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-6 relative my-auto">
-            <button onClick={() => setActiveModal(null)} className="absolute top-5 right-5 text-neutral-400 hover:text-white transition-colors">
+          <div className="max-w-2xl w-full bg-card border border-border p-8 shadow-2xl space-y-6 relative my-auto">
+            <button onClick={() => setActiveModal(null)} className="absolute top-5 right-5 text-muted-foreground hover:text-foreground transition-colors">
               <X className="w-5 h-5" />
             </button>
 
-            <div className="border-b border-neutral-800 pb-4">
-              <h3 className="font-serif text-xl font-semibold text-white">
+            <div className="border-b border-border pb-4">
+              <h3 className="font-serif text-xl font-semibold text-foreground">
                 {editingProduct ? "Edit Product" : "Add New Product"}
               </h3>
             </div>
@@ -515,19 +515,19 @@ export default function AdminCatalogPage() {
               />
 
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">Description</label>
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">Description</label>
                 <textarea
                   rows={3}
                   value={prodDescription}
                   onChange={(e) => setProdDescription(e.target.value)}
                   placeholder="What is this, and what makes it worth buying?"
-                  className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary resize-none"
+                  className="w-full bg-background border border-border p-3 text-xs text-foreground outline-none focus:border-primary resize-none"
                 />
               </div>
 
               {!editingProduct && (
-                <div className="pt-4 border-t border-neutral-800 space-y-4">
-                  <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
+                <div className="pt-4 border-t border-border space-y-4">
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">
                     First variant
                   </span>
                   <div className="grid grid-cols-2 gap-4">
@@ -554,10 +554,10 @@ export default function AdminCatalogPage() {
               )}
 
               <div className="pt-2 flex gap-3">
-                <Button type="button" variant="outline" onClick={() => setActiveModal(null)} className="flex-1 rounded-none border-neutral-800 text-neutral-400 hover:text-white">
+                <Button type="button" variant="outline" onClick={() => setActiveModal(null)} className="flex-1 rounded-none border-border text-muted-foreground hover:text-foreground">
                   Cancel
                 </Button>
-                <Button type="submit" loading={createProduct.isPending || updateProduct.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-white font-semibold text-xs uppercase tracking-wider">
+                <Button type="submit" loading={createProduct.isPending || updateProduct.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider">
                   {editingProduct ? "Save Changes" : "Publish Product"}
                 </Button>
               </div>
@@ -569,8 +569,8 @@ export default function AdminCatalogPage() {
       {/* Category Modal */}
       {activeModal === "category" && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50">
-          <div className="max-w-md w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-6 relative">
-            <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
+          <div className="max-w-md w-full bg-card border border-border p-8 shadow-2xl space-y-6 relative">
+            <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
               <X className="w-4 h-4" />
             </button>
             <form
@@ -580,7 +580,7 @@ export default function AdminCatalogPage() {
               }}
               className="space-y-4"
             >
-              <h3 className="font-serif text-lg text-white">Add Category</h3>
+              <h3 className="font-serif text-lg text-foreground">Add Category</h3>
               <Input label="Category Name" required value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="e.g. Skin & Body" />
               <Input label="Slug (optional)" value={catSlug} onChange={(e) => setCatSlug(e.target.value)} placeholder="e.g. skin-body" />
               <Button type="submit" loading={createCategory.isPending} className="w-full rounded-none mt-2">
@@ -594,8 +594,8 @@ export default function AdminCatalogPage() {
       {/* Coupon Modal */}
       {activeModal === "coupon" && (
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50">
-          <div className="max-w-md w-full bg-neutral-900 border border-neutral-800 p-8 shadow-2xl space-y-6 relative">
-            <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
+          <div className="max-w-md w-full bg-card border border-border p-8 shadow-2xl space-y-6 relative">
+            <button onClick={() => setActiveModal(null)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
               <X className="w-4 h-4" />
             </button>
             <form
@@ -605,7 +605,7 @@ export default function AdminCatalogPage() {
               }}
               className="space-y-4"
             >
-              <h3 className="font-serif text-lg text-white">Create Coupon</h3>
+              <h3 className="font-serif text-lg text-foreground">Create Coupon</h3>
               <Input label="Coupon Code" required value={coupCode} onChange={(e) => setCoupCode(e.target.value.toUpperCase())} placeholder="e.g. COCO50" />
               <div className="grid grid-cols-2 gap-4">
                 <Input label="Value" type="number" required value={coupDiscount} onChange={(e) => setCoupDiscount(e.target.value)} placeholder="e.g. 20" />
@@ -647,16 +647,16 @@ function VariantsEditor({
   const [newStock, setNewStock] = useState("0");
 
   return (
-    <div className="pt-4 border-t border-neutral-800 space-y-3">
-      <span className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
+    <div className="pt-4 border-t border-border space-y-3">
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">
         Variants ({product.variants.length})
       </span>
 
       <div className="space-y-2">
         {product.variants.map((v) => (
-          <div key={v.id} className="flex items-center gap-2 bg-neutral-950 border border-neutral-800 p-2.5">
-            <span className="text-[10px] text-neutral-400 font-mono w-24 shrink-0 truncate">{v.sku}</span>
-            <span className="text-xs text-white flex-1 truncate">{v.name}</span>
+          <div key={v.id} className="flex items-center gap-2 bg-background border border-border p-2.5">
+            <span className="text-[10px] text-muted-foreground font-mono w-24 shrink-0 truncate">{v.sku}</span>
+            <span className="text-xs text-foreground flex-1 truncate">{v.name}</span>
             <input
               type="number"
               defaultValue={v.price}
@@ -664,7 +664,7 @@ function VariantsEditor({
                 const n = Number(e.target.value);
                 if (n > 0 && n !== Number(v.price)) onUpdate(v.id, { price: n });
               }}
-              className="w-24 bg-neutral-900 border border-neutral-800 px-2 py-1 text-xs text-white outline-none focus:border-primary"
+              className="w-24 bg-card border border-border px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
             />
             <input
               type="number"
@@ -673,7 +673,7 @@ function VariantsEditor({
                 const n = Number(e.target.value);
                 if (n >= 0 && n !== v.stock) onUpdate(v.id, { stock: n });
               }}
-              className="w-16 bg-neutral-900 border border-neutral-800 px-2 py-1 text-xs text-white outline-none focus:border-primary"
+              className="w-16 bg-card border border-border px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
             />
             <button
               type="button"
@@ -693,10 +693,10 @@ function VariantsEditor({
       </div>
 
       <div className="flex items-center gap-2 pt-2">
-        <input value={newSku} onChange={(e) => setNewSku(e.target.value)} placeholder="SKU" className="w-24 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
-        <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Name" className="flex-1 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
-        <input value={newPrice} onChange={(e) => setNewPrice(e.target.value)} type="number" placeholder="Price" className="w-24 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
-        <input value={newStock} onChange={(e) => setNewStock(e.target.value)} type="number" placeholder="Stock" className="w-16 bg-neutral-950 border border-neutral-800 px-2 py-2 text-xs text-white outline-none focus:border-primary" />
+        <input value={newSku} onChange={(e) => setNewSku(e.target.value)} placeholder="SKU" className="w-24 bg-background border border-border px-2 py-2 text-xs text-foreground outline-none focus:border-primary" />
+        <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Name" className="flex-1 bg-background border border-border px-2 py-2 text-xs text-foreground outline-none focus:border-primary" />
+        <input value={newPrice} onChange={(e) => setNewPrice(e.target.value)} type="number" placeholder="Price" className="w-24 bg-background border border-border px-2 py-2 text-xs text-foreground outline-none focus:border-primary" />
+        <input value={newStock} onChange={(e) => setNewStock(e.target.value)} type="number" placeholder="Stock" className="w-16 bg-background border border-border px-2 py-2 text-xs text-foreground outline-none focus:border-primary" />
         <Button
           type="button"
           size="sm"

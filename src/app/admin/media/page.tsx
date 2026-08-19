@@ -79,8 +79,8 @@ export default function AdminMediaLibraryPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Media Library</h1>
-        <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground mb-2">Media Library</h1>
+        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider font-sans">
           Real uploads via Cloudinary — images and videos
         </p>
       </div>
@@ -98,7 +98,7 @@ export default function AdminMediaLibraryPage() {
           if (file) upload.mutate(file);
         }}
         className={`flex flex-col items-center justify-center gap-3 border-2 border-dashed p-10 text-center transition-colors ${
-          isDraggingOver ? "border-primary bg-primary/5" : "border-neutral-800"
+          isDraggingOver ? "border-primary bg-primary/5" : "border-border"
         }`}
       >
         <input
@@ -112,8 +112,8 @@ export default function AdminMediaLibraryPage() {
             e.target.value = "";
           }}
         />
-        <UploadCloud className="w-6 h-6 text-neutral-500" aria-hidden="true" />
-        <p className="text-xs text-neutral-400">Drag and drop an image or video here, or</p>
+        <UploadCloud className="w-6 h-6 text-muted-foreground" aria-hidden="true" />
+        <p className="text-xs text-muted-foreground">Drag and drop an image or video here, or</p>
         <Button
           onClick={() => fileInputRef.current?.click()}
           disabled={upload.isPending}
@@ -122,7 +122,7 @@ export default function AdminMediaLibraryPage() {
           {upload.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
           {upload.isPending ? "Uploading…" : "Browse files"}
         </Button>
-        <p className="text-[10px] text-neutral-500 uppercase tracking-wider">JPEG, PNG, WebP, AVIF up to 8MB · MP4, WebM, MOV up to 80MB</p>
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">JPEG, PNG, WebP, AVIF up to 8MB · MP4, WebM, MOV up to 80MB</p>
       </div>
 
       <div className="flex gap-4 items-center max-w-md bg-card border border-border/40 px-4 py-2">
@@ -137,16 +137,16 @@ export default function AdminMediaLibraryPage() {
       </div>
 
       {mediaQuery.isLoading ? (
-        <p className="text-xs text-neutral-500 py-10 text-center">Loading…</p>
+        <p className="text-xs text-muted-foreground py-10 text-center">Loading…</p>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center border border-dashed border-neutral-800 text-neutral-500 text-xs">
+        <div className="py-16 text-center border border-dashed border-border text-muted-foreground text-xs">
           {assets.length === 0 ? "No uploads yet." : "Nothing matches your search."}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filtered.map((asset) => (
             <div key={asset.id} className="group bg-card border border-border/40 overflow-hidden flex flex-col justify-between">
-              <div className="relative aspect-square overflow-hidden bg-neutral-900 flex items-center justify-center border-b border-border/20">
+              <div className="relative aspect-square overflow-hidden bg-muted flex items-center justify-center border-b border-border/20">
                 {asset.kind === "video" ? (
                   <video src={asset.url} muted className="w-full h-full object-cover" />
                 ) : (

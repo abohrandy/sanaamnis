@@ -41,8 +41,8 @@ async function uploadFile(file: File): Promise<string> {
 }
 
 const TOOLBAR_BUTTON =
-  "p-2 rounded-none text-neutral-300 hover:text-white hover:bg-neutral-800 disabled:opacity-30 disabled:pointer-events-none cursor-pointer";
-const TOOLBAR_BUTTON_ACTIVE = "bg-neutral-800 text-white";
+  "p-2 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:pointer-events-none cursor-pointer";
+const TOOLBAR_BUTTON_ACTIVE = "bg-muted text-foreground";
 
 /**
  * Full HTML editor for blog article body copy — replaces the old
@@ -69,7 +69,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     editorProps: {
       attributes: {
         class:
-          "min-h-[260px] max-h-[520px] overflow-y-auto p-4 text-sm text-white outline-none prose-invert [&_h2]:font-serif [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:mt-4 [&_h3]:font-serif [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-3 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-2 [&_blockquote]:border-neutral-700 [&_blockquote]:pl-3 [&_blockquote]:italic [&_a]:underline [&_a]:text-primary [&_img]:rounded-[1rem] [&_img]:my-3 [&_video]:my-3",
+          "min-h-[260px] max-h-[520px] overflow-y-auto p-4 text-sm text-foreground outline-none [&_h2]:font-serif [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:mt-4 [&_h3]:font-serif [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-3 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_blockquote]:italic [&_a]:underline [&_a]:text-primary [&_img]:rounded-[1rem] [&_img]:my-3 [&_video]:my-3",
       },
       handleDrop: (_view, event) => {
         const files = Array.from(event.dataTransfer?.files ?? []);
@@ -122,8 +122,8 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   };
 
   return (
-    <div className="border border-neutral-800 bg-neutral-950">
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-neutral-800 p-1.5">
+    <div className="border border-border bg-card">
+      <div className="flex flex-wrap items-center gap-0.5 border-b border-border p-1.5">
         <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={`${TOOLBAR_BUTTON} ${editor.isActive("bold") ? TOOLBAR_BUTTON_ACTIVE : ""}`} aria-label="Bold">
           <Bold className="w-3.5 h-3.5" />
         </button>
@@ -137,7 +137,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           <Strikethrough className="w-3.5 h-3.5" />
         </button>
 
-        <span className="w-px h-5 bg-neutral-800 mx-1" />
+        <span className="w-px h-5 bg-border mx-1" />
 
         <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={`${TOOLBAR_BUTTON} ${editor.isActive("heading", { level: 2 }) ? TOOLBAR_BUTTON_ACTIVE : ""}`} aria-label="Heading 2">
           <Heading2 className="w-3.5 h-3.5" />
@@ -158,7 +158,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           <LinkIcon className="w-3.5 h-3.5" />
         </button>
 
-        <span className="w-px h-5 bg-neutral-800 mx-1" />
+        <span className="w-px h-5 bg-border mx-1" />
 
         <input
           ref={imageInputRef}
@@ -190,7 +190,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           <VideoIcon className="w-3.5 h-3.5" />
         </button>
 
-        {isUploading && <Loader2 className="w-3.5 h-3.5 text-neutral-400 animate-spin ml-1" />}
+        {isUploading && <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin ml-1" />}
 
         <span className="flex-1" />
 
@@ -203,7 +203,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       </div>
 
       <EditorContent editor={editor} />
-      <p className="px-3 py-2 text-[10px] text-neutral-500 border-t border-neutral-800">
+      <p className="px-3 py-2 text-[10px] text-muted-foreground border-t border-border">
         Drag and drop an image or video anywhere in the text above to embed it.
       </p>
     </div>

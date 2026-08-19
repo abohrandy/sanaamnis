@@ -16,8 +16,6 @@ import {
   ChevronRight,
   LogOut,
   Image,
-  Sun,
-  Moon,
   Loader2,
 } from "lucide-react";
 
@@ -48,7 +46,6 @@ const NAV_ITEMS = [
 
 export function Sidebar({ className, userProfile }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const pathname = usePathname() || "";
   const router = useRouter();
@@ -56,11 +53,6 @@ export function Sidebar({ className, userProfile }: SidebarProps) {
   const visibleItems = NAV_ITEMS.filter((item) =>
     item.permissions.some((p) => hasPermission(userProfile.role, p))
   );
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   // Keyboard nav shortcuts (g d, g c, ...), scoped to visible items only.
   useEffect(() => {
@@ -147,16 +139,6 @@ export function Sidebar({ className, userProfile }: SidebarProps) {
       </div>
 
       <div className="p-4 border-t border-border/20 space-y-4">
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="w-full flex items-center justify-between px-4 py-3 text-[10px] uppercase tracking-widest font-semibold font-sans text-muted-foreground hover:bg-accent/40 hover:text-foreground transition-all rounded-xl cursor-pointer"
-        >
-          <div className="flex items-center gap-4">
-            {darkMode ? <Moon className="w-4 h-4 shrink-0" /> : <Sun className="w-4 h-4 shrink-0" />}
-            {!collapsed && <span>{darkMode ? "Dark Mode" : "Light Mode"}</span>}
-          </div>
-        </button>
-
         {!collapsed && (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">

@@ -117,7 +117,7 @@ export default function AdminSettingsPage() {
           }}
           className="space-y-6 max-w-xl"
         >
-          <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans mb-4">
+          <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans mb-4">
             Default meta tags — used where a page doesn&apos;t set its own
           </h3>
           <Input label="Default page title" value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder="Sana Amnis | Cold-Pressed Coconut Oil & Water" />
@@ -125,7 +125,7 @@ export default function AdminSettingsPage() {
           <Button type="submit" loading={saveSettings.isPending} className="flex items-center gap-1.5 rounded-none">
             <Save className="w-3.5 h-3.5" /> Save
           </Button>
-          <p className="text-[11px] text-neutral-500">
+          <p className="text-[11px] text-muted-foreground">
             Stored for reference; each page currently sets its own title and description in code, so this isn&apos;t read by the site yet.
           </p>
         </form>
@@ -141,7 +141,7 @@ export default function AdminSettingsPage() {
               e.preventDefault();
               createRedirect.mutate();
             }}
-            className="flex flex-wrap items-end gap-3 bg-neutral-900/60 p-4 border border-neutral-800"
+            className="flex flex-wrap items-end gap-3 bg-muted p-4 border border-border"
           >
             <div className="w-40">
               <Input label="From path" required value={fromPath} onChange={(e) => setFromPath(e.target.value)} placeholder="/old-page" />
@@ -164,7 +164,7 @@ export default function AdminSettingsPage() {
               <Plus className="w-3.5 h-3.5" /> Add
             </Button>
           </form>
-          <p className="text-[11px] text-neutral-500">
+          <p className="text-[11px] text-muted-foreground">
             Stored here for reference; nothing currently reads this table to actually redirect a visitor — that would be a small follow-up if you want it enforced.
           </p>
           <Table columns={redirectColumns} data={redirects} loading={redirectsQuery.isLoading} />
@@ -182,7 +182,7 @@ export default function AdminSettingsPage() {
           }}
           className="space-y-6 max-w-xl"
         >
-          <h3 className="text-xs uppercase tracking-widest text-neutral-400 font-bold font-sans mb-4">Contact Information</h3>
+          <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans mb-4">Contact Information</h3>
           <Input label="Support email" type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
           <Input label="Support phone" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
           <Button type="submit" loading={saveSettings.isPending} className="flex items-center gap-1.5 rounded-none">
@@ -196,8 +196,8 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Settings</h1>
-        <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground mb-2">Settings</h1>
+        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider font-sans">
           SEO defaults, redirects and contact details
         </p>
       </div>

@@ -49,10 +49,10 @@ export function MediaDropzone({ value, onChange, accept = DEFAULT_ACCEPT, label 
 
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">{label}</label>
+      <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">{label}</label>
 
       {value ? (
-        <div className="relative rounded-none overflow-hidden border border-neutral-800 bg-neutral-950 h-40 flex items-center justify-center">
+        <div className="relative rounded-none overflow-hidden border border-border bg-muted h-40 flex items-center justify-center">
           {isVideoUrl(value) ? (
             <video src={value} muted controls className="h-full w-full object-contain" />
           ) : (
@@ -82,7 +82,7 @@ export function MediaDropzone({ value, onChange, accept = DEFAULT_ACCEPT, label 
           }}
           onClick={() => !isUploading && fileInputRef.current?.click()}
           className={`flex flex-col items-center justify-center gap-2 h-40 border-2 border-dashed cursor-pointer transition-colors ${
-            isDraggingOver ? "border-primary bg-primary/5" : "border-neutral-800 hover:border-neutral-700"
+            isDraggingOver ? "border-primary bg-primary/5" : "border-border hover:border-foreground/30"
           }`}
         >
           <input
@@ -98,13 +98,13 @@ export function MediaDropzone({ value, onChange, accept = DEFAULT_ACCEPT, label 
           />
           {isUploading ? (
             <>
-              <Loader2 className="w-5 h-5 text-neutral-400 animate-spin" />
-              <p className="text-[10px] text-neutral-500">Uploading…</p>
+              <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+              <p className="text-[10px] text-muted-foreground">Uploading…</p>
             </>
           ) : (
             <>
-              <UploadCloud className="w-5 h-5 text-neutral-500" aria-hidden="true" />
-              <p className="text-[10px] text-neutral-500 text-center px-4">
+              <UploadCloud className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+              <p className="text-[10px] text-muted-foreground text-center px-4">
                 Drag and drop, or click to browse — images or videos
               </p>
             </>

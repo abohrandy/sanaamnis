@@ -51,15 +51,15 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-10 font-sans">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#242A26]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border">
         <div>
           <Badge variant="gold">DASHBOARD</Badge>
-          <h1 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#FAF8F5] mt-1">
+          <h1 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-foreground mt-1">
             Overview
           </h1>
-          <p className="text-xs text-[#FAF8F5]/60 font-sans">Real order and revenue data, refreshed on load.</p>
+          <p className="text-xs text-muted-foreground font-sans">Real order and revenue data, refreshed on load.</p>
         </div>
-        <div className="px-4 py-2 rounded-[0.5rem] bg-[#1C3322] border border-[#242A26] text-xs text-[#C9A227] font-semibold flex items-center gap-2">
+        <div className="px-4 py-2 rounded-[0.5rem] bg-secondary border border-border text-xs text-[#1C3322] font-semibold flex items-center gap-2">
           <ShieldCheck className="w-4 h-4" /> Live database
         </div>
       </div>
@@ -71,21 +71,21 @@ export default function AdminDashboardPage() {
         <StatCard title="Newsletter Subscribers" value={isLoading ? "…" : data?.activeSubscribers ?? 0} icon={Mail} />
       </div>
 
-      <div className="p-6 rounded-[1.25rem] bg-[#161A17] border border-[#242A26] space-y-4">
-        <h3 className="text-xs uppercase tracking-[0.2em] text-[#C9A227] font-bold">
+      <div className="p-6 rounded-[1.25rem] bg-card border border-border space-y-4">
+        <h3 className="text-xs uppercase tracking-[0.2em] text-[#1C3322] font-bold">
           Monthly Revenue — Paid Orders (₦)
         </h3>
         {data?.monthlyRevenue && data.monthlyRevenue.length > 0 ? (
           <BarChart data={data.monthlyRevenue} height={200} />
         ) : (
-          <p className="text-xs text-[#FAF8F5]/50 py-10 text-center">
+          <p className="text-xs text-muted-foreground py-10 text-center">
             No paid orders in the last 6 months yet.
           </p>
         )}
       </div>
 
-      <div className="p-6 rounded-[1.25rem] bg-[#161A17] border border-[#242A26] space-y-4">
-        <h3 className="text-xs uppercase tracking-[0.2em] text-[#C9A227] font-bold">Recent Orders</h3>
+      <div className="p-6 rounded-[1.25rem] bg-card border border-border space-y-4">
+        <h3 className="text-xs uppercase tracking-[0.2em] text-[#1C3322] font-bold">Recent Orders</h3>
         <Table columns={columns} data={data?.recentOrders ?? []} loading={isLoading} />
       </div>
     </div>
