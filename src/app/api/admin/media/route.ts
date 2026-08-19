@@ -7,8 +7,10 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-const MAX_BYTES = 8 * 1024 * 1024; // 8MB
-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8MB
+const MAX_VIDEO_BYTES = 80 * 1024 * 1024; // 80MB
+const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
+const VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const UPLOAD_FOLDER = "sana-amnis";
 
 function cloudinaryConfig() {
@@ -70,11 +72,17 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "No file provided." }, { status: 400 });
   }
-  if (!ALLOWED_TYPES.has(file.type)) {
-    return NextResponse.json({ error: "Only JPEG, PNG, WebP or AVIF images are allowed." }, { status: 400 });
+
+  const kind: "image" | "video" = VIDEO_TYPES.has(file.type) ? "video" : "image";
+  if (kind === "image" && !IMAGE_TYPES.has(file.type)) {
+    return NextResponse.json({ error: "Only JPEG, PNG, WebP, AVIF images or MP4, WebM, MOV videos are allowed." }, { status: 400 });
   }
-  if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Image must be under 8MB." }, { status: 400 });
+  const maxBytes = kind === "video" ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+  if (file.size > maxBytes) {
+    return NextResponse.json(
+      { error: kind === "video" ? "Video must be under 80MB." : "Image must be under 8MB." },
+      { status: 400 }
+    );
   }
 
   try {
@@ -90,7 +98,7 @@ export async function POST(request: Request) {
     uploadBody.set("folder", UPLOAD_FOLDER);
     uploadBody.set("signature", signature);
 
-    const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/image/upload`, {
+    const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/${kind}/upload`, {
       method: "POST",
       body: uploadBody,
     });
@@ -107,6 +115,7 @@ export async function POST(request: Request) {
         filename: file.name,
         url: result.secure_url,
         provider: "cloudinary",
+        kind,
         bytes: result.bytes ?? file.size,
         width: result.width ?? null,
         height: result.height ?? null,

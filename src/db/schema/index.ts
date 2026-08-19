@@ -252,6 +252,8 @@ export const media = pgTable("media", {
   filename: text("filename").notNull(),
   url: text("url").notNull(),
   provider: text("provider").default("cloudinary").notNull(),
+  /** "image" or "video" — decides which Cloudinary resource_type endpoint an upload/delete uses. */
+  kind: text("kind").default("image").notNull(),
   bytes: integer("bytes"),
   width: integer("width"),
   height: integer("height"),

@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/hooks/useToast";
+import { RichTextEditor } from "@/components/cms/RichTextEditor";
+import { MediaDropzone } from "@/components/cms/MediaDropzone";
 import { Edit, Plus, Trash2, X } from "lucide-react";
 
 interface AdminPost {
@@ -541,22 +543,12 @@ export default function AdminContentPage() {
             >
               <Input label="Title" required value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
               {!editingPost && <Input label="Slug (optional)" value={postSlug} onChange={(e) => setPostSlug(e.target.value)} placeholder={slugify(postTitle)} />}
-              <div className="grid grid-cols-2 gap-4">
-                <Input label="Category" required value={postCategory} onChange={(e) => setPostCategory(e.target.value)} />
-                <Input label="Image URL" value={postImage} onChange={(e) => setPostImage(e.target.value)} placeholder="/products/… or https://…" />
-              </div>
+              <Input label="Category" required value={postCategory} onChange={(e) => setPostCategory(e.target.value)} />
+              <MediaDropzone label="Cover image or video" value={postImage} onChange={setPostImage} />
               <Input label="Excerpt" value={postExcerpt} onChange={(e) => setPostExcerpt(e.target.value)} placeholder="One sentence for the listing card" />
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">
-                  Content — blank line between paragraphs, start a line with &quot;## &quot; for a heading
-                </label>
-                <textarea
-                  required
-                  rows={10}
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 p-3 text-xs text-white outline-none focus:border-primary resize-y font-mono"
-                />
+                <label className="text-[10px] uppercase tracking-widest text-neutral-300 font-bold block">Content</label>
+                <RichTextEditor value={postContent} onChange={setPostContent} />
               </div>
               <label className="flex items-center gap-2 text-xs text-neutral-300">
                 <input type="checkbox" checked={postPublished} onChange={(e) => setPostPublished(e.target.checked)} />
@@ -595,7 +587,7 @@ export default function AdminContentPage() {
               <Input label="Title" required value={rTitle} onChange={(e) => setRTitle(e.target.value)} />
               {!editingRecipe && <Input label="Slug (optional)" value={rSlug} onChange={(e) => setRSlug(e.target.value)} placeholder={slugify(rTitle)} />}
               <Input label="Excerpt" value={rExcerpt} onChange={(e) => setRExcerpt(e.target.value)} />
-              <Input label="Image URL" value={rImage} onChange={(e) => setRImage(e.target.value)} placeholder="/products/… or https://…" />
+              <MediaDropzone label="Recipe image or video" value={rImage} onChange={setRImage} />
               <div className="grid grid-cols-3 gap-4">
                 <Select
                   label="Difficulty"

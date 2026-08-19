@@ -7,6 +7,16 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
+// Product/recipe/blog images live under /public as absolute paths (e.g. "/products/foo.jpg"),
+// not just full URLs — z.string().url() alone rejects those, which is what the form's own
+// placeholder ("/products/… or https://…") invites admins to type.
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || v.startsWith("/") || /^https?:\/\//i.test(v), {
+    message: "Enter a path starting with / or a full https:// URL",
+  });
+
 const createRecipeSchema = z.object({
   title: z.string().trim().min(2).max(200),
   slug: z
@@ -15,7 +25,7 @@ const createRecipeSchema = z.object({
     .toLowerCase()
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens only"),
   excerpt: z.string().trim().max(400).optional(),
-  imageUrl: z.string().trim().url().optional().or(z.literal("")),
+  imageUrl: imageUrlSchema.optional(),
   difficulty: z.enum(["Easy", "Simple", "Takes practice"]).default("Easy"),
   durationLabel: z.string().trim().min(1).max(40).default("30 mins"),
   servingsLabel: z.string().trim().min(1).max(40).default("Serves 4"),

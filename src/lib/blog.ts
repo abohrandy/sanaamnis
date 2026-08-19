@@ -41,8 +41,19 @@ export function parseArticleBody(content: string): Article["body"] {
 }
 
 function readingMinutes(content: string): number {
-  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  // Strip tags before counting so an HTML body doesn't inflate the word count with markup.
+  const text = content.replace(/<[^>]+>/g, " ");
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+}
+
+/**
+ * Posts written with the admin's rich text editor are saved as HTML; older
+ * posts saved as blank-line-separated plain text. Detecting a tag is enough to
+ * tell them apart since plain-text content never legitimately contains "<".
+ */
+function isHtml(content: string): boolean {
+  return /<[a-z][\s\S]*>/i.test(content);
 }
 
 type DbBlogRow = {
@@ -58,6 +69,7 @@ type DbBlogRow = {
 
 function fromDb(row: DbBlogRow): Article {
   const content = row.content ?? "";
+  const html = isHtml(content);
   return {
     slug: row.slug,
     title: row.title,
@@ -66,7 +78,8 @@ function fromDb(row: DbBlogRow): Article {
     date: (row.publishedAt ?? row.createdAt).toISOString(),
     readingMinutes: readingMinutes(content),
     image: row.imageUrl || "/products/placeholder.jpg",
-    body: parseArticleBody(content),
+    body: html ? [] : parseArticleBody(content),
+    bodyHtml: html ? content : undefined,
   };
 }
 

@@ -40,6 +40,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 
     const config = cloudinaryConfig();
     const publicId = row.provider === "cloudinary" ? publicIdFromUrl(row.url) : null;
+    const resourceType = row.kind === "video" ? "video" : "image";
 
     // Best-effort: removing the DB row is what matters for the admin UI and the
     // storefront; a failed or skipped Cloudinary cleanup just leaves an orphaned
@@ -55,7 +56,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
       body.set("timestamp", timestamp);
       body.set("signature", signature);
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/image/destroy`, {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/${resourceType}/destroy`, {
         method: "POST",
         body,
       }).catch((error) => {

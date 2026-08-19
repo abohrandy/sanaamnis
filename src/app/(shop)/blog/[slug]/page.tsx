@@ -110,25 +110,32 @@ export default async function ArticlePage({
             />
           </div>
 
-          <div className="prose-content space-y-8 max-w-[680px]">
-            {article.body.map((section, i) => (
-              <section key={section.heading ?? i} className="space-y-4">
-                {section.heading && (
-                  <h2 className="font-serif text-xl md:text-2xl font-medium text-[#1C3322] pt-2">
-                    {section.heading}
-                  </h2>
-                )}
-                {section.paragraphs.map((paragraph, j) => (
-                  <p
-                    key={j}
-                    className="text-[15px] md:text-base text-[#161A17]/80 leading-[1.85]"
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </section>
-            ))}
-          </div>
+          {article.bodyHtml ? (
+            <div
+              className="prose-content max-w-[680px] text-[15px] md:text-base text-[#161A17]/80 leading-[1.85] [&_h2]:font-serif [&_h2]:text-xl [&_h2]:md:text-2xl [&_h2]:font-medium [&_h2]:text-[#1C3322] [&_h2]:pt-2 [&_h2]:mb-4 [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-[#1C3322] [&_h3]:pt-2 [&_h3]:mb-3 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_li]:mb-1.5 [&_blockquote]:border-l-2 [&_blockquote]:border-[#C9A227] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:mb-4 [&_a]:underline [&_a]:underline-offset-4 [&_a]:text-[#1C3322] [&_a]:hover:text-[#C9A227] [&_img]:rounded-[1.25rem] [&_img]:my-6 [&_video]:rounded-[1.25rem] [&_video]:my-6 [&_video]:w-full"
+              dangerouslySetInnerHTML={{ __html: article.bodyHtml }}
+            />
+          ) : (
+            <div className="prose-content space-y-8 max-w-[680px]">
+              {article.body.map((section, i) => (
+                <section key={section.heading ?? i} className="space-y-4">
+                  {section.heading && (
+                    <h2 className="font-serif text-xl md:text-2xl font-medium text-[#1C3322] pt-2">
+                      {section.heading}
+                    </h2>
+                  )}
+                  {section.paragraphs.map((paragraph, j) => (
+                    <p
+                      key={j}
+                      className="text-[15px] md:text-base text-[#161A17]/80 leading-[1.85]"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </section>
+              ))}
+            </div>
+          )}
 
           <div className="pt-6 border-t border-[#E2E6E3]">
             <Link

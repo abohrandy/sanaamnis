@@ -7,6 +7,15 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
+// See the matching comment in src/app/api/admin/recipes/route.ts — local /public paths must
+// stay valid, not just full URLs.
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || v.startsWith("/") || /^https?:\/\//i.test(v), {
+    message: "Enter a path starting with / or a full https:// URL",
+  });
+
 const createPostSchema = z.object({
   title: z.string().trim().min(2).max(200),
   slug: z
@@ -19,7 +28,7 @@ const createPostSchema = z.object({
   // See parseArticleBody() in src/lib/blog.ts for the reader.
   content: z.string().trim().min(20).max(20_000),
   category: z.string().trim().min(2).max(60).default("Guides"),
-  imageUrl: z.string().trim().url().optional().or(z.literal("")),
+  imageUrl: imageUrlSchema.optional(),
   isPublished: z.boolean().default(true),
 });
 

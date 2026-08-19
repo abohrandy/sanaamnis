@@ -45,8 +45,10 @@ export interface Article {
   date: string;
   readingMinutes: number;
   image: string;
-  /** Paragraphs and subheadings, in order. */
+  /** Paragraphs and subheadings, in order — used for hardcoded fallback articles and legacy plain-text DB rows. */
   body: Array<{ heading?: string; paragraphs: string[] }>;
+  /** Rich HTML from the admin's editor, when the post was authored or last saved after it existed. Renders in place of `body` when set. */
+  bodyHtml?: string;
 }
 
 export const RECIPES: Recipe[] = [

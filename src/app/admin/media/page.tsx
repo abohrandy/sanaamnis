@@ -11,10 +11,13 @@ interface MediaAsset {
   id: string;
   filename: string;
   url: string;
+  kind: "image" | "video";
   bytes: number | null;
   width: number | null;
   height: number | null;
 }
+
+const ACCEPT = "image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm,video/quicktime";
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init);
@@ -35,6 +38,7 @@ export default function AdminMediaLibraryPage() {
 
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const mediaQuery = useQuery({
     queryKey: ["admin", "media"],
@@ -74,17 +78,33 @@ export default function AdminMediaLibraryPage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div>
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Media Library</h1>
-          <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
-            Real uploads via Cloudinary
-          </p>
-        </div>
+      <div>
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-white mb-2">Media Library</h1>
+        <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider font-sans">
+          Real uploads via Cloudinary — images and videos
+        </p>
+      </div>
+
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDraggingOver(true);
+        }}
+        onDragLeave={() => setIsDraggingOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDraggingOver(false);
+          const file = e.dataTransfer.files?.[0];
+          if (file) upload.mutate(file);
+        }}
+        className={`flex flex-col items-center justify-center gap-3 border-2 border-dashed p-10 text-center transition-colors ${
+          isDraggingOver ? "border-primary bg-primary/5" : "border-neutral-800"
+        }`}
+      >
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/avif"
+          accept={ACCEPT}
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
@@ -92,14 +112,17 @@ export default function AdminMediaLibraryPage() {
             e.target.value = "";
           }}
         />
+        <UploadCloud className="w-6 h-6 text-neutral-500" aria-hidden="true" />
+        <p className="text-xs text-neutral-400">Drag and drop an image or video here, or</p>
         <Button
           onClick={() => fileInputRef.current?.click()}
           disabled={upload.isPending}
-          className="flex items-center gap-2 rounded-none self-start sm:self-auto"
+          className="flex items-center gap-2 rounded-none"
         >
           {upload.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
-          {upload.isPending ? "Uploading…" : "Upload New Asset"}
+          {upload.isPending ? "Uploading…" : "Browse files"}
         </Button>
+        <p className="text-[10px] text-neutral-500 uppercase tracking-wider">JPEG, PNG, WebP, AVIF up to 8MB · MP4, WebM, MOV up to 80MB</p>
       </div>
 
       <div className="flex gap-4 items-center max-w-md bg-card border border-border/40 px-4 py-2">
@@ -124,7 +147,11 @@ export default function AdminMediaLibraryPage() {
           {filtered.map((asset) => (
             <div key={asset.id} className="group bg-card border border-border/40 overflow-hidden flex flex-col justify-between">
               <div className="relative aspect-square overflow-hidden bg-neutral-900 flex items-center justify-center border-b border-border/20">
-                <Image src={asset.url} alt={asset.filename} fill sizes="300px" className="object-cover" />
+                {asset.kind === "video" ? (
+                  <video src={asset.url} muted className="w-full h-full object-cover" />
+                ) : (
+                  <Image src={asset.url} alt={asset.filename} fill sizes="300px" className="object-cover" />
+                )}
               </div>
 
               <div className="p-4 space-y-3">
