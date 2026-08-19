@@ -22,6 +22,11 @@ interface TableProps<T> {
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
+  // Row selection — all four required together to turn on the checkbox column.
+  getRowId?: (item: T) => string;
+  selectedIds?: Set<string>;
+  onToggleRow?: (id: string) => void;
+  onToggleAll?: (ids: string[]) => void;
 }
 
 export function Table<T>({
@@ -33,13 +38,32 @@ export function Table<T>({
   currentPage,
   totalPages,
   onPageChange,
+  getRowId,
+  selectedIds,
+  onToggleRow,
+  onToggleAll,
 }: TableProps<T>) {
+  const selectable = !!(getRowId && selectedIds && onToggleRow && onToggleAll);
+  const rowIds = selectable ? data.map((item) => getRowId!(item)) : [];
+  const allSelected = selectable && rowIds.length > 0 && rowIds.every((id) => selectedIds!.has(id));
+
   return (
     <div className={cn("w-full bg-card border border-border/40 flex flex-col justify-between shadow-xs", className)}>
       <div className="overflow-x-auto w-full">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-border/40 bg-muted/20">
+              {selectable && (
+                <th className="p-4 w-10">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={() => onToggleAll!(rowIds)}
+                    aria-label="Select all rows"
+                    className="cursor-pointer"
+                  />
+                </th>
+              )}
               {columns.map((col, idx) => (
                 <th
                   key={idx}
@@ -57,6 +81,7 @@ export function Table<T>({
             {loading ? (
               Array.from({ length: loadingRows }).map((_, rowIdx) => (
                 <tr key={rowIdx}>
+                  {selectable && <td className="p-4" />}
                   {columns.map((_, colIdx) => (
                     <td key={colIdx} className="p-4">
                       <div className="h-3.5 rounded-sm bg-muted/30 animate-pulse" style={{ width: `${55 + ((rowIdx + colIdx) % 3) * 15}%` }} />
@@ -66,27 +91,43 @@ export function Table<T>({
               ))
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="p-8 text-center text-muted-foreground">
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="p-8 text-center text-muted-foreground">
                   No records found.
                 </td>
               </tr>
             ) : (
-              data.map((item, rowIdx) => (
-                <tr key={rowIdx} className="hover:bg-muted/10 transition-colors">
-                  {columns.map((col, colIdx) => {
-                    const cellContent =
-                      typeof col.accessor === "function"
-                        ? col.accessor(item)
-                        : (item[col.accessor] as React.ReactNode);
+              data.map((item, rowIdx) => {
+                const rowId = selectable ? rowIds[rowIdx] : undefined;
+                const isSelected = rowId !== undefined && selectedIds!.has(rowId);
 
-                    return (
-                      <td key={colIdx} className={cn("p-4 font-medium", col.className)}>
-                        {cellContent}
+                return (
+                  <tr key={rowIdx} className={cn("hover:bg-muted/10 transition-colors", isSelected && "bg-primary/5")}>
+                    {selectable && (
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onToggleRow!(rowId!)}
+                          aria-label="Select row"
+                          className="cursor-pointer"
+                        />
                       </td>
-                    );
-                  })}
-                </tr>
-              ))
+                    )}
+                    {columns.map((col, colIdx) => {
+                      const cellContent =
+                        typeof col.accessor === "function"
+                          ? col.accessor(item)
+                          : (item[col.accessor] as React.ReactNode);
+
+                      return (
+                        <td key={colIdx} className={cn("p-4 font-medium", col.className)}>
+                          {cellContent}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

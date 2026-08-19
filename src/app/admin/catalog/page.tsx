@@ -173,6 +173,60 @@ export default function AdminCatalogPage() {
     onError: (err: Error) => toast.error("Could not update product", err.message),
   });
 
+  // ------------------------------------------------------- Bulk selection
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+
+  const toggleProductRow = (id: string) => {
+    setSelectedProductIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAllProductRows = (ids: string[]) => {
+    setSelectedProductIds((current) => {
+      const allSelected = ids.length > 0 && ids.every((id) => current.has(id));
+      if (allSelected) {
+        const next = new Set(current);
+        ids.forEach((id) => next.delete(id));
+        return next;
+      }
+      return new Set([...current, ...ids]);
+    });
+  };
+
+  const bulkDeleteProducts = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const results = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            await api(`/api/admin/products/${id}`, { method: "DELETE" });
+            return { id, ok: true as const };
+          } catch (error) {
+            return { id, ok: false as const, message: error instanceof Error ? error.message : "Failed" };
+          }
+        })
+      );
+      return results;
+    },
+    onSuccess: (results) => {
+      const deleted = results.filter((r) => r.ok).length;
+      const failed = results.filter((r) => !r.ok);
+      invalidate("products");
+      setSelectedProductIds(new Set());
+      if (deleted > 0) toast.success(`Deleted ${deleted} product${deleted === 1 ? "" : "s"}`);
+      if (failed.length > 0) {
+        toast.error(
+          `Could not delete ${failed.length} product${failed.length === 1 ? "" : "s"}`,
+          failed[0].message
+        );
+      }
+    },
+    onError: (err: Error) => toast.error("Could not delete the selected products", err.message),
+  });
+
   const openEditProduct = (product: AdminProduct) => {
     setEditingProduct(product);
     setProdTitle(product.title);
@@ -421,15 +475,54 @@ export default function AdminCatalogPage() {
       label: "Products",
       content: (
         <div className="space-y-6">
-          <div className="flex justify-between items-center bg-muted p-4 border border-border">
-            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
-              Products ({products.length})
-            </h3>
-            <Button size="sm" onClick={openAddProduct} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
-              <Plus className="w-4 h-4" /> Add Product
-            </Button>
-          </div>
-          <Table columns={productColumns} data={products} loading={productsQuery.isLoading} />
+          {selectedProductIds.size > 0 ? (
+            <div className="flex justify-between items-center bg-primary/5 p-4 border border-primary/30">
+              <h3 className="text-xs uppercase tracking-widest text-foreground font-bold font-sans">
+                {selectedProductIds.size} selected
+              </h3>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedProductIds(new Set())}
+                  className="rounded-none border-border text-muted-foreground hover:text-foreground"
+                >
+                  Clear
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  loading={bulkDeleteProducts.isPending}
+                  onClick={() => {
+                    const count = selectedProductIds.size;
+                    if (!confirm(`Delete ${count} product${count === 1 ? "" : "s"}? This can't be undone. Products with order history will be skipped.`)) return;
+                    bulkDeleteProducts.mutate([...selectedProductIds]);
+                  }}
+                  className="flex items-center gap-1.5 rounded-none text-destructive hover:bg-destructive/10 font-semibold text-xs uppercase tracking-wider px-4 py-2"
+                >
+                  <Trash2 className="w-4 h-4" /> Delete selected
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center bg-muted p-4 border border-border">
+              <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
+                Products ({products.length})
+              </h3>
+              <Button size="sm" onClick={openAddProduct} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
+                <Plus className="w-4 h-4" /> Add Product
+              </Button>
+            </div>
+          )}
+          <Table
+            columns={productColumns}
+            data={products}
+            loading={productsQuery.isLoading}
+            getRowId={(item: AdminProduct) => item.id}
+            selectedIds={selectedProductIds}
+            onToggleRow={toggleProductRow}
+            onToggleAll={toggleAllProductRows}
+          />
         </div>
       ),
     },
