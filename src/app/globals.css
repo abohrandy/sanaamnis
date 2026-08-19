@@ -106,7 +106,15 @@
   
   --color-accent: #C9A227;
   --color-accent-foreground: #FAF8F5;
-  
+
+  /* text-destructive/bg-destructive/border-destructive are used throughout the
+     admin for delete actions and error states. Tailwind v4 only generates real
+     utilities from @theme --color-* tokens — the --destructive HSL pair above
+     is a leftover shadcn-style variable Tailwind v4 never reads, so those
+     classes had been silently resolving to nothing (inherited color) everywhere. */
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FAF8F5;
+
   --color-card: #FAF8F5;
   --color-card-foreground: #161A17;
   

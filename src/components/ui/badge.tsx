@@ -34,7 +34,10 @@ export function Badge({
     gold: "bg-[#C9A227]/15 text-[#8C531B] border-[#C9A227]/40 backdrop-blur-xs",
     secondary: "border-transparent bg-[#F3EFE8] text-[#161A17] hover:bg-[#EADBCE]",
     destructive: "border-transparent bg-rose-500/10 text-rose-700 border-rose-500/20",
-    outline: "text-[#161A17] border-[#E2E6E3] dark:text-[#FAF8F5]",
+    // No dark: text override — this variant has no background of its own, so a
+    // dark: text color with nothing to pair it with goes invisible against a
+    // light parent under prefers-color-scheme: dark (see the ghost Button variant).
+    outline: "text-[#161A17] border-[#E2E6E3]",
     accent: "border-gold-hairline bg-[#C9A227] text-[#FAF8F5] shadow-ambient-sm",
     glass: "glass-alabaster text-[#161A17] dark:glass-obsidian dark:text-[#FAF8F5]",
     pill: "bg-[#F3EFE8] text-[#1C3322] border-transparent font-bold",

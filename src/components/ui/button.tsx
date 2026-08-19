@@ -24,7 +24,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       gold:
         "bg-[#C9A227] text-[#FAF8F5] hover:bg-[#B59120] shadow-ambient-sm border border-gold-hairline hover-lift-luxury",
       ghost:
-        "bg-transparent text-[#161A17] hover:bg-[#F3EFE8] hover:text-[#1C3322] dark:text-[#FAF8F5]",
+        // No dark: text override here on purpose — this variant's background stays
+        // bg-transparent in both modes, so a dark: text color with nothing to pair
+        // it with would go invisible against a light parent under prefers-color-scheme: dark.
+        "bg-transparent text-[#161A17] hover:bg-[#F3EFE8] hover:text-[#1C3322]",
       iconPill:
         "rounded-full glass-alabaster text-[#161A17] hover:bg-[#1C3322] hover:text-[#FAF8F5] transition-colors p-2.5 shadow-ambient-sm border border-[#E2E6E3]",
       primary: "bg-[#1C3322] text-[#FAF8F5] hover:bg-[#2D4E35] shadow-ambient-sm hover-lift-luxury",
