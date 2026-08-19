@@ -33,7 +33,9 @@ const TABS = [
   { id: "shipping", label: "Shipping & returns" },
 ] as const;
 
-type TabId = (typeof TABS)[number]["id"];
+const FAQ_TAB = { id: "faq", label: "FAQ" } as const;
+
+type TabId = (typeof TABS)[number]["id"] | typeof FAQ_TAB.id;
 
 export default function ProductDetailClient({
   product,
@@ -70,6 +72,9 @@ export default function ProductDetailClient({
     reviews.length > 0
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : null;
+
+  const hasFaqs = !!product.faqs && product.faqs.length > 0;
+  const tabs = hasFaqs ? [...TABS, FAQ_TAB] : TABS;
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-10 md:py-14 font-sans space-y-24">
@@ -168,7 +173,7 @@ export default function ProductDetailClient({
           aria-label="Product details"
           className="flex border-b border-[#E2E6E3] overflow-x-auto gap-8 text-[11px] uppercase tracking-[0.18em] font-sans font-bold"
         >
-          {TABS.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               role="tab"
@@ -261,6 +266,55 @@ export default function ProductDetailClient({
               </p>
             </div>
           )}
+
+          {activeTab === "faq" && hasFaqs && (
+            <div className="max-w-3xl space-y-3">
+              {product.faqs!.map((faq, idx) => {
+                const open = openFaq === idx;
+                return (
+                  <div
+                    key={faq.q}
+                    className="rounded-[1rem] border border-[#E2E6E3] bg-[#FAF8F5] overflow-hidden"
+                  >
+                    <h3>
+                      <button
+                        type="button"
+                        onClick={() => setOpenFaq(open ? null : idx)}
+                        aria-expanded={open}
+                        aria-controls={`faq-panel-${idx}`}
+                        className="w-full p-5 text-left font-serif text-base font-medium text-[#161A17] flex items-center justify-between gap-4 cursor-pointer hover:bg-[#F3EFE8]/60 transition-colors"
+                      >
+                        <span>{faq.q}</span>
+                        <ChevronDown
+                          className={cn(
+                            "w-4 h-4 text-[#C9A227] transition-transform duration-300 shrink-0",
+                            open && "rotate-180"
+                          )}
+                        />
+                      </button>
+                    </h3>
+
+                    <AnimatePresence initial={false}>
+                      {open && (
+                        <motion.div
+                          id={`faq-panel-${idx}`}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <p className="px-5 pb-5 text-sm text-[#676E6A] leading-relaxed">
+                            {faq.a}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -294,67 +348,6 @@ export default function ProductDetailClient({
             ))}
           </div>
         </section>
-      )}
-
-      {/* ------------------------------------------------------------------ FAQ */}
-      {product.faqs && product.faqs.length > 0 && (
-      <section className="space-y-8 pt-4 border-t border-[#E2E6E3]">
-        <div className="text-center max-w-xl mx-auto space-y-2">
-          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227]">
-            Good to know
-          </span>
-          <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#1C3322]">
-            {product.title} FAQs
-          </h2>
-        </div>
-
-        <div className="max-w-3xl mx-auto space-y-3">
-          {product.faqs.map((faq, idx) => {
-            const open = openFaq === idx;
-            return (
-              <div
-                key={faq.q}
-                className="rounded-[1rem] border border-[#E2E6E3] bg-[#FAF8F5] overflow-hidden"
-              >
-                <h3>
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(open ? null : idx)}
-                    aria-expanded={open}
-                    aria-controls={`faq-panel-${idx}`}
-                    className="w-full p-5 text-left font-serif text-base font-medium text-[#161A17] flex items-center justify-between gap-4 cursor-pointer hover:bg-[#F3EFE8]/60 transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown
-                      className={cn(
-                        "w-4 h-4 text-[#C9A227] transition-transform duration-300 shrink-0",
-                        open && "rotate-180"
-                      )}
-                    />
-                  </button>
-                </h3>
-
-                <AnimatePresence initial={false}>
-                  {open && (
-                    <motion.div
-                      id={`faq-panel-${idx}`}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <p className="px-5 pb-5 text-sm text-[#676E6A] leading-relaxed">
-                        {faq.a}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
-      </section>
       )}
 
       {/* -------------------------------------------------------------- Reviews */}
