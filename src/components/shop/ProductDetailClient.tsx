@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Droplet, Truck, ChevronDown, Star, Leaf } from "lucide-react";
 import ProductInteractiveForm from "./ProductInteractiveForm";
 import { ProductHeroGallery } from "./ProductHeroGallery";
+import { ReviewImageCarousel } from "./ReviewImageCarousel";
 import { StickyPurchaseBar } from "./StickyPurchaseBar";
 import { Badge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/ds/cards/product-card";
@@ -361,14 +362,20 @@ export default function ProductDetailClient({
           </h2>
         </div>
 
+        {product.reviewImages && product.reviewImages.length > 0 && (
+          <ReviewImageCarousel images={product.reviewImages} title={product.title} />
+        )}
+
         {reviews.length === 0 ? (
-          <div className="max-w-lg mx-auto text-center p-10 rounded-[1.5rem] border border-dashed border-[#E2E6E3] bg-[#F3EFE8]/40">
-            <Leaf className="w-6 h-6 text-[#C9A227] mx-auto mb-4" />
-            <p className="text-sm text-[#676E6A] leading-relaxed">
-              No reviews for {product.title} yet. Reviews appear here once verified
-              customers have received their order.
-            </p>
-          </div>
+          (!product.reviewImages || product.reviewImages.length === 0) && (
+            <div className="max-w-lg mx-auto text-center p-10 rounded-[1.5rem] border border-dashed border-[#E2E6E3] bg-[#F3EFE8]/40">
+              <Leaf className="w-6 h-6 text-[#C9A227] mx-auto mb-4" />
+              <p className="text-sm text-[#676E6A] leading-relaxed">
+                No reviews for {product.title} yet. Reviews appear here once verified
+                customers have received their order.
+              </p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl mx-auto">
             {reviews.map((review) => (

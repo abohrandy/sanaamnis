@@ -41,6 +41,8 @@ export interface CatalogProduct {
   usageSteps: CatalogUsageStep[];
   /** Product-specific FAQs shown on its product page — each product carries its own, rather than one generic list shared by all. */
   faqs?: CatalogFaq[];
+  /** Screenshots of real customer reviews (WhatsApp, etc.) shown as a carousel on the product page. */
+  reviewImages?: string[];
 }
 
 export type CategorySlug = "hydration" | "culinary" | "body";
@@ -133,6 +135,14 @@ export const CATALOG: CatalogProduct[] = [
         q: "How can I order Sana Amnis Coconut Water?",
         a: "Ordering is easy. Simply click the Order Now button on our website or contact us directly on WhatsApp.",
       },
+    ],
+    reviewImages: [
+      "/reviews/coconut-water-review-1.jpeg",
+      "/reviews/coconut-water-review-2.jpeg",
+      "/reviews/coconut-water-review-3.jpeg",
+      "/reviews/coconut-water-review-4.jpeg",
+      "/reviews/coconut-water-review-5.jpeg",
+      "/reviews/coconut-water-review-6.jpeg",
     ],
     variants: [
       {
