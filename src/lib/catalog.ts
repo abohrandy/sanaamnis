@@ -21,6 +21,11 @@ export interface CatalogUsageStep {
   description: string;
 }
 
+export interface CatalogFaq {
+  q: string;
+  a: string;
+}
+
 export interface CatalogProduct {
   id: string;
   slug: string;
@@ -34,6 +39,8 @@ export interface CatalogProduct {
   badge?: string;
   photographyPending?: boolean;
   usageSteps: CatalogUsageStep[];
+  /** Product-specific FAQs shown on its product page — each product carries its own, rather than one generic list shared by all. */
+  faqs?: CatalogFaq[];
 }
 
 export type CategorySlug = "hydration" | "culinary" | "body";
@@ -76,6 +83,56 @@ export const CATALOG: CatalogProduct[] = [
       { title: "Chilled, straight up", description: "Best served cold, straight from the fridge, as a light everyday drink." },
       { title: "Post-workout", description: "Replace lost electrolytes after exercise or time in the sun instead of a sports drink." },
       { title: "Once opened", description: "Refrigerate and drink within 48 hours — there are no preservatives to extend it." },
+    ],
+    faqs: [
+      {
+        q: "Is Sana Amnis Coconut Water natural?",
+        a: "Yes. Sana Amnis Coconut Water is made from carefully selected fresh green coconuts, giving you a naturally refreshing drink.",
+      },
+      {
+        q: "Does Sana Amnis Coconut Water contain added sugar?",
+        a: "No. We do not add sugar to our coconut water. Its mild sweetness comes naturally from the coconut.",
+      },
+      {
+        q: "Why does the taste sometimes vary?",
+        a: "Coconuts are natural fruits, so their sweetness and flavour can vary slightly depending on the season, variety and maturity of the coconut. Slight differences in taste are completely normal.",
+      },
+      {
+        q: "Why does my coconut water sometimes turn pink?",
+        a: "Fresh coconut water can sometimes develop a light pink colour due to a natural reaction involving oxygen, light and temperature. A slight pink colour does not automatically mean the coconut water has gone bad.",
+      },
+      {
+        q: "Does Sana Amnis Coconut Water need to be refrigerated?",
+        a: "Yes. Sana Amnis Coconut Water should be kept refrigerated, particularly in the freezer compartment. Always follow the storage instructions provided on the product label.",
+      },
+      {
+        q: "How long does Sana Amnis Coconut Water last?",
+        a: "It can last for 3 months once stored properly. Please check the Best Before date on your bottle or pouch and follow the recommended storage instructions.",
+      },
+      {
+        q: "How do I know if my coconut water has gone bad?",
+        a: "Do not drink the product if it develops an unusual smell or taste, or if the packaging is swollen, leaking or damaged. When in doubt, do not consume it.",
+      },
+      {
+        q: "What sizes of Sana Amnis Coconut Water are available?",
+        a: "Our coconut water is available in convenient 250 ml pouches and 500 ml bottles, making it easy to choose the size that works for you.",
+      },
+      {
+        q: "Do you deliver Sana Amnis Coconut Water?",
+        a: "Yes. We offer delivery to different locations. Delivery availability, fees and timelines depend on your location. Contact us or use the Order Now button to confirm delivery to your area.",
+      },
+      {
+        q: "Can I buy Sana Amnis Coconut Water in bulk?",
+        a: "Yes. We accept bulk orders for homes, offices, events, gyms, restaurants, retailers and other businesses. Contact us for current bulk-order options.",
+      },
+      {
+        q: "Do you supply supermarkets, gyms, restaurants and other retailers?",
+        a: "Yes. We welcome wholesale and retail partnerships. If you would like to stock Sana Amnis Coconut Water in your supermarket, store, gym, restaurant, café or other business, please contact us for our supply options.",
+      },
+      {
+        q: "How can I order Sana Amnis Coconut Water?",
+        a: "Ordering is easy. Simply click the Order Now button on our website or contact us directly on WhatsApp.",
+      },
     ],
     variants: [
       {

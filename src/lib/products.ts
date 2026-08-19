@@ -102,6 +102,7 @@ function fromDb(row: DbProductRow): CatalogProduct {
     badge: seed?.badge,
     photographyPending: seed?.photographyPending,
     usageSteps: seed?.usageSteps ?? [],
+    faqs: seed?.faqs ?? [],
   };
 }
 

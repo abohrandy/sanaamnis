@@ -27,25 +27,6 @@ export interface ProductDetailClientProps {
   reviews?: ProductReview[];
 }
 
-const FAQS = [
-  {
-    q: "How is Sana Amnis coconut oil different from what I find in the supermarket?",
-    a: "Most commercial coconut oil is refined, bleached and deodorised at temperatures above 200°C, which strips the natural polyphenols and aroma. Our cold-pressed bottle is extracted through a natural fermentation process, with no added heat, and is never refined or bleached. Our hot-pressed bottle is traditionally extracted for a fuller flavour and a higher smoke point.",
-  },
-  {
-    q: "How should I store it, and how long does it keep?",
-    a: "Store in a cool, dry cupboard away from direct sunlight. Unopened, our oils keep for 24 months. Below roughly 24°C coconut oil turns solid and white — that is normal and is a sign the oil is unrefined, not a fault. It liquefies again in warm hands.",
-  },
-  {
-    q: "Is the coconut water from concentrate?",
-    a: "No. It is drawn from young green coconuts and bottled as-is, with no added sugar, no concentrate and no preservatives. Keep it refrigerated once opened and drink within 48 hours.",
-  },
-  {
-    q: "Where do you deliver, and how long does it take?",
-    a: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days. [Check the distributor list](/distributors) to see the distributors closest to you.",
-  },
-];
-
 const TABS = [
   { id: "ingredients", label: "Ingredients" },
   { id: "usage", label: "How to use" },
@@ -316,18 +297,19 @@ export default function ProductDetailClient({
       )}
 
       {/* ------------------------------------------------------------------ FAQ */}
+      {product.faqs && product.faqs.length > 0 && (
       <section className="space-y-8 pt-4 border-t border-[#E2E6E3]">
         <div className="text-center max-w-xl mx-auto space-y-2">
           <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227]">
             Good to know
           </span>
           <h2 className="font-serif text-2xl md:text-3xl font-medium text-[#1C3322]">
-            Frequently asked questions
+            {product.title} FAQs
           </h2>
         </div>
 
         <div className="max-w-3xl mx-auto space-y-3">
-          {FAQS.map((faq, idx) => {
+          {product.faqs.map((faq, idx) => {
             const open = openFaq === idx;
             return (
               <div
@@ -373,6 +355,7 @@ export default function ProductDetailClient({
           })}
         </div>
       </section>
+      )}
 
       {/* -------------------------------------------------------------- Reviews */}
       <section id="reviews" className="space-y-8 pt-4 border-t border-[#E2E6E3] scroll-mt-28">
