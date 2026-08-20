@@ -303,6 +303,7 @@ export const CATALOG: CatalogProduct[] = [
     ],
     variants: [
       { id: "8b1ea61d-8b9f-55b9-9a39-0909eff7765a", sku: "SA-CO-CP-100", name: "Cold Press · 100ml", price: 3000, stock: 80, imageUrl: "/products/coconut-oil-cold-pressed-100ml.jpg" },
+      { id: "0cc58ae1-3e61-5aa7-a8b3-c7aaaaf6f4fe", sku: "SA-CO-CP-200", name: "Cold Press · 200ml", price: 6000, stock: 70, imageUrl: "/products/coconut-oil-cold-pressed-100ml.jpg" },
       { id: "0ee7a821-4734-5314-8eb3-505605e26aa5", sku: "SA-CO-CP-500", name: "Cold Press · 500ml", price: 13000, stock: 50, imageUrl: "/products/coconut-oil-cold-pressed-500ml.jpg" },
       { id: "aa60f9df-efd5-584d-aa1d-d2ef20e4f322", sku: "SA-CO-CP-1L", name: "Cold Press · 1 litre", price: 25000, stock: 30, imageUrl: "/products/coconut-oil-cold-pressed-1l.jpg" },
       { id: "9545e5d0-c1ac-5441-a59d-155e360669b2", sku: "SA-CO-HP-1L", name: "Hot Press · 1 litre", price: 25000, stock: 40, imageUrl: "/products/coconut-oil-hot-pressed.jpg" },
@@ -474,7 +475,7 @@ export const CATALOG: CatalogProduct[] = [
       { q: "How can I order?", a: "Click the Order Now button on our website or contact us directly on WhatsApp." },
     ],
     variants: [
-      { id: "ef0a71a3-941f-5ca4-9d2c-dad5c4d04f54", sku: "SA-DSC-100", name: "100g", price: 2000, stock: 100, imageUrl: "/products/desiccated-coconut.jpg" },
+      { id: "a8a768da-08b0-502c-b3ff-82d2f04d324c", sku: "SA-DES-100", name: "100g", price: 2000, stock: 90, imageUrl: "/products/desiccated-coconut.jpg" },
     ],
   },
   {

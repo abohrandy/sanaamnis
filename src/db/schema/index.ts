@@ -162,6 +162,41 @@ export const productVariants = pgTable("product_variants", {
 ]);
 
 
+// --- Bundles ---
+
+export const bundles = pgTable("bundles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  tagline: text("tagline"),
+  description: text("description"),
+  // The flat price the bundle actually sells for — the source of truth an order
+  // is priced against server-side. Never derived by summing bundleItems'
+  // variant prices, since the whole point of a bundle is that it doesn't.
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  // What the components would cost bought separately, for the "you save ₦X"
+  // marketing display. Informational only — never used in order pricing.
+  regularValue: numeric("regular_value", { precision: 10, scale: 2 }),
+  badge: text("badge"), // e.g. "SAVE ₦9,500"
+  heroImageUrl: text("hero_image_url"),
+  isPublished: boolean("is_published").default(true).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [index("bundle_sort_idx").on(t.sortOrder)]);
+
+export const bundleItems = pgTable("bundle_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bundleId: uuid("bundle_id")
+    .notNull()
+    .references(() => bundles.id, { onDelete: "cascade" }),
+  // Bundles are pinned to a specific variant (e.g. "500ml", not just "coconut
+  // milk") since that is what actually has a price and a stock count to check.
+  variantId: uuid("variant_id")
+    .notNull()
+    .references(() => productVariants.id, { onDelete: "restrict" }),
+  quantity: integer("quantity").notNull().default(1),
+}, (t) => [index("bundle_item_bundle_idx").on(t.bundleId)]);
+
 // --- Orders & Voucher Systems ---
 
 export const coupons = pgTable("coupons", {
@@ -206,6 +241,11 @@ export const orderItems = pgTable("order_items", {
     .references(() => productVariants.id, { onDelete: "restrict" }),
   quantity: integer("quantity").notNull(),
   priceAtPurchase: numeric("price_at_purchase", { precision: 10, scale: 2 }).notNull(),
+  // Set when this line was purchased as part of a bundle rather than added on
+  // its own — lets an order/admin view group bundle-origin lines together and
+  // show which bundle they came from. Detached (not deleted) if the bundle is
+  // later removed, since it must never affect a historical order.
+  bundleId: uuid("bundle_id").references(() => bundles.id, { onDelete: "set null" }),
 });
 
 export const transactions = pgTable("transactions", {
@@ -505,6 +545,16 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
 export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   order: one(orders, { fields: [orderItems.orderId], references: [orders.id] }),
   variant: one(productVariants, { fields: [orderItems.variantId], references: [productVariants.id] }),
+  bundle: one(bundles, { fields: [orderItems.bundleId], references: [bundles.id] }),
+}));
+
+export const bundlesRelations = relations(bundles, ({ many }) => ({
+  items: many(bundleItems),
+}));
+
+export const bundleItemsRelations = relations(bundleItems, ({ one }) => ({
+  bundle: one(bundles, { fields: [bundleItems.bundleId], references: [bundles.id] }),
+  variant: one(productVariants, { fields: [bundleItems.variantId], references: [productVariants.id] }),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({

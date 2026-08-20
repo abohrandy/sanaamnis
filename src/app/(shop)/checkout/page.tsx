@@ -30,8 +30,11 @@ export default function CheckoutPage() {
   const isHydrated = useHydrated();
   const rawItems = useCartStore((state) => state.items);
   const items = isHydrated ? rawItems : [];
+  const rawBundles = useCartStore((state) => state.bundles);
+  const bundles = isHydrated ? rawBundles : [];
   const totalAmount = useCartStore((state) => state.getTotalAmount)();
   const clearCart = useCartStore((state) => state.clearCart);
+  const hasContent = items.length > 0 || bundles.length > 0;
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -42,8 +45,13 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
 
   // Same module the order API prices with, so this total is the amount charged.
+  // A bundle contributes one flat-priced line here — its own price, not the sum
+  // of its components — matching exactly how /api/orders prices it server-side.
   const totals = computeTotals(
-    items.map((i) => ({ variantId: i.variantId, quantity: i.quantity, unitPrice: i.price })),
+    [
+      ...items.map((i) => ({ variantId: i.variantId, quantity: i.quantity, unitPrice: i.price })),
+      ...bundles.map((b) => ({ variantId: `bundle:${b.bundleId}`, quantity: b.quantity, unitPrice: b.price })),
+    ],
     shippingState,
     deliverySpeed
   );
@@ -51,7 +59,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0 || isSubmitting) return;
+    if (!hasContent || isSubmitting) return;
 
     setIsSubmitting(true);
     setError("");
@@ -69,6 +77,10 @@ export default function CheckoutPage() {
           items: items.map((i) => ({
             variantId: i.variantId,
             quantity: i.quantity,
+          })),
+          bundles: bundles.map((b) => ({
+            bundleId: b.bundleId,
+            quantity: b.quantity,
           })),
         }),
       });
@@ -131,7 +143,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {items.length === 0 ? (
+        {!hasContent ? (
           <div className="py-24 text-center bg-[#FAF8F5] border border-[#E2E6E3] rounded-[1.5rem] max-w-xl mx-auto space-y-6 p-10 shadow-ambient-sm">
             <div className="w-16 h-16 rounded-full bg-[#F3EFE8] flex items-center justify-center mx-auto">
               <ShoppingBag className="w-8 h-8 text-[#676E6A] stroke-[1.2]" />
@@ -315,10 +327,31 @@ export default function CheckoutPage() {
             {/* Right Column: Order Summary Sidebar */}
             <aside className="lg:col-span-5 p-8 rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-md space-y-6 sticky top-28">
               <h3 className="font-serif text-xl font-medium text-[#161A17] pb-4 border-b border-[#E2E6E3]">
-                Reserved Inventory ({items.length})
+                Reserved Inventory ({items.length + bundles.length})
               </h3>
 
               <div className="divide-y divide-[#E2E6E3] max-h-[340px] overflow-y-auto pr-2 space-y-4">
+                {bundles.map((bundle) => (
+                  <div key={bundle.bundleId} className="flex gap-4 pt-4 first:pt-0">
+                    <div className="relative w-14 h-16 rounded-[0.5rem] bg-[#F3EFE8] overflow-hidden border border-[#C9A227]/40 shrink-0">
+                      <Image
+                        src={bundle.imageUrl || "/products/placeholder.jpg"}
+                        alt=""
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[9px] uppercase tracking-[0.15em] text-[#C9A227] font-bold block">Bundle</span>
+                      <h4 className="font-serif text-xs font-medium text-[#161A17] truncate">{bundle.title}</h4>
+                      <span className="text-[10px] text-[#676E6A] font-sans block">× {bundle.quantity}</span>
+                    </div>
+                    <span className="font-serif text-xs font-bold text-[#1C3322]">
+                      ₦{(bundle.price * bundle.quantity).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
                 {items.map((item) => (
                   <div key={item.variantId} className="flex gap-4 pt-4 first:pt-0">
                     <div className="relative w-14 h-16 rounded-[0.5rem] bg-[#F3EFE8] overflow-hidden border border-[#E2E6E3] shrink-0">

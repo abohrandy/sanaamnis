@@ -31,9 +31,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const isHydrated = useHydrated();
   const rawItems = useCartStore((state) => state.items);
   const items = isHydrated ? rawItems : [];
+  const rawBundles = useCartStore((state) => state.bundles);
+  const bundles = isHydrated ? rawBundles : [];
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
+  const updateBundleQuantity = useCartStore((state) => state.updateBundleQuantity);
+  const removeBundle = useCartStore((state) => state.removeBundle);
   const totalAmount = useCartStore((state) => state.getTotalAmount)();
+  const hasContent = items.length > 0 || bundles.length > 0;
 
   // Informational only — no monetary effect, so nothing here can disagree with
   // what checkout actually charges. This drawer previously also had a coupon
@@ -82,7 +87,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <div>
                   <h3 className="font-serif text-lg font-medium text-[#161A17]">Your Cart</h3>
                   <p className="text-[10px] uppercase tracking-[0.18em] text-[#676E6A]">
-                    {items.length} {items.length === 1 ? "item" : "items"}
+                    {items.length + bundles.length} {items.length + bundles.length === 1 ? "item" : "items"}
                   </p>
                 </div>
               </div>
@@ -119,7 +124,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Scrollable Cart Content Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
-              {items.length === 0 ? (
+              {!hasContent ? (
                 <div className="h-full flex flex-col items-center justify-center text-center py-12 space-y-4">
                   <div className="w-16 h-16 rounded-full bg-[#F3EFE8] flex items-center justify-center">
                     <ShoppingBag className="w-8 h-8 text-[#676E6A] stroke-[1.2]" />
@@ -134,6 +139,69 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </div>
               ) : (
                 <>
+                  {/* Bundles */}
+                  {bundles.length > 0 && (
+                    <div className="space-y-4">
+                      {bundles.map((bundle) => (
+                        <div
+                          key={bundle.bundleId}
+                          className="flex gap-4 pb-4 border-b border-[#E2E6E3] last:border-0"
+                        >
+                          <div className="relative w-20 h-24 rounded-[0.75rem] bg-[#F3EFE8] overflow-hidden border border-[#C9A227]/40 shrink-0">
+                            <Image
+                              src={bundle.imageUrl || "/products/placeholder.jpg"}
+                              alt=""
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 flex flex-col justify-between">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <span className="text-[9px] uppercase tracking-[0.15em] text-[#C9A227] font-bold block mb-0.5">Bundle</span>
+                                <h4 className="font-serif font-medium text-[#161A17] text-sm line-clamp-1">
+                                  {bundle.title}
+                                </h4>
+                              </div>
+                              <span className="font-serif font-bold text-[#1C3322] text-sm">
+                                ₦{(bundle.price * bundle.quantity).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between pt-2">
+                              <div className="flex items-center rounded-[0.5rem] border border-[#E2E6E3] bg-[#FAF8F5] overflow-hidden">
+                                <button
+                                  onClick={() => updateBundleQuantity(bundle.bundleId, bundle.quantity - 1)}
+                                  className="p-1.5 hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
+                                  aria-label="Decrease quantity"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="px-3 text-xs font-sans font-bold text-[#161A17]">
+                                  {bundle.quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateBundleQuantity(bundle.bundleId, bundle.quantity + 1)}
+                                  className="p-1.5 hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
+                                  aria-label="Increase quantity"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <button
+                                onClick={() => removeBundle(bundle.bundleId)}
+                                className="text-[#676E6A] hover:text-[#DC2626] transition-colors p-1.5 cursor-pointer"
+                                aria-label="Remove bundle"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Cart Items List */}
                   <div className="space-y-4">
                     {items.map((item) => (
@@ -223,7 +291,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
 
             {/* Footer Summary & Luxury Checkout CTA */}
-            {items.length > 0 && (
+            {hasContent && (
               <div className="p-6 border-t border-[#E2E6E3] bg-[#F3EFE8]/70 glass-alabaster space-y-4">
                 <div className="space-y-1 text-xs font-sans">
                   <div className="flex justify-between items-baseline pt-2">

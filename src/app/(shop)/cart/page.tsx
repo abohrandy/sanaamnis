@@ -30,6 +30,9 @@ export default function CartPage() {
   const items = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const bundles = useCartStore((state) => state.bundles);
+  const removeBundle = useCartStore((state) => state.removeBundle);
+  const updateBundleQuantity = useCartStore((state) => state.updateBundleQuantity);
   const rawSubtotal = useCartStore((state) => state.getTotalAmount)();
 
   // Informational only — no monetary effect, so nothing here can disagree with
@@ -73,7 +76,7 @@ export default function CartPage() {
           </p>
         </div>
 
-        {items.length > 0 ? (
+        {items.length > 0 || bundles.length > 0 ? (
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* Items Column */}
             <div className="lg:col-span-7 space-y-6">
@@ -96,6 +99,78 @@ export default function CartPage() {
                   />
                 </div>
               </div>
+
+              {/* Bundles */}
+              {bundles.length > 0 && (
+                <div className="space-y-4">
+                  {bundles.map((bundle) => (
+                    <div
+                      key={bundle.bundleId}
+                      className="p-6 rounded-[1.25rem] bg-[#F3EFE8] border border-[#C9A227]/40 glass-alabaster flex gap-6 shadow-ambient-sm"
+                    >
+                      <div className="relative w-24 h-28 bg-[#FAF8F5] rounded-[0.75rem] overflow-hidden border border-[#E2E6E3] shrink-0">
+                        <Image
+                          src={bundle.imageUrl || "/products/placeholder.jpg"}
+                          alt=""
+                          fill
+                          sizes="96px"
+                          className="object-cover"
+                        />
+                      </div>
+
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <Badge variant="gold" size="sm" className="mb-1.5">Bundle</Badge>
+                            <h3 className="font-serif text-base font-medium text-[#161A17]">
+                              {bundle.title}
+                            </h3>
+                            <ul className="text-[10px] text-[#676E6A] mt-1 space-y-0.5">
+                              {bundle.items.map((component) => (
+                                <li key={component.variantId}>
+                                  {component.quantity} × {component.productTitle} ({component.variantName})
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <button
+                            onClick={() => removeBundle(bundle.bundleId)}
+                            className="text-[#676E6A] hover:text-[#DC2626] p-1 transition-colors cursor-pointer shrink-0"
+                            aria-label="Remove bundle"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <div className="flex justify-between items-end pt-4">
+                          <div className="flex items-center border border-[#E2E6E3] rounded-[0.5rem] bg-[#FAF8F5] overflow-hidden">
+                            <button
+                              onClick={() => updateBundleQuantity(bundle.bundleId, bundle.quantity - 1)}
+                              className="p-2 hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
+                              disabled={bundle.quantity <= 1}
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="px-3 text-xs font-bold text-[#161A17]">
+                              {bundle.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateBundleQuantity(bundle.bundleId, bundle.quantity + 1)}
+                              className="p-2 hover:bg-[#F3EFE8] text-[#161A17] transition-colors cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          <span className="font-serif text-lg font-bold text-[#1C3322]">
+                            ₦{(bundle.price * bundle.quantity).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Items Card List */}
               <div className="space-y-4">

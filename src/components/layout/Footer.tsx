@@ -6,6 +6,7 @@ import { CATEGORIES } from "@/lib/catalog";
 
 const SHOP_LINKS = [
   { href: "/shop", label: "All products" },
+  { href: "/bundles", label: "Bundles" },
   ...Object.values(CATEGORIES).map((c) => ({
     href: `/shop?category=${c.slug}`,
     label: c.name,

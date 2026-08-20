@@ -11,6 +11,8 @@ import { HeroSlider } from "@/components/ds/storytelling/HeroSlider";
 import { ScrollReveal } from "@/components/ds/motion/ScrollReveal";
 import { CATEGORIES, FEATURED_SLUGS, type CategorySlug } from "@/lib/catalog";
 import { getFeaturedProducts } from "@/lib/products";
+import { getBundles } from "@/lib/bundles";
+import { BundleCarousel } from "@/components/shop/BundleCarousel";
 import {
   ArrowRight,
   Leaf,
@@ -76,7 +78,10 @@ const PROCESS_STEPS = [
 ];
 
 export default async function Home() {
-  const featured = await getFeaturedProducts(FEATURED_SLUGS);
+  const [featured, bundles] = await Promise.all([
+    getFeaturedProducts(FEATURED_SLUGS),
+    getBundles(),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAF8F5] text-[#161A17] selection:bg-[#C9A227] selection:text-[#FAF8F5]">
@@ -139,6 +144,32 @@ export default async function Home() {
               </div>
             </section>
           </ScrollReveal>
+
+          {/* --------------------------------------------------------- Bundles */}
+          {bundles.length > 0 && (
+            <ScrollReveal>
+              <section className="space-y-10">
+                <div className="flex flex-wrap justify-between items-end gap-4 border-b border-[#E2E6E3] pb-5">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C9A227] block mb-1.5">
+                      Bundles
+                    </span>
+                    <h2 className="font-serif text-3xl md:text-4xl font-semibold text-[#1C3322] tracking-tight">
+                      Curated coconut sets
+                    </h2>
+                  </div>
+
+                  <Link href="/bundles">
+                    <Button variant="ghost" size="sm" className="flex items-center gap-1.5">
+                      Shop all bundles <ArrowRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </Link>
+                </div>
+
+                <BundleCarousel bundles={bundles} />
+              </section>
+            </ScrollReveal>
+          )}
 
           {/* ------------------------------------------------------ Categories */}
           <ScrollReveal>

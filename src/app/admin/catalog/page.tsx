@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/hooks/useToast";
+import { MediaDropzone } from "@/components/cms/MediaDropzone";
 import { Edit, Plus, Trash2, X, Archive, ArchiveRestore } from "lucide-react";
 
 interface AdminVariant {
@@ -50,7 +51,34 @@ interface AdminCoupon {
   isActive: boolean;
 }
 
+interface AdminBundleItem {
+  variantId: string;
+  quantity: number;
+  variant: {
+    sku: string;
+    name: string;
+    price: string;
+    product: { title: string } | null;
+  } | null;
+}
+
+interface AdminBundle {
+  id: string;
+  slug: string;
+  title: string;
+  tagline: string | null;
+  description: string | null;
+  price: string;
+  regularValue: string | null;
+  badge: string | null;
+  heroImageUrl: string | null;
+  isPublished: boolean;
+  sortOrder: number;
+  items: AdminBundleItem[];
+}
+
 const naira = (value: string | number) => `₦${Number(value).toLocaleString()}`;
+const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -67,7 +95,7 @@ export default function AdminCatalogPage() {
   const queryClient = useQueryClient();
 
   const [activeModal, setActiveModal] = useState<
-    "add-product" | "edit-product" | "category" | "coupon" | null
+    "add-product" | "edit-product" | "category" | "coupon" | "add-bundle" | "edit-bundle" | null
   >(null);
   const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
 
@@ -83,10 +111,15 @@ export default function AdminCatalogPage() {
     queryKey: ["admin", "coupons"],
     queryFn: () => api<{ coupons: AdminCoupon[] }>("/api/admin/coupons"),
   });
+  const bundlesQuery = useQuery({
+    queryKey: ["admin", "bundles"],
+    queryFn: () => api<{ bundles: AdminBundle[] }>("/api/admin/bundles"),
+  });
 
   const products = productsQuery.data?.products ?? [];
   const categories = categoriesQuery.data?.categories ?? [];
   const coupons = couponsQuery.data?.coupons ?? [];
+  const bundleList = bundlesQuery.data?.bundles ?? [];
 
   const invalidate = (key: string) => queryClient.invalidateQueries({ queryKey: ["admin", key] });
 
@@ -349,6 +382,89 @@ export default function AdminCatalogPage() {
     onError: (err: Error) => toast.error("Could not delete coupon", err.message),
   });
 
+  // ----------------------------------------------------------------- Bundles
+  const [editingBundle, setEditingBundle] = useState<AdminBundle | null>(null);
+  const [bunTitle, setBunTitle] = useState("");
+  const [bunSlug, setBunSlug] = useState("");
+  const [bunTagline, setBunTagline] = useState("");
+  const [bunDescription, setBunDescription] = useState("");
+  const [bunPrice, setBunPrice] = useState("");
+  const [bunRegularValue, setBunRegularValue] = useState("");
+  const [bunBadge, setBunBadge] = useState("");
+  const [bunHeroImage, setBunHeroImage] = useState("");
+  const [bunPublished, setBunPublished] = useState(true);
+  const [bunItems, setBunItems] = useState<Array<{ variantId: string; quantity: number }>>([]);
+
+  const resetBundleForm = () => {
+    setBunTitle("");
+    setBunSlug("");
+    setBunTagline("");
+    setBunDescription("");
+    setBunPrice("");
+    setBunRegularValue("");
+    setBunBadge("");
+    setBunHeroImage("");
+    setBunPublished(true);
+    setBunItems([]);
+  };
+
+  const openAddBundle = () => {
+    setEditingBundle(null);
+    resetBundleForm();
+    setActiveModal("add-bundle");
+  };
+
+  const openEditBundle = (bundle: AdminBundle) => {
+    setEditingBundle(bundle);
+    setBunTitle(bundle.title);
+    setBunTagline(bundle.tagline ?? "");
+    setBunDescription(bundle.description ?? "");
+    setBunPrice(bundle.price);
+    setBunRegularValue(bundle.regularValue ?? "");
+    setBunBadge(bundle.badge ?? "");
+    setBunHeroImage(bundle.heroImageUrl ?? "");
+    setBunPublished(bundle.isPublished);
+    setBunItems(bundle.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })));
+    setActiveModal("edit-bundle");
+  };
+
+  const saveBundle = useMutation({
+    mutationFn: () => {
+      const body = {
+        title: bunTitle,
+        tagline: bunTagline || undefined,
+        description: bunDescription || undefined,
+        price: Number(bunPrice),
+        regularValue: bunRegularValue ? Number(bunRegularValue) : undefined,
+        badge: bunBadge || undefined,
+        heroImageUrl: bunHeroImage || undefined,
+        isPublished: bunPublished,
+        items: bunItems,
+      };
+      return editingBundle
+        ? api(`/api/admin/bundles/${editingBundle.id}`, { method: "PATCH", body: JSON.stringify(body) })
+        : api("/api/admin/bundles", {
+            method: "POST",
+            body: JSON.stringify({ ...body, slug: bunSlug || slugify(bunTitle) }),
+          });
+    },
+    onSuccess: () => {
+      toast.success(editingBundle ? "Bundle updated" : "Bundle published");
+      invalidate("bundles");
+      setActiveModal(null);
+    },
+    onError: (err: Error) => toast.error("Could not save bundle", err.message),
+  });
+
+  const deleteBundle = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/bundles/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Bundle deleted");
+      invalidate("bundles");
+    },
+    onError: (err: Error) => toast.error("Could not delete bundle", err.message),
+  });
+
   // -------------------------------------------------------------- Table defs
   const productColumns = [
     {
@@ -469,6 +585,47 @@ export default function AdminCatalogPage() {
     },
   ];
 
+  const bundleColumns = [
+    {
+      header: "Bundle",
+      accessor: (item: AdminBundle) => (
+        <button onClick={() => openEditBundle(item)} className="flex items-center gap-3 text-left cursor-pointer">
+          <div className="relative w-10 h-10 bg-card border border-border rounded-lg overflow-hidden shrink-0">
+            {item.heroImageUrl && <Image src={item.heroImageUrl} alt="" fill sizes="40px" className="object-cover" />}
+          </div>
+          <div>
+            <span className="font-serif text-sm font-semibold text-foreground block">{item.title}</span>
+            <span className="text-[10px] text-muted-foreground">/bundles/{item.slug} · {item.items.length} items</span>
+          </div>
+        </button>
+      ),
+    },
+    { header: "Price", accessor: (item: AdminBundle) => <span className="font-serif font-semibold text-foreground">{naira(item.price)}</span> },
+    {
+      header: "Regular value",
+      accessor: (item: AdminBundle) => (item.regularValue ? naira(item.regularValue) : "—"),
+    },
+    { header: "Status", accessor: (item: AdminBundle) => <Badge variant={item.isPublished ? "success" : "secondary"}>{item.isPublished ? "Published" : "Draft"}</Badge> },
+    {
+      header: "Actions",
+      accessor: (item: AdminBundle) => (
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm" onClick={() => openEditBundle(item)} className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted" title="Edit">
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => confirm(`Delete "${item.title}"?`) && deleteBundle.mutate(item.id)}
+            className="p-2 text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   const tabContents = [
     {
       id: "products",
@@ -562,6 +719,23 @@ export default function AdminCatalogPage() {
             </Button>
           </div>
           <Table columns={couponColumns} data={coupons} loading={couponsQuery.isLoading} />
+        </div>
+      ),
+    },
+    {
+      id: "bundles",
+      label: "Bundles",
+      content: (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center bg-muted p-4 border border-border">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
+              Bundles ({bundleList.length})
+            </h3>
+            <Button size="sm" onClick={openAddBundle} className="flex items-center gap-1.5 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider px-4 py-2">
+              <Plus className="w-4 h-4" /> Add Bundle
+            </Button>
+          </div>
+          <Table columns={bundleColumns} data={bundleList} loading={bundlesQuery.isLoading} />
         </div>
       ),
     },
@@ -719,6 +893,78 @@ export default function AdminCatalogPage() {
           </div>
         </div>
       )}
+
+      {/* Bundle Modal */}
+      {(activeModal === "add-bundle" || activeModal === "edit-bundle") && (
+        <div className="fixed inset-0 bg-black/80 flex justify-center items-center px-4 z-50 overflow-y-auto py-10">
+          <div className="max-w-2xl w-full bg-card border border-border p-8 shadow-2xl space-y-6 relative my-auto">
+            <button onClick={() => setActiveModal(null)} className="absolute top-5 right-5 text-muted-foreground hover:text-foreground transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="border-b border-border pb-4">
+              <h3 className="font-serif text-xl font-semibold text-foreground">
+                {editingBundle ? "Edit Bundle" : "Add New Bundle"}
+              </h3>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (bunItems.length === 0) {
+                  toast.error("Add at least one item to the bundle");
+                  return;
+                }
+                saveBundle.mutate();
+              }}
+              className="space-y-5"
+            >
+              <Input label="Bundle Title" required value={bunTitle} onChange={(e) => setBunTitle(e.target.value)} placeholder="e.g. Rice Don Set! Coconut Rice Bundle" />
+
+              {!editingBundle && (
+                <Input label="Slug (optional — generated from title)" value={bunSlug} onChange={(e) => setBunSlug(e.target.value)} placeholder={slugify(bunTitle) || "e.g. rice-don-set"} />
+              )}
+
+              <Input label="Tagline" value={bunTagline} onChange={(e) => setBunTagline(e.target.value)} placeholder="One sentence for the carousel card" />
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">Description</label>
+                <textarea
+                  rows={4}
+                  value={bunDescription}
+                  onChange={(e) => setBunDescription(e.target.value)}
+                  placeholder="Why this bundle, and how to enjoy it — blank line between paragraphs"
+                  className="w-full bg-background border border-border p-3 text-xs text-foreground outline-none focus:border-primary resize-y"
+                />
+              </div>
+
+              <MediaDropzone label="Hero image" value={bunHeroImage} onChange={setBunHeroImage} accept="image/jpeg,image/png,image/webp,image/avif" />
+
+              <div className="grid grid-cols-3 gap-4">
+                <Input label="Bundle price (₦)" type="number" required min={1} value={bunPrice} onChange={(e) => setBunPrice(e.target.value)} />
+                <Input label="Regular value (₦, optional)" type="number" min={1} value={bunRegularValue} onChange={(e) => setBunRegularValue(e.target.value)} placeholder="Sum of parts" />
+                <Input label="Badge (optional)" value={bunBadge} onChange={(e) => setBunBadge(e.target.value)} placeholder="e.g. SAVE ₦2,500" />
+              </div>
+
+              <BundleItemsEditor products={products} items={bunItems} onChange={setBunItems} />
+
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                <input type="checkbox" checked={bunPublished} onChange={(e) => setBunPublished(e.target.checked)} />
+                Published (unchecked hides it from the storefront)
+              </label>
+
+              <div className="pt-2 flex gap-3">
+                <Button type="button" variant="outline" onClick={() => setActiveModal(null)} className="flex-1 rounded-none border-border text-muted-foreground hover:text-foreground">
+                  Cancel
+                </Button>
+                <Button type="submit" loading={saveBundle.isPending} className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-wider">
+                  {editingBundle ? "Save Changes" : "Publish Bundle"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -800,6 +1046,111 @@ function VariantsEditor({
             setNewName("");
             setNewPrice("");
             setNewStock("0");
+          }}
+          className="rounded-none shrink-0"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Fully client-side until the bundle is saved — unlike VariantsEditor, a
+ * bundle's items are a small fixed set edited as one array in the same PATCH
+ * as everything else, not independently priced/stocked resources of their own.
+ */
+function BundleItemsEditor({
+  products,
+  items,
+  onChange,
+}: {
+  products: AdminProduct[];
+  items: Array<{ variantId: string; quantity: number }>;
+  onChange: (items: Array<{ variantId: string; quantity: number }>) => void;
+}) {
+  const [newVariantId, setNewVariantId] = useState("");
+  const [newQuantity, setNewQuantity] = useState("1");
+
+  const variantOptions = products.flatMap((p) =>
+    p.variants.map((v) => ({ value: v.id, label: `${p.title} — ${v.name} (${v.sku})` }))
+  );
+
+  const findVariantLabel = (variantId: string) => {
+    for (const p of products) {
+      const v = p.variants.find((v) => v.id === variantId);
+      if (v) return { productTitle: p.title, variantName: v.name, sku: v.sku, price: v.price };
+    }
+    return null;
+  };
+
+  return (
+    <div className="pt-4 border-t border-border space-y-3">
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold block">
+        Bundle contents ({items.length})
+      </span>
+
+      <div className="space-y-2">
+        {items.map((item, idx) => {
+          const info = findVariantLabel(item.variantId);
+          return (
+            <div key={`${item.variantId}-${idx}`} className="flex items-center gap-2 bg-background border border-border p-2.5">
+              <span className="text-xs text-foreground flex-1 truncate">
+                {info ? `${info.productTitle} — ${info.variantName}` : item.variantId}
+              </span>
+              <input
+                type="number"
+                min={1}
+                value={item.quantity}
+                onChange={(e) => {
+                  const quantity = Math.max(1, Number(e.target.value) || 1);
+                  onChange(items.map((i, j) => (j === idx ? { ...i, quantity } : i)));
+                }}
+                className="w-16 bg-card border border-border px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
+              />
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, j) => j !== idx))}
+                className="p-1 text-destructive hover:bg-destructive/10 shrink-0"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          );
+        })}
+        {items.length === 0 && (
+          <p className="text-xs text-muted-foreground py-2">No items yet — add at least one below.</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 pt-2">
+        <select
+          value={newVariantId}
+          onChange={(e) => setNewVariantId(e.target.value)}
+          className="flex-1 bg-background border border-border px-2 py-2 text-xs text-foreground outline-none focus:border-primary cursor-pointer"
+        >
+          <option value="">Choose a product variant…</option>
+          {variantOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        <input
+          type="number"
+          min={1}
+          value={newQuantity}
+          onChange={(e) => setNewQuantity(e.target.value)}
+          className="w-16 bg-background border border-border px-2 py-2 text-xs text-foreground outline-none focus:border-primary"
+        />
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => {
+            if (!newVariantId) return;
+            const quantity = Math.max(1, Number(newQuantity) || 1);
+            onChange([...items, { variantId: newVariantId, quantity }]);
+            setNewVariantId("");
+            setNewQuantity("1");
           }}
           className="rounded-none shrink-0"
         >
