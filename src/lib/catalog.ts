@@ -45,7 +45,7 @@ export interface CatalogProduct {
   reviewImages?: string[];
 }
 
-export type CategorySlug = "hydration" | "culinary" | "body";
+export type CategorySlug = "hydration" | "culinary" | "body" | "oils";
 export const PLACEHOLDER_IMAGE = "/products/placeholder.jpg";
 
 export const CATEGORIES: Record<CategorySlug, CatalogCategory> = {
@@ -63,6 +63,14 @@ export const CATEGORIES: Record<CategorySlug, CatalogCategory> = {
     id: "11038842-b08b-5840-8cc4-4dd138cd714b",
     slug: "body",
     name: "Skin & Body",
+  },
+  // Created via the admin Categories tab and assigned to the DB's split
+  // cold/hot-pressed coconut oil products — added here so this matches the
+  // real live category instead of being an unrecognised slug at render time.
+  oils: {
+    id: "171c75d9-cb73-56e1-abfa-872509649461",
+    slug: "oils",
+    name: "Cold-Pressed Oils",
   },
 };
 
@@ -559,6 +567,19 @@ export const FEATURED_SLUGS = [
 ] as const;
 
 export function getCategory(slug: CategorySlug): CatalogCategory { return CATEGORIES[slug]; }
+/**
+ * Never throws — a DB product's category comes from the admin's free-form
+ * Categories CRUD, which can create a slug this module doesn't know about yet
+ * (as "oils" did, crashing every page that read CATEGORIES[slug].name on an
+ * unrecognised value). Falls back to a readable label from the slug itself.
+ */
+export function categoryOrFallback(slug: string): CatalogCategory {
+  return (CATEGORIES as Record<string, CatalogCategory>)[slug] ?? {
+    id: slug,
+    slug,
+    name: slug.charAt(0).toUpperCase() + slug.slice(1),
+  };
+}
 export function getProductBySlug(slug: string): CatalogProduct | undefined { return CATALOG.find((p) => p.slug === slug); }
 export function findVariant(variantId: string): { product: CatalogProduct; variant: CatalogVariant } | undefined {
   for (const product of CATALOG) {

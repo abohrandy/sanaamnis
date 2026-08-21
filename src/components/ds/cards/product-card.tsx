@@ -8,7 +8,7 @@ import { ShoppingBag, Heart, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
-  CATEGORIES,
+  categoryOrFallback,
   formatNaira,
   startingPrice,
   type CatalogProduct,
@@ -42,7 +42,7 @@ export function ProductCard({
   const [added, setAdded] = React.useState(false);
 
   const image = product.images[0] ?? "/products/placeholder.jpg";
-  const category = CATEGORIES[product.categorySlug];
+  const category = categoryOrFallback(product.categorySlug);
   const from = startingPrice(product);
   const hasChoices = product.variants.length > 1;
   const soldOut = product.variants.every((v) => v.stock <= 0);

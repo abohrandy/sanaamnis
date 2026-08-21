@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { searchProducts, formatNaira, startingPrice, CATEGORIES } from "@/lib/catalog";
+import { searchProducts, formatNaira, startingPrice, categoryOrFallback } from "@/lib/catalog";
 
 export interface SearchModalProps {
   isOpen: boolean;
@@ -144,7 +144,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         </div>
                         <div className="min-w-0 flex-1">
                           <span className="text-[10px] uppercase tracking-[0.16em] text-[#676E6A] font-semibold block">
-                            {CATEGORIES[product.categorySlug].name}
+                            {categoryOrFallback(product.categorySlug).name}
                           </span>
                           <span className="font-serif text-sm font-medium text-[#161A17] block truncate">
                             {product.title}

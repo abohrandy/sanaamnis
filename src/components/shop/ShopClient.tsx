@@ -13,6 +13,7 @@ import { Tag } from "@/components/ui/tag";
 import { Button } from "@/components/ui/button";
 import {
   CATEGORIES,
+  categoryOrFallback,
   startingPrice,
   type CatalogProduct,
   type CategorySlug,
@@ -215,7 +216,7 @@ export function ShopClient({
                       title: p.title,
                       price: startingPrice(p),
                       imageUrl: p.images[0],
-                      categoryName: CATEGORIES[p.categorySlug].name,
+                      categoryName: categoryOrFallback(p.categorySlug).name,
                     })
                   }
                 />

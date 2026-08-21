@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ProductDetailClient from "@/components/shop/ProductDetailClient";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { CATALOG, CATEGORIES } from "@/lib/catalog";
+import { CATALOG, categoryOrFallback } from "@/lib/catalog";
 import { getProduct, getRelatedProducts, getReviews } from "@/lib/products";
 
 export const revalidate = 300;
@@ -72,7 +72,7 @@ export default async function ProductDetailPage({
     getRelatedProducts(product),
     getReviews(product.id),
   ]);
-  const category = CATEGORIES[product.categorySlug];
+  const category = categoryOrFallback(product.categorySlug);
 
   // Rich result data, so the listing carries price and availability in search.
   const productJsonLd = {

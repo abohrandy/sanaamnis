@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/ds/cards/product-card";
 import { Button } from "@/components/ui/button";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
-import { CATALOG, CATEGORIES, startingPrice } from "@/lib/catalog";
+import { CATALOG, categoryOrFallback, startingPrice } from "@/lib/catalog";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
 
 export interface WishlistGridProps {
@@ -88,7 +88,7 @@ export function WishlistGrid({
               title: p.title,
               price: startingPrice(p),
               imageUrl: p.images[0],
-              categoryName: CATEGORIES[p.categorySlug].name,
+              categoryName: categoryOrFallback(p.categorySlug).name,
             })
           }
         />
