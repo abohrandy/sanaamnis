@@ -17,6 +17,7 @@ import { db } from "@/db";
 import {
   CATALOG,
   CATEGORIES,
+  FEATURED_SLUGS,
   PLACEHOLDER_IMAGE,
   type CatalogProduct,
   type CategorySlug,
@@ -150,7 +151,29 @@ export async function getProduct(slug: string): Promise<CatalogProduct | undefin
   return CATALOG.find((p) => p.slug === slug);
 }
 
-/** Products for the homepage grid, in the order FEATURED_SLUGS defines. */
+/**
+ * Slugs for the homepage "Start here" grid, admin-editable via the Settings →
+ * Homepage tab (stored as a JSON array under the "featured-products" key).
+ * Falls back to the catalog default when unset, invalid, or the DB is down.
+ */
+export async function getFeaturedSlugs(): Promise<readonly string[]> {
+  try {
+    const row = await db.query.settings.findFirst({
+      where: (settings, { eq }) => eq(settings.id, "featured-products"),
+    });
+    if (row?.value) {
+      const parsed = JSON.parse(row.value);
+      if (Array.isArray(parsed) && parsed.every((s) => typeof s === "string") && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.error("[products] could not load featured-products setting, using default:", error);
+  }
+  return FEATURED_SLUGS;
+}
+
+/** Products for the homepage grid, in the order the given slugs define. */
 export async function getFeaturedProducts(slugs: readonly string[]): Promise<CatalogProduct[]> {
   const all = await getProducts();
   const bySlug = new Map(all.map((p) => [p.slug, p]));

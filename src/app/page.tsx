@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Newsletter } from "@/components/layout/Newsletter";
 import { HeroSlider } from "@/components/ds/storytelling/HeroSlider";
 import { ScrollReveal } from "@/components/ds/motion/ScrollReveal";
-import { CATEGORIES, FEATURED_SLUGS, type CategorySlug } from "@/lib/catalog";
-import { getFeaturedProducts } from "@/lib/products";
+import { CATEGORIES, type CategorySlug } from "@/lib/catalog";
+import { getFeaturedProducts, getFeaturedSlugs } from "@/lib/products";
 import { getBundles } from "@/lib/bundles";
 import { BundleCarousel } from "@/components/shop/BundleCarousel";
 import {
@@ -78,10 +78,8 @@ const PROCESS_STEPS = [
 ];
 
 export default async function Home() {
-  const [featured, bundles] = await Promise.all([
-    getFeaturedProducts(FEATURED_SLUGS),
-    getBundles(),
-  ]);
+  const [featuredSlugs, bundles] = await Promise.all([getFeaturedSlugs(), getBundles()]);
+  const featured = await getFeaturedProducts(featuredSlugs);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAF8F5] text-[#161A17] selection:bg-[#C9A227] selection:text-[#FAF8F5]">
@@ -131,13 +129,13 @@ export default async function Home() {
                 </Link>
               </div>
 
-              <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                 {featured.map((product, i) => (
                   <ProductCard
                     key={product.id}
                     product={product}
                     // First row is above the fold on desktop; do not lazy-load it.
-                    priority={i < 2}
+                    priority={i < 3}
                     sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 320px"
                   />
                 ))}
@@ -183,7 +181,7 @@ export default async function Home() {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {CATEGORY_TILES.map(({ slug, image, blurb }) => {
                   const category = CATEGORIES[slug];
                   return (
