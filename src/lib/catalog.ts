@@ -45,7 +45,7 @@ export interface CatalogProduct {
   reviewImages?: string[];
 }
 
-export type CategorySlug = "hydration" | "culinary" | "body" | "oils";
+export type CategorySlug = "hydration" | "culinary" | "body";
 export const PLACEHOLDER_IMAGE = "/products/placeholder.jpg";
 
 export const CATEGORIES: Record<CategorySlug, CatalogCategory> = {
@@ -63,14 +63,6 @@ export const CATEGORIES: Record<CategorySlug, CatalogCategory> = {
     id: "11038842-b08b-5840-8cc4-4dd138cd714b",
     slug: "body",
     name: "Skin & Body",
-  },
-  // Created via the admin Categories tab and assigned to the DB's split
-  // cold/hot-pressed coconut oil products — added here so this matches the
-  // real live category instead of being an unrecognised slug at render time.
-  oils: {
-    id: "171c75d9-cb73-56e1-abfa-872509649461",
-    slug: "oils",
-    name: "Cold-Pressed Oils",
   },
 };
 

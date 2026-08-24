@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { orders, orderItems, productVariants } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { initializePaystackPayment } from "@/lib/paystack";
-import { computeTotals, type DeliverySpeed, type PricedLine } from "@/lib/pricing";
+import { computeTotals, type PricedLine } from "@/lib/pricing";
 import { findVariant } from "@/lib/catalog";
 import { BUNDLES as CATALOG_BUNDLES } from "@/lib/bundles";
 
@@ -16,9 +16,9 @@ const createOrderSchema = z
   .object({
     email: z.string().email(),
     name: z.string().min(2).max(120),
-    shippingAddress: z.string().min(5).max(500),
-    shippingState: z.string().min(2).max(80),
-    deliverySpeed: z.enum(["standard", "express"]).default("standard"),
+    deliveryMethod: z.enum(["pickup", "delivery"]),
+    pickupLocation: z.string().max(160).optional(),
+    shippingAddress: z.string().max(500).optional(),
     items: z
       .array(
         z.object({
@@ -41,6 +41,14 @@ const createOrderSchema = z
   .refine((data) => data.items.length > 0 || data.bundles.length > 0, {
     message: "Your cart is empty.",
     path: ["items"],
+  })
+  .refine((data) => data.deliveryMethod !== "pickup" || !!data.pickupLocation, {
+    message: "Please choose a pickup location.",
+    path: ["pickupLocation"],
+  })
+  .refine((data) => data.deliveryMethod !== "delivery" || !!data.shippingAddress, {
+    message: "Please provide a delivery address.",
+    path: ["shippingAddress"],
   });
 
 interface RequestedComponent {
@@ -234,14 +242,10 @@ export async function POST(request: Request) {
   // Standalone items price the subtotal directly; each bundle contributes one
   // flat-priced line instead of its components, so VAT is charged on the
   // discounted bundle price rather than the pre-discount sum of its parts.
-  const totals = computeTotals(
-    [
-      ...priced.filter((l) => l.bundleId === null).map(({ variantId, quantity, unitPrice }) => ({ variantId, quantity, unitPrice })),
-      ...bundleLines,
-    ],
-    input.shippingState,
-    input.deliverySpeed as DeliverySpeed
-  );
+  const totals = computeTotals([
+    ...priced.filter((l) => l.bundleId === null).map(({ variantId, quantity, unitPrice }) => ({ variantId, quantity, unitPrice })),
+    ...bundleLines,
+  ]);
 
   if (totals.total <= 0) {
     return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
@@ -286,7 +290,10 @@ export async function POST(request: Request) {
           orderNumber,
           totalAmount: totals.total.toFixed(2),
           status: "pending",
-          shippingAddress: `${input.name}\n${input.shippingAddress}\n${input.shippingState}\n${input.email}`,
+          shippingAddress:
+            input.deliveryMethod === "pickup"
+              ? `${input.name}\nPICKUP: ${input.pickupLocation}\n${input.email}`
+              : `${input.name}\n${input.shippingAddress}\nDelivery — cost to be communicated separately\n${input.email}`,
         })
         .returning({ id: orders.id });
 

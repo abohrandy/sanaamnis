@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { useHydrated } from "@/hooks/useHydratedStore";
@@ -12,10 +12,7 @@ import {
   Minus,
   Trash2,
   ShieldCheck,
-  Sparkles,
-  Truck,
   ArrowRight,
-  Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,8 +21,6 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const FREE_SHIPPING_THRESHOLD = 50000;
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const isHydrated = useHydrated();
@@ -39,23 +34,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const removeBundle = useCartStore((state) => state.removeBundle);
   const totalAmount = useCartStore((state) => state.getTotalAmount)();
   const hasContent = items.length > 0 || bundles.length > 0;
-
-  // Informational only — no monetary effect, so nothing here can disagree with
-  // what checkout actually charges. This drawer previously also had a coupon
-  // form and a gift-wrap toggle that both changed the "Estimated Total" shown
-  // here without checkout (src/lib/pricing.ts) knowing anything about either —
-  // a customer could apply "SANA10", see a 10% discount, then be charged the
-  // full undiscounted amount at checkout. Removed rather than left half-wired.
-  const [selectedCity, setSelectedCity] = useState<"lagos" | "abuja" | "ph">("lagos");
-
-  const progressPercentage = Math.min((totalAmount / FREE_SHIPPING_THRESHOLD) * 100, 100);
-  const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - totalAmount, 0);
-
-  const deliveryEstimates = {
-    lagos: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
-    abuja: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
-    ph: "We offer 24 to 48 hours delivery of orders in cities where our distributors are domicile. Orders outside these cities take 3 to 5 working days.",
-  };
 
   return (
     <AnimatePresence>
@@ -98,28 +76,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               >
                 <X className="w-5 h-5" />
               </button>
-            </div>
-
-            {/* Delivery information */}
-            <div className="hidden bg-[#F3EFE8] px-6 py-3.5 border-b border-[#E2E6E3]">
-              {false ? (
-                <p className="text-xs font-sans text-[#161A17] mb-1.5 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" />
-                  Delivery charges are calculated at checkout.
-                </p>
-              ) : (
-                <p className="text-xs font-sans text-[#1C3322] font-semibold mb-1.5 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#C9A227]" /> Delivery charges are calculated at checkout.
-                </p>
-              )}
-              <div className="w-full h-1.5 bg-[#E2E6E3] rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="h-full bg-gradient-to-r from-[#1C3322] to-[#C9A227]"
-                />
-              </div>
             </div>
 
             {/* Scrollable Cart Content Area */}
@@ -266,26 +222,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
 
                   {/* Delivery Logistics Estimator */}
-                  <div className="p-4 rounded-[1rem] bg-[#FAF8F5] border border-[#E2E6E3] space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-[#161A17]">
-                      <Truck className="w-4 h-4 text-[#C9A227]" />
-                      <span>Delivery Dispatch Estimator</span>
-                    </div>
-
-                    <select
-                      value={selectedCity}
-                      onChange={(e) => setSelectedCity(e.target.value as "lagos" | "abuja" | "ph")}
-                      className="w-full p-2 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans outline-none cursor-pointer"
-                    >
-                      <option value="lagos">Lagos (Mainland & Islands)</option>
-                      <option value="abuja">Abuja (FCT Metropolis)</option>
-                      <option value="ph">Port Harcourt (Rivers)</option>
-                    </select>
-
-                    <p className="text-[10px] font-sans text-[#676E6A] flex items-center gap-1.5 pt-1">
-                      <Clock className="w-3 h-3 text-[#C9A227]" /> {deliveryEstimates[selectedCity]}
-                    </p>
-                  </div>
                 </>
               )}
             </div>
@@ -298,7 +234,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <span className="text-xs uppercase font-bold tracking-[0.18em] text-[#161A17]">Subtotal</span>
                     <span className="font-serif text-2xl font-bold text-[#1C3322]">₦{totalAmount.toLocaleString()}</span>
                   </div>
-                  <p className="text-[10px] text-[#676E6A]">Shipping and any taxes are calculated at checkout.</p>
+                  <p className="text-[10px] text-[#676E6A]">VAT and delivery are confirmed at checkout — pickup or delivery.</p>
                 </div>
 
                 <Link href="/checkout" onClick={onClose} className="block w-full">
