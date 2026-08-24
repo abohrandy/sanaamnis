@@ -214,7 +214,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex justify-between">
-                  <span>VAT & Delivery</span>
+                  <span>Delivery</span>
                   <span className="font-bold text-[#1C3322]">Confirmed at Checkout</span>
                 </div>
               </div>

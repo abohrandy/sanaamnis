@@ -10,8 +10,6 @@
  * settled with the customer before the order ships (deliveryFee stays 0).
  */
 
-export const VAT_RATE = 0.075;
-
 export interface PricedLine {
   variantId: string;
   quantity: number;
@@ -20,20 +18,17 @@ export interface PricedLine {
 
 export interface OrderTotals {
   subtotal: number;
-  vat: number;
   deliveryFee: number;
   total: number;
 }
 
 export function computeTotals(lines: PricedLine[], deliveryFee: number = 0): OrderTotals {
   const subtotal = lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0);
-  const vat = round2(subtotal * VAT_RATE);
   const fee = round2(deliveryFee);
   return {
     subtotal: round2(subtotal),
-    vat,
     deliveryFee: fee,
-    total: round2(subtotal + vat + fee),
+    total: round2(subtotal + fee),
   };
 }
 

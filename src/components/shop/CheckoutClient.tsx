@@ -70,7 +70,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
     ],
     deliveryMethod === "delivery" ? deliveryZone?.fee ?? 0 : 0
   );
-  const { subtotal, vat, deliveryFee, total: grandTotal } = totals;
+  const { subtotal, deliveryFee, total: grandTotal } = totals;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -453,10 +453,6 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span className="font-bold text-[#161A17]">₦{subtotal.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>VAT (7.5%)</span>
-                  <span className="font-bold text-[#161A17]">₦{vat.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery</span>

@@ -234,7 +234,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <span className="text-xs uppercase font-bold tracking-[0.18em] text-[#161A17]">Subtotal</span>
                     <span className="font-serif text-2xl font-bold text-[#1C3322]">₦{totalAmount.toLocaleString()}</span>
                   </div>
-                  <p className="text-[10px] text-[#676E6A]">VAT and delivery are confirmed at checkout — pickup or delivery.</p>
+                  <p className="text-[10px] text-[#676E6A]">Delivery is confirmed at checkout — pickup or delivery.</p>
                 </div>
 
                 <Link href="/checkout" onClick={onClose} className="block w-full">
