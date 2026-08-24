@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ProductCard } from "@/components/ds/cards/product-card";
+import { BundleCard } from "./BundleCard";
 import { CollectionBanner } from "./CollectionBanner";
 import { FilterSidebar } from "./FilterSidebar";
 import { EmptyState } from "@/components/ds/feedback/EmptyState";
@@ -18,19 +19,26 @@ import {
   type CatalogProduct,
   type CategorySlug,
 } from "@/lib/catalog";
+import type { Bundle } from "@/lib/bundles";
 
 export interface ShopClientProps {
   products: CatalogProduct[];
+  bundles?: Bundle[];
   categories: Array<{ id: string; slug: string; name: string; count?: number }>;
   bannerTitle?: string;
   bannerSubtitle?: string;
   bannerDescription?: string;
 }
 
+type ShopItem =
+  | { kind: "product"; key: string; price: number; title: string; data: CatalogProduct }
+  | { kind: "bundle"; key: string; price: number; title: string; data: Bundle };
+
 const PAGE_SIZE = 8;
 
 export function ShopClient({
   products,
+  bundles = [],
   categories,
   bannerTitle,
   bannerSubtitle,
@@ -68,35 +76,72 @@ export function ShopClient({
     [router, pathname, searchParams]
   );
 
-  const filteredProducts = useMemo(() => {
-    let list = products;
+  const filteredItems = useMemo(() => {
+    let items: ShopItem[];
 
-    if (selectedCategory !== "all") {
-      list = list.filter(
-        (p) =>
-          p.categorySlug === selectedCategory ||
-          p.extraCategorySlugs?.includes(selectedCategory as CategorySlug)
-      );
+    if (selectedCategory === "bundles") {
+      items = bundles.map((b) => ({
+        kind: "bundle" as const,
+        key: b.id,
+        price: b.price,
+        title: b.title,
+        data: b,
+      }));
+    } else if (selectedCategory === "all") {
+      items = [
+        ...products.map((p) => ({
+          kind: "product" as const,
+          key: p.id,
+          price: startingPrice(p),
+          title: p.title,
+          data: p,
+        })),
+        ...bundles.map((b) => ({
+          kind: "bundle" as const,
+          key: b.id,
+          price: b.price,
+          title: b.title,
+          data: b,
+        })),
+      ];
+    } else {
+      items = products
+        .filter(
+          (p) =>
+            p.categorySlug === selectedCategory ||
+            p.extraCategorySlugs?.includes(selectedCategory as CategorySlug)
+        )
+        .map((p) => ({
+          kind: "product" as const,
+          key: p.id,
+          price: startingPrice(p),
+          title: p.title,
+          data: p,
+        }));
     }
 
-    const sorted = [...list];
+    const sorted = [...items];
     if (sortBy === "price_asc") {
-      sorted.sort((a, b) => startingPrice(a) - startingPrice(b));
+      sorted.sort((a, b) => a.price - b.price);
     } else if (sortBy === "price_desc") {
-      sorted.sort((a, b) => startingPrice(b) - startingPrice(a));
+      sorted.sort((a, b) => b.price - a.price);
     } else if (sortBy === "name") {
       sorted.sort((a, b) => a.title.localeCompare(b.title));
     }
     return sorted;
-  }, [products, selectedCategory, sortBy]);
+  }, [products, bundles, selectedCategory, sortBy]);
 
-  const displayedProducts = filteredProducts.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredProducts.length;
+  const displayedItems = filteredItems.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredItems.length;
 
   const selectedCategoryName =
-    selectedCategory !== "all"
+    selectedCategory === "bundles"
+      ? "Bundles"
+      : selectedCategory !== "all"
       ? CATEGORIES[selectedCategory as CategorySlug]?.name ?? selectedCategory
       : null;
+
+  const sidebarCategories = [{ id: "bundles", slug: "bundles", name: "Bundles", count: bundles.length }, ...categories];
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 md:px-12 lg:px-16 py-8 font-sans">
@@ -104,7 +149,7 @@ export function ShopClient({
         title={bannerTitle}
         subtitle={bannerSubtitle}
         description={bannerDescription}
-        itemCount={filteredProducts.length}
+        itemCount={filteredItems.length}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-[#E2E6E3]">
@@ -122,8 +167,8 @@ export function ShopClient({
             className="text-[11px] font-sans uppercase font-bold tracking-[0.16em] text-[#676E6A]"
             aria-live="polite"
           >
-            Showing {displayedProducts.length} of {filteredProducts.length}{" "}
-            {filteredProducts.length === 1 ? "product" : "products"}
+            Showing {displayedItems.length} of {filteredItems.length}{" "}
+            {filteredItems.length === 1 ? "item" : "items"}
           </span>
         </div>
 
@@ -165,7 +210,7 @@ export function ShopClient({
 
       <div className="flex gap-12">
         <FilterSidebar
-          categories={categories.map((c) => ({ id: c.slug, name: c.name, count: c.count }))}
+          categories={sidebarCategories.map((c) => ({ id: c.slug, name: c.name, count: c.count }))}
           selectedCategory={selectedCategory}
           onSelectCategory={(id) => setParam("category", id)}
           sortBy={sortBy}
@@ -181,7 +226,7 @@ export function ShopClient({
         />
 
         <div className="flex-1">
-          {displayedProducts.length === 0 ? (
+          {displayedItems.length === 0 ? (
             <EmptyState
               title="Nothing here yet"
               description="No products match this filter. Try another category, or browse everything."
@@ -194,33 +239,48 @@ export function ShopClient({
                 gridColumns === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
               }`}
             >
-              {displayedProducts.map((product, i) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  priority={i < 4}
-                  sizes={
-                    gridColumns === 3
-                      ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 380px"
-                      : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
-                  }
-                  // Only trust the store after hydration, otherwise the server HTML
-                  // and the first client render disagree.
-                  isWishlisted={
-                    hydrated && wishlist.some((w) => w.productId === product.id)
-                  }
-                  onToggleWishlist={(p) =>
-                    toggleWishlist({
-                      productId: p.id,
-                      slug: p.slug,
-                      title: p.title,
-                      price: startingPrice(p),
-                      imageUrl: p.images[0],
-                      categoryName: categoryOrFallback(p.categorySlug).name,
-                    })
-                  }
-                />
-              ))}
+              {displayedItems.map((item, i) => {
+                const sizes =
+                  gridColumns === 3
+                    ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 380px"
+                    : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px";
+
+                if (item.kind === "bundle") {
+                  return (
+                    <BundleCard
+                      key={item.key}
+                      bundle={item.data}
+                      priority={i < 4}
+                      sizes={sizes}
+                    />
+                  );
+                }
+
+                const product = item.data;
+                return (
+                  <ProductCard
+                    key={item.key}
+                    product={product}
+                    priority={i < 4}
+                    sizes={sizes}
+                    // Only trust the store after hydration, otherwise the server HTML
+                    // and the first client render disagree.
+                    isWishlisted={
+                      hydrated && wishlist.some((w) => w.productId === product.id)
+                    }
+                    onToggleWishlist={(p) =>
+                      toggleWishlist({
+                        productId: p.id,
+                        slug: p.slug,
+                        title: p.title,
+                        price: startingPrice(p),
+                        imageUrl: p.images[0],
+                        categoryName: categoryOrFallback(p.categorySlug).name,
+                      })
+                    }
+                  />
+                );
+              })}
             </div>
           )}
 

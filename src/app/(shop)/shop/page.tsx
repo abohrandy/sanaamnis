@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { ShopClient } from "@/components/shop/ShopClient";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
 import { getProducts, categoriesInUse } from "@/lib/products";
+import { getBundles } from "@/lib/bundles";
 
 export const revalidate = 300;
 
@@ -28,7 +29,7 @@ function ShopGridSkeleton() {
 }
 
 export default async function ShopPage() {
-  const products = await getProducts();
+  const [products, bundles] = await Promise.all([getProducts(), getBundles()]);
   const categories = categoriesInUse(products);
 
   return (
@@ -40,6 +41,7 @@ export default async function ShopPage() {
         <Suspense fallback={<ShopGridSkeleton />}>
           <ShopClient
             products={products}
+            bundles={bundles}
             categories={categories}
             bannerTitle="Every product"
             bannerSubtitle="The full range"
