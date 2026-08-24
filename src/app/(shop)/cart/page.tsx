@@ -49,7 +49,7 @@ export default function CartPage() {
       <main className="flex-grow max-w-7xl mx-auto px-6 py-16 w-full space-y-12">
         {/* Intro */}
         <div className="max-w-2xl space-y-3">
-          <Badge variant="gold">SANCTUARY INVENTORY</Badge>
+          <Badge variant="gold">YOUR CART</Badge>
           <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17]">
             Shopping Cart
           </h1>

@@ -24,7 +24,7 @@ export default function AccountPage() {
         {/* Intro Banner */}
         <div className="max-w-2xl space-y-3">
           <span className="text-[10px] uppercase font-sans font-bold tracking-[0.2em] text-[#C9A227]">
-            SANCTUARY PROFILE
+            YOUR PROFILE
           </span>
           <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17]">
             My Collector Account
@@ -34,7 +34,7 @@ export default function AccountPage() {
           </p>
         </div>
 
-        {/* Tabbed Account Sanctuary Dashboard */}
+        {/* Tabbed Account Dashboard */}
         <AccountClient />
       </main>
 

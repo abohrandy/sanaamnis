@@ -19,11 +19,19 @@ import {
   ChevronRight,
   Info,
   Check,
+  Phone,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Distributor } from "@/lib/content";
+import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/deliveryZones";
+
+const OFFICE_PHONE_DISPLAY = "+234 913 735 8352";
+const OFFICE_PHONE_TEL = "+2349137358352";
+const OFFICE_WHATSAPP_URL = "https://wa.me/2349137358352";
+const NOT_LISTED = "not-listed";
 
 export interface CheckoutClientProps {
   distributors: Distributor[];
@@ -43,20 +51,26 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
   const [name, setName] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [pickupLocation, setPickupLocation] = useState(distributors[0]?.region ?? "");
+  const [deliveryZoneSlug, setDeliveryZoneSlug] = useState<string>(NOT_LISTED);
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const deliveryZone = deliveryZoneSlug === NOT_LISTED ? undefined : findDeliveryZone(deliveryZoneSlug);
+
   // Same module the order API prices with, so this total is the amount charged.
   // A bundle contributes one flat-priced line here — its own price, not the sum
   // of its components — matching exactly how /api/orders prices it server-side.
-  // Delivery is never part of this total: pickup is free, and a delivery quote
-  // is worked out separately and settled with the customer before dispatch.
-  const totals = computeTotals([
-    ...items.map((i) => ({ variantId: i.variantId, quantity: i.quantity, unitPrice: i.price })),
-    ...bundles.map((b) => ({ variantId: `bundle:${b.bundleId}`, quantity: b.quantity, unitPrice: b.price })),
-  ]);
-  const { subtotal, vat, total: grandTotal } = totals;
+  // Pickup is free. Delivery only adds a fee when the address falls inside a
+  // known zone; otherwise it stays 0 and is quoted after checkout.
+  const totals = computeTotals(
+    [
+      ...items.map((i) => ({ variantId: i.variantId, quantity: i.quantity, unitPrice: i.price })),
+      ...bundles.map((b) => ({ variantId: `bundle:${b.bundleId}`, quantity: b.quantity, unitPrice: b.price })),
+    ],
+    deliveryMethod === "delivery" ? deliveryZone?.fee ?? 0 : 0
+  );
+  const { subtotal, vat, deliveryFee, total: grandTotal } = totals;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,6 +89,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
           deliveryMethod,
           pickupLocation: deliveryMethod === "pickup" ? pickupLocation : undefined,
           shippingAddress: deliveryMethod === "delivery" ? address : undefined,
+          deliveryZoneSlug: deliveryMethod === "delivery" ? deliveryZoneSlug : undefined,
           items: items.map((i) => ({
             variantId: i.variantId,
             quantity: i.quantity,
@@ -121,7 +136,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
             <div>
               <Badge variant="gold">BANK-GRADE ENCRYPTED CHECKOUT</Badge>
               <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17] mt-1">
-                Finalize Sanctuary Order
+                Finalize Your Order
               </h1>
             </div>
 
@@ -272,6 +287,34 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   <div className="space-y-3">
                     <div className="space-y-1.5">
                       <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
+                        Is Your Area Listed Below? *
+                      </label>
+                      <select
+                        required
+                        value={deliveryZoneSlug}
+                        onChange={(e) => setDeliveryZoneSlug(e.target.value)}
+                        className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322] cursor-pointer"
+                      >
+                        <option value={NOT_LISTED}>My area isn&apos;t listed — I&apos;ll arrange delivery separately</option>
+                        <optgroup label="Port Harcourt">
+                          {DELIVERY_ZONES.filter((z) => z.city === "Port Harcourt").map((z) => (
+                            <option key={z.slug} value={z.slug}>
+                              {z.area} — ₦{z.fee.toLocaleString()}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="Abuja (FCT)">
+                          {DELIVERY_ZONES.filter((z) => z.city === "Abuja (FCT)").map((z) => (
+                            <option key={z.slug} value={z.slug}>
+                              {z.area} — ₦{z.fee.toLocaleString()}
+                            </option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
                         Full Delivery Street Address *
                       </label>
                       <textarea
@@ -283,14 +326,40 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                         className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322] resize-none"
                       />
                     </div>
-                    <p className="text-xs text-[#676E6A] flex items-start gap-1.5 bg-[#F3EFE8] p-3 rounded-[0.5rem]">
-                      <Info className="w-3.5 h-3.5 text-[#C9A227] shrink-0 mt-0.5" />
-                      Delivery cost is not included in this payment. We will work out the delivery
-                      fee for your address and share it with you after checkout — it is settled
-                      separately (e.g. bank transfer) before your order ships.
-                    </p>
+
+                    {deliveryZone ? (
+                      <p className="text-xs text-[#1C3322] font-semibold flex items-start gap-1.5 bg-[#F3EFE8] p-3 rounded-[0.5rem]">
+                        <MapPin className="w-3.5 h-3.5 text-[#C9A227] shrink-0 mt-0.5" />
+                        Delivery to {deliveryZone.area}, {deliveryZone.city}: ₦{deliveryZone.fee.toLocaleString()} — added to your total below.
+                      </p>
+                    ) : (
+                      <p className="text-xs text-[#676E6A] flex items-start gap-1.5 bg-[#F3EFE8] p-3 rounded-[0.5rem]">
+                        <Info className="w-3.5 h-3.5 text-[#C9A227] shrink-0 mt-0.5" />
+                        Delivery cost is not included in this payment. We will work out the delivery
+                        fee for your address and share it with you after checkout — it is settled
+                        separately (e.g. bank transfer) before your order ships.
+                      </p>
+                    )}
                   </div>
                 )}
+
+                <div className="pt-2 border-t border-[#E2E6E3] flex flex-wrap items-center gap-3">
+                  <span className="text-xs text-[#676E6A]">Delivery questions? Call our office:</span>
+                  <a
+                    href={`tel:${OFFICE_PHONE_TEL}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.5rem] bg-[#1C3322] text-[#FAF8F5] text-[11px] font-bold uppercase tracking-[0.12em] hover:bg-[#2D4E35] transition-colors"
+                  >
+                    <Phone className="w-3.5 h-3.5" aria-hidden="true" /> {OFFICE_PHONE_DISPLAY}
+                  </a>
+                  <a
+                    href={OFFICE_WHATSAPP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[0.5rem] border border-[#E2E6E3] text-[#161A17] text-[11px] font-bold uppercase tracking-[0.12em] hover:border-[#1C3322] transition-colors"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-[#C9A227]" aria-hidden="true" /> WhatsApp
+                  </a>
+                </div>
               </div>
 
               {/* Paystack Submit Trigger */}
@@ -392,7 +461,11 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                 <div className="flex justify-between">
                   <span>Delivery</span>
                   <span className="font-bold text-[#1C3322]">
-                    {deliveryMethod === "pickup" ? "Free (pickup)" : "Quoted after checkout"}
+                    {deliveryMethod === "pickup"
+                      ? "Free (pickup)"
+                      : deliveryZone
+                      ? `₦${deliveryFee.toLocaleString()}`
+                      : "Quoted after checkout"}
                   </span>
                 </div>
               </div>

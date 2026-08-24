@@ -63,14 +63,14 @@ export function NotFoundState() {
     <div className="min-h-[70vh] flex flex-col items-center justify-center text-center p-6 bg-[#FAF8F5]">
       <span className="font-serif text-8xl font-medium text-[#C9A227] mb-2">404</span>
       <h1 className="font-serif text-3xl md:text-5xl font-medium text-[#161A17] mb-4">
-        Sanctuary Page Not Found
+        Page Not Found
       </h1>
       <p className="text-xs md:text-sm text-[#676E6A] font-sans max-w-md leading-relaxed mb-8">
         The botanical formulation or editorial page you are searching for has moved or is no longer available.
       </p>
       <Link href="/">
         <Button variant="botanical" size="lg">
-          Return to Sanctuary Home
+          Return Home
         </Button>
       </Link>
     </div>

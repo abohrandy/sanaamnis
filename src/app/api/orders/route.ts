@@ -9,6 +9,7 @@ import { initializePaystackPayment } from "@/lib/paystack";
 import { computeTotals, type PricedLine } from "@/lib/pricing";
 import { findVariant } from "@/lib/catalog";
 import { BUNDLES as CATALOG_BUNDLES } from "@/lib/bundles";
+import { findDeliveryZone } from "@/lib/deliveryZones";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ const createOrderSchema = z
     deliveryMethod: z.enum(["pickup", "delivery"]),
     pickupLocation: z.string().max(160).optional(),
     shippingAddress: z.string().max(500).optional(),
+    deliveryZoneSlug: z.string().max(80).optional(),
     items: z
       .array(
         z.object({
@@ -239,13 +241,22 @@ export async function POST(request: Request) {
     );
   }
 
+  // A delivery fee is only ever charged for a zone on the known list — the
+  // client never gets to name their own price, the slug just looks one up.
+  const deliveryZone = input.deliveryMethod === "delivery" && input.deliveryZoneSlug
+    ? findDeliveryZone(input.deliveryZoneSlug)
+    : undefined;
+
   // Standalone items price the subtotal directly; each bundle contributes one
   // flat-priced line instead of its components, so VAT is charged on the
   // discounted bundle price rather than the pre-discount sum of its parts.
-  const totals = computeTotals([
-    ...priced.filter((l) => l.bundleId === null).map(({ variantId, quantity, unitPrice }) => ({ variantId, quantity, unitPrice })),
-    ...bundleLines,
-  ]);
+  const totals = computeTotals(
+    [
+      ...priced.filter((l) => l.bundleId === null).map(({ variantId, quantity, unitPrice }) => ({ variantId, quantity, unitPrice })),
+      ...bundleLines,
+    ],
+    deliveryZone?.fee ?? 0
+  );
 
   if (totals.total <= 0) {
     return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
@@ -293,6 +304,8 @@ export async function POST(request: Request) {
           shippingAddress:
             input.deliveryMethod === "pickup"
               ? `${input.name}\nPICKUP: ${input.pickupLocation}\n${input.email}`
+              : deliveryZone
+              ? `${input.name}\n${input.shippingAddress}\nDelivery zone: ${deliveryZone.area}, ${deliveryZone.city} — ₦${deliveryZone.fee.toLocaleString()} paid at checkout\n${input.email}`
               : `${input.name}\n${input.shippingAddress}\nDelivery — cost to be communicated separately\n${input.email}`,
         })
         .returning({ id: orders.id });

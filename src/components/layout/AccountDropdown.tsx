@@ -75,7 +75,7 @@ export function AccountDropdown({ isOpen, onClose, session }: AccountDropdownPro
               }}
               className="w-full flex items-center gap-2.5 p-2.5 rounded-[0.5rem] text-[#DC2626] hover:bg-[#DC2626]/10 text-xs font-sans font-semibold uppercase tracking-[0.18em] transition-colors"
             >
-              <LogOut className="w-4 h-4" /> Sign Out Sanctuary
+              <LogOut className="w-4 h-4" /> Sign Out
             </button>
           </div>
         </motion.div>

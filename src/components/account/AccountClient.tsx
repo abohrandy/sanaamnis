@@ -110,7 +110,7 @@ export function AccountClient() {
   const [smsAlerts, setSmsAlerts] = useState(false);
 
   const TABS = [
-    { id: "overview", label: "Sanctuary Overview", icon: User },
+    { id: "overview", label: "Account Overview", icon: User },
     { id: "orders", label: "Orders Archive", icon: ShoppingBag, badge: orders.length },
     { id: "wishlist", label: "Saved Formulations", icon: Heart, badge: wishlistCount },
     { id: "addresses", label: "Saved Destinations", icon: MapPin },
@@ -214,7 +214,7 @@ export function AccountClient() {
             {/* Recent Orders Overview */}
             <div className="p-8 rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-6">
               <div className="flex items-center justify-between border-b border-[#E2E6E3] pb-4">
-                <h3 className="font-serif text-xl font-medium text-[#161A17]">Recent Sanctuary Order</h3>
+                <h3 className="font-serif text-xl font-medium text-[#161A17]">Recent Order</h3>
                 <button onClick={() => setActiveTab("orders")} className="text-xs font-bold uppercase tracking-[0.18em] text-[#1C3322] hover:text-[#C9A227]">
                   View All Archive →
                 </button>
