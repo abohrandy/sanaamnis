@@ -63,6 +63,8 @@ export const BUNDLES: RawBundle[] = [
     description:
       "Everything coconut you need to turn an ordinary pot of rice into a rich, creamy and delicious coconut rice meal for the whole family!\n\nOur Full-Cream Coconut Milk gives your rice that rich, creamy base and unmistakable coconut flavour. Use the Cold-Pressed Coconut Oil to sauté your onions, peppers, vegetables and protein, adding another delicious layer of coconut goodness. Want it extra rich and coconutty? Add some Coconut Milk Powder to your coconut milk while cooking to boost the creamy flavour and adjust the richness to your taste.\n\nThe Rice Don Set Bundle gives you the coconut essentials for preparing a delicious coconut rice meal for approximately 4–6 people. Simply add your rice, favourite protein, vegetables and seasonings — Sana Amnis brings the coconut magic.",
     price: 20000,
+    regularValue: 21000,
+    badge: "SAVE ₦1,000",
     heroImageUrl: "/bundles/rice-don-set.jpg",
     items: [
       { variantId: "ee6d9cb0-a0f1-50c2-af4f-1b6c1aa0bef2", quantity: 2 }, // 500ml Full-Cream Coconut Milk
