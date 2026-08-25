@@ -17,6 +17,7 @@ import { db } from "@/db";
 import {
   CATALOG,
   CATEGORIES,
+  EXTRA_CATEGORIES_BY_SLUG,
   FEATURED_SLUGS,
   PLACEHOLDER_IMAGE,
   type CatalogProduct,
@@ -97,7 +98,7 @@ function fromDb(row: DbProductRow): CatalogProduct {
     tagline: seed?.tagline ?? "",
     description: row.description || seed?.description || "",
     categorySlug,
-    extraCategorySlugs: seed?.extraCategorySlugs,
+    extraCategorySlugs: seed?.extraCategorySlugs ?? EXTRA_CATEGORIES_BY_SLUG[row.slug],
     images: images.length > 0 ? images : [PLACEHOLDER_IMAGE],
     variants: variants.length > 0 ? variants : (seed?.variants ?? []),
     badge: seed?.badge,

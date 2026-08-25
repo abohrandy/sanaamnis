@@ -66,6 +66,17 @@ export const CATEGORIES: Record<CategorySlug, CatalogCategory> = {
   },
 };
 
+/**
+ * Secondary categories for a live DB product, keyed by its DB slug — the
+ * products table only has one category_id column, so a product that should
+ * show under two categories (e.g. coconut oil, under both Culinary
+ * Essentials and Skin & Body) needs this rather than a second category row.
+ */
+export const EXTRA_CATEGORIES_BY_SLUG: Record<string, CategorySlug[]> = {
+  "extra-virgin-coconut-oil": ["body"],
+  "coconut-oil-hot-pressed": ["body"],
+};
+
 export const CATALOG: CatalogProduct[] = [
   {
     id: "b02e6a54-39c4-595e-bff6-937beb679466",
