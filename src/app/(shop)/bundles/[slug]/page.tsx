@@ -1,6 +1,5 @@
 import React from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/layout/Header";
@@ -8,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { AddBundleToCartButton } from "@/components/shop/AddBundleToCartButton";
+import { BundleHeroImage } from "@/components/shop/BundleHeroImage";
 import { getBundle, getBundles, BUNDLES } from "@/lib/bundles";
 
 export const revalidate = 300;
@@ -69,16 +69,7 @@ export default async function BundleDetailPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
           <div className="lg:col-span-6">
-            <div className="relative aspect-[4/5] rounded-[1.5rem] overflow-hidden bg-[#F3EFE8] border border-[#E2E6E3] shadow-ambient-md">
-              <Image
-                src={bundle.heroImageUrl}
-                alt={bundle.title}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
+            <BundleHeroImage src={bundle.heroImageUrl} alt={bundle.title} />
           </div>
 
           <div className="lg:col-span-6 space-y-6">
