@@ -341,6 +341,7 @@ export const DELIVERY_ZONES: DeliveryZone[] = [
   zone("Port Harcourt", "Elelenwo / Akpajo / Oyigbo Axis", "Akpajo", 4000),
   zone("Port Harcourt", "Elelenwo / Akpajo / Oyigbo Axis", "Iriebe", 5000),
   zone("Port Harcourt", "Elelenwo / Akpajo / Oyigbo Axis", "Oyigbo", 5000),
+  zone("Port Harcourt", "Elelenwo / Akpajo / Oyigbo Axis", "Afam Road Axis", 5000),
 
   zone("Port Harcourt", "Other Port Harcourt Areas", "Borokiri", 3500),
   zone("Port Harcourt", "Other Port Harcourt Areas", "Township", 3500),
