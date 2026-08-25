@@ -409,7 +409,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
             {/* Right Column: Order Summary Sidebar */}
             <aside className="lg:col-span-5 p-8 rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-md space-y-6 sticky top-28">
               <h3 className="font-serif text-xl font-medium text-[#161A17] pb-4 border-b border-[#E2E6E3]">
-                Reserved Inventory ({items.length + bundles.length})
+                Cart ({items.length + bundles.length})
               </h3>
 
               <div className="divide-y divide-[#E2E6E3] max-h-[340px] overflow-y-auto pr-2 space-y-4">
