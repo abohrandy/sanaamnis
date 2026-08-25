@@ -26,7 +26,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Distributor } from "@/lib/content";
-import { DELIVERY_ZONES, findDeliveryZone } from "@/lib/deliveryZones";
+import { DELIVERY_CITIES, findDeliveryZone, zonesForCity, type DeliveryCity } from "@/lib/deliveryZones";
 
 const OFFICE_PHONE_DISPLAY = "+234 913 735 8352";
 const OFFICE_PHONE_TEL = "+2349137358352";
@@ -51,12 +51,22 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
   const [name, setName] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [pickupLocation, setPickupLocation] = useState(distributors[0]?.region ?? "");
+  const [deliveryCity, setDeliveryCity] = useState<string>(NOT_LISTED);
   const [deliveryZoneSlug, setDeliveryZoneSlug] = useState<string>(NOT_LISTED);
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  const cityZones = deliveryCity === NOT_LISTED ? [] : zonesForCity(deliveryCity as DeliveryCity);
   const deliveryZone = deliveryZoneSlug === NOT_LISTED ? undefined : findDeliveryZone(deliveryZoneSlug);
+
+  // Grouped in source order so each optgroup mirrors the client's own
+  // corridor names (e.g. "Sangotedo & Environs") — undefined for the
+  // Abuja / Lagos Mainland lists, which have no sub-corridors at all.
+  const subregions = Array.from(new Set(cityZones.map((z) => z.subregion ?? "")))
+    .filter(Boolean)
+    .map((label) => ({ label, zones: cityZones.filter((z) => z.subregion === label) }));
+  const ungroupedZones = cityZones.filter((z) => !z.subregion);
 
   // Same module the order API prices with, so this total is the amount charged.
   // A bundle contributes one flat-priced line here — its own price, not the sum
@@ -287,38 +297,55 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   <div className="space-y-3">
                     <div className="space-y-1.5">
                       <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
-                        Is Your Area Listed Below? *
+                        Is Your City Covered? *
                       </label>
                       <select
                         required
-                        value={deliveryZoneSlug}
-                        onChange={(e) => setDeliveryZoneSlug(e.target.value)}
+                        value={deliveryCity}
+                        onChange={(e) => {
+                          setDeliveryCity(e.target.value);
+                          setDeliveryZoneSlug(NOT_LISTED);
+                        }}
                         className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322] cursor-pointer"
                       >
-                        <option value={NOT_LISTED}>My area isn&apos;t listed — I&apos;ll arrange delivery separately</option>
-                        <optgroup label="Port Harcourt">
-                          {DELIVERY_ZONES.filter((z) => z.city === "Port Harcourt").map((z) => (
-                            <option key={z.slug} value={z.slug}>
-                              {z.area} — ₦{z.fee.toLocaleString()}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label="Abuja (FCT)">
-                          {DELIVERY_ZONES.filter((z) => z.city === "Abuja (FCT)").map((z) => (
-                            <option key={z.slug} value={z.slug}>
-                              {z.area} — ₦{z.fee.toLocaleString()}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label="Lagos Island">
-                          {DELIVERY_ZONES.filter((z) => z.city === "Lagos Island").map((z) => (
-                            <option key={z.slug} value={z.slug}>
-                              {z.area} — ₦{z.fee.toLocaleString()}
-                            </option>
-                          ))}
-                        </optgroup>
+                        <option value={NOT_LISTED}>My city isn&apos;t listed — I&apos;ll arrange delivery separately</option>
+                        {DELIVERY_CITIES.map((city) => (
+                          <option key={city} value={city}>
+                            {city}
+                          </option>
+                        ))}
                       </select>
                     </div>
+
+                    {cityZones.length > 0 && (
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
+                          Is Your Area Listed Below? *
+                        </label>
+                        <select
+                          required
+                          value={deliveryZoneSlug}
+                          onChange={(e) => setDeliveryZoneSlug(e.target.value)}
+                          className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322] cursor-pointer"
+                        >
+                          <option value={NOT_LISTED}>My area isn&apos;t listed — I&apos;ll arrange delivery separately</option>
+                          {ungroupedZones.map((z) => (
+                            <option key={z.slug} value={z.slug}>
+                              {z.area} — ₦{z.fee.toLocaleString()}
+                            </option>
+                          ))}
+                          {subregions.map(({ label, zones }) => (
+                            <optgroup key={label} label={label}>
+                              {zones.map((z) => (
+                                <option key={z.slug} value={z.slug}>
+                                  {z.area} — ₦{z.fee.toLocaleString()}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
+                        </select>
+                      </div>
+                    )}
 
                     <div className="space-y-1.5">
                       <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
