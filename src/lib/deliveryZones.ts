@@ -7,13 +7,19 @@
 
 export interface DeliveryZone {
   slug: string;
-  city: "Port Harcourt" | "Abuja (FCT)";
+  city: "Port Harcourt" | "Abuja (FCT)" | "Lagos Island";
   area: string;
   fee: number;
 }
 
+const CITY_PREFIX: Record<DeliveryZone["city"], string> = {
+  "Port Harcourt": "ph",
+  "Abuja (FCT)": "abj",
+  "Lagos Island": "lag",
+};
+
 function zone(city: DeliveryZone["city"], area: string, fee: number): DeliveryZone {
-  const slug = `${city === "Port Harcourt" ? "ph" : "abj"}-${area
+  const slug = `${CITY_PREFIX[city]}-${area
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")}`;
@@ -76,6 +82,33 @@ export const DELIVERY_ZONES: DeliveryZone[] = [
   zone("Abuja (FCT)", "Lokogoma", 2500),
   zone("Abuja (FCT)", "Apo Resettlement", 2500),
   zone("Abuja (FCT)", "Durumi", 2500),
+
+  // Lagos Island
+  zone("Lagos Island", "VI", 5000),
+  zone("Lagos Island", "Ikoyi", 5000),
+  zone("Lagos Island", "Lekki", 5000),
+  zone("Lagos Island", "Ikate", 4500),
+  zone("Lagos Island", "Maruwa", 4500),
+  zone("Lagos Island", "Salem", 4000),
+  zone("Lagos Island", "Jakande", 4000),
+  zone("Lagos Island", "Agungi", 3500),
+  zone("Lagos Island", "Igbeafon", 3500),
+  zone("Lagos Island", "Chevron", 3500),
+  zone("Lagos Island", "Orchid Road", 4000),
+  zone("Lagos Island", "Ikota Vila", 3500),
+  zone("Lagos Island", "VGC", 3500),
+  zone("Lagos Island", "Off Addo Road", 4000),
+  zone("Lagos Island", "Badore", 4000),
+  zone("Lagos Island", "Adesanya", 3000),
+  zone("Lagos Island", "Thomas", 2500),
+  zone("Lagos Island", "Ogombo", 5000),
+  zone("Lagos Island", "Off Lagos Business School", 4000),
+  zone("Lagos Island", "Songotedo", 4000),
+  zone("Lagos Island", "Awoyaya", 5000),
+  zone("Lagos Island", "Lawkowe", 5000),
+  zone("Lagos Island", "Abijo", 5000),
+  zone("Lagos Island", "Amen Estate", 7000),
+  zone("Lagos Island", "Epe", 7000),
 ];
 
 export function findDeliveryZone(slug: string): DeliveryZone | undefined {

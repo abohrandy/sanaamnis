@@ -310,6 +310,13 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                             </option>
                           ))}
                         </optgroup>
+                        <optgroup label="Lagos Island">
+                          {DELIVERY_ZONES.filter((z) => z.city === "Lagos Island").map((z) => (
+                            <option key={z.slug} value={z.slug}>
+                              {z.area} — ₦{z.fee.toLocaleString()}
+                            </option>
+                          ))}
+                        </optgroup>
                       </select>
                     </div>
 
