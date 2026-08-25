@@ -108,6 +108,24 @@ export const BUNDLES: RawBundle[] = [
     ],
   },
   {
+    id: "9370acac-173e-4d93-aa51-d8b5cf3f2c5a",
+    slug: "move-sweat-hydrate-2-week",
+    title: "Move. Sweat. Hydrate. — 2-Week Active Lifestyle Bundle",
+    tagline: "Two weeks of Sana Amnis coconut goodness for your active lifestyle.",
+    description:
+      "Two weeks of Sana Amnis coconut goodness for your active lifestyle. Whether you're hitting the gym, running, cycling, playing your favourite sport or simply living life on the move, this bundle brings together refreshing coconut water, creamy coconut goodness and crunchy coconut snacks to complement your active routine.\n\nEnjoy the 500ml bottles around your workouts, runs, football, cycling and other active days. The convenient 250ml portions are perfect for lighter activities, outings and busy days on the move. With 15 portions of fresh coconut water, you've got plenty of coconut refreshment to spread across your two-week routine.\n\nAdd Coconut Milk Powder to your smoothies and shakes for a rich, creamy coconut taste, or enjoy it in oats, pap, cereals and other breakfast favourites. With 4 handy 50g packs, your coconut snack is already conveniently portioned for your active days — enjoy Coconut Flakes straight from the pack, take one along to work or the gym, or sprinkle them over oats, yoghurt, cereals and smoothie bowls.\n\nSip it. Blend it. Sprinkle it. Snack on it. Two weeks of coconut goodness for life in motion.",
+    price: 50000,
+    regularValue: 53500,
+    badge: "SAVE ₦3,500",
+    heroImageUrl: "/bundles/move-sweat-hydrate-2week.jpg",
+    items: [
+      { variantId: "31a5e022-90e4-58cd-a2a5-eff49f933071", quantity: 10 }, // 500ml Coconut Water x10
+      { variantId: "def59067-c0eb-5884-b1d1-0585c3529edb", quantity: 5 }, // 250ml Coconut Water x5
+      { variantId: "6d396826-aed2-5b9a-a316-efcc7b8ae204", quantity: 2 }, // 100g Coconut Milk Powder x2
+      { variantId: "0f786e66-cfdc-5574-a16d-c11ce804d127", quantity: 4 }, // 50g Coconut Flakes x4
+    ],
+  },
+  {
     id: "0a58d06c-d2d5-4c7c-b351-b7ebf56f806d",
     slug: "coco-glow",
     title: "Coco Glow Bundle",
