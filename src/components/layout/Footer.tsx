@@ -123,11 +123,11 @@ export default function Footer() {
             </p>
             <p className="flex items-start gap-2">
               <Mail className="w-3.5 h-3.5 mt-0.5 shrink-0" aria-hidden="true" />
-              <span className="space-y-1">
-                <a href="mailto:communitymart@gmail.com" className="block hover:text-[#C9A227] transition-colors break-all">
+              <span className="min-w-0 flex-1 space-y-1">
+                <a href="mailto:communitymart@gmail.com" className="block whitespace-nowrap hover:text-[#C9A227] transition-colors">
                   communitymart@gmail.com
                 </a>
-                <a href="mailto:info@sanaamniscoconut.com" className="block hover:text-[#C9A227] transition-colors break-all">
+                <a href="mailto:info@sanaamniscoconut.com" className="block whitespace-nowrap hover:text-[#C9A227] transition-colors">
                   info@sanaamniscoconut.com
                 </a>
               </span>
