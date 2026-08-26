@@ -17,7 +17,7 @@ const contactSchema = z.object({
   company: z.string().optional(),
 });
 
-const CONTACT_INBOX = process.env.CONTACT_EMAIL || "concierge@sanaamnis.com";
+const CONTACT_INBOX = process.env.CONTACT_EMAIL || "info@sanaamniscoconut.com";
 
 /**
  * Delivers the contact form to the team inbox.

@@ -283,7 +283,7 @@ async function main() {
 
     for (const [id, value] of Object.entries({
       "site-name": "Sana Amnis",
-      "contact-email": "concierge@sanaamnis.com",
+      "contact-email": "info@sanaamniscoconut.com",
       "contact-phone": "+234 812 345 6789",
     })) {
       await db

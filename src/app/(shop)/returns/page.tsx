@@ -39,7 +39,7 @@ export default function ReturnsPage() {
         {
           heading: "How to start a return",
           body: [
-            "Email concierge@sanaamnis.com with your order number and, where relevant, a photograph of the problem. You do not need to ship anything back before hearing from us.",
+            "Email info@sanaamniscoconut.com or communitymart@gmail.com with your order number and, where relevant, a photograph of the problem. You do not need to ship anything back before hearing from us.",
             "We will confirm within one working day whether to return the item and, if so, arrange collection or give you a return address.",
           ],
         },

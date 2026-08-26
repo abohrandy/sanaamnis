@@ -56,7 +56,7 @@ export default function PoliciesPage() {
         {
           heading: "Your rights",
           body: [
-            "You can ask us what personal data we hold about you, ask us to correct it, or ask us to delete it, subject to what we are legally required to keep for tax and accounting purposes. Write to concierge@sanaamnis.com to make a request.",
+            "You can ask us what personal data we hold about you, ask us to correct it, or ask us to delete it, subject to what we are legally required to keep for tax and accounting purposes. Write to info@sanaamniscoconut.com or communitymart@gmail.com to make a request.",
           ],
         },
         {

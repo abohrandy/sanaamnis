@@ -95,7 +95,13 @@ const ORGANIZATION_JSON_LD = {
     {
       "@type": "ContactPoint",
       contactType: "customer service",
-      email: "concierge@sanaamnis.com",
+      email: "info@sanaamniscoconut.com",
+      areaServed: "NG",
+    },
+    {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      email: "communitymart@gmail.com",
       areaServed: "NG",
     },
   ],

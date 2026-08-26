@@ -54,7 +54,7 @@ export default function SustainabilityPage() {
         {
           heading: "Questions",
           body: [
-            "If you want to know more about where a specific batch came from, or you are considering stocking our products and need sourcing detail, write to concierge@sanaamnis.com and ask. We will tell you what we know.",
+            "If you want to know more about where a specific batch came from, or you are considering stocking our products and need sourcing detail, write to info@sanaamniscoconut.com or communitymart@gmail.com and ask. We will tell you what we know.",
           ],
         },
       ]}
