@@ -45,6 +45,10 @@ export default function AdminSettingsPage() {
   const [seoDesc, setSeoDesc] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
+  const [resendApiKey, setResendApiKey] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [bankAccountName, setBankAccountName] = useState("");
+  const [bankAccountNumber, setBankAccountNumber] = useState("");
 
   // Populate the form once the real settings load — previously these fields
   // were hardcoded starting values ("Timeless garments designed with
@@ -57,6 +61,10 @@ export default function AdminSettingsPage() {
     setSeoDesc(s["seo-description"] ?? "");
     setContactEmail(s["contact-email"] ?? "");
     setContactPhone(s["contact-phone"] ?? "");
+    setResendApiKey(s["resend-api-key"] ?? "");
+    setBankName(s["bank-transfer-bank-name"] ?? "");
+    setBankAccountName(s["bank-transfer-account-name"] ?? "");
+    setBankAccountNumber(s["bank-transfer-account-number"] ?? "");
   }, [settingsQuery.data]);
 
   const saveSettings = useMutation({
@@ -332,6 +340,57 @@ export default function AdminSettingsPage() {
           </p>
           <Table columns={redirectColumns} data={redirects} loading={redirectsQuery.isLoading} />
         </div>
+      ),
+    },
+    {
+      id: "payments",
+      label: "Payments",
+      content: (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveSettings.mutate({
+              "resend-api-key": resendApiKey,
+              "bank-transfer-bank-name": bankName,
+              "bank-transfer-account-name": bankAccountName,
+              "bank-transfer-account-number": bankAccountNumber,
+            });
+          }}
+          className="space-y-8 max-w-xl"
+        >
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
+              Email delivery
+            </h3>
+            <Input
+              label="Resend API key"
+              type="password"
+              autoComplete="off"
+              value={resendApiKey}
+              onChange={(e) => setResendApiKey(e.target.value)}
+              placeholder="re_..."
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Used to send order, payment and delivery emails. Falls back to the RESEND_API_KEY environment variable if left blank.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
+              Bank transfer details
+            </h3>
+            <p className="text-[11px] text-muted-foreground">
+              Shown to customers who choose &quot;Bank Transfer&quot; at checkout.
+            </p>
+            <Input label="Bank name" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. GTBank" />
+            <Input label="Account name" value={bankAccountName} onChange={(e) => setBankAccountName(e.target.value)} placeholder="e.g. Sana Amnis Ltd" />
+            <Input label="Account number" value={bankAccountNumber} onChange={(e) => setBankAccountNumber(e.target.value)} placeholder="e.g. 0123456789" />
+          </div>
+
+          <Button type="submit" loading={saveSettings.isPending} className="flex items-center gap-1.5 rounded-none">
+            <Save className="w-3.5 h-3.5" /> Save
+          </Button>
+        </form>
       ),
     },
     {

@@ -12,7 +12,15 @@ export const dynamic = "force-dynamic";
 // schema comment always intended but nothing has ever set (shipped/delivered),
 // plus cancelled for manual admin use.
 const updateOrderSchema = z.object({
-  status: z.enum(["pending", "paid", "payment_failed", "shipped", "delivered", "cancelled"]),
+  status: z.enum([
+    "pending",
+    "awaiting_confirmation",
+    "paid",
+    "payment_failed",
+    "shipped",
+    "delivered",
+    "cancelled",
+  ]),
 });
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {

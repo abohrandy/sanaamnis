@@ -22,6 +22,7 @@ interface AdminOrder {
   id: string;
   orderNumber: string;
   status: string;
+  paymentMethod: string;
   totalAmount: number;
   customerName: string | null;
   customerEmail: string | null;
@@ -59,11 +60,20 @@ const STATUS_VARIANT: Record<string, "success" | "warning" | "primary" | "destru
   shipped: "primary",
   delivered: "success",
   pending: "warning",
+  awaiting_confirmation: "warning",
   payment_failed: "destructive",
   cancelled: "secondary",
 };
 
-const STATUS_OPTIONS = ["pending", "paid", "payment_failed", "shipped", "delivered", "cancelled"].map((s) => ({
+const STATUS_OPTIONS = [
+  "pending",
+  "awaiting_confirmation",
+  "paid",
+  "payment_failed",
+  "shipped",
+  "delivered",
+  "cancelled",
+].map((s) => ({
   value: s,
   label: s.replace("_", " "),
 }));
@@ -101,6 +111,26 @@ export default function AdminOperationsPage() {
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
     },
     onError: (err: Error) => toast.error("Could not update order", err.message),
+  });
+
+  const confirmPayment = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/orders/${id}/confirm-payment`, { method: "POST" }),
+    onSuccess: () => {
+      toast.success("Payment confirmed");
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
+    },
+    onError: (err: Error) => toast.error("Could not confirm payment", err.message),
+  });
+
+  const notifyDelivery = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/orders/${id}/notify-delivery`, { method: "POST" }),
+    onSuccess: () => {
+      toast.success("Customer notified of delivery");
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
+    },
+    onError: (err: Error) => toast.error("Could not notify customer", err.message),
   });
 
   const removeSubscriber = useMutation({
@@ -148,6 +178,36 @@ export default function AdminOperationsPage() {
           options={STATUS_OPTIONS}
           className="!py-2 !text-[10px] w-36"
         />
+      ),
+    },
+    {
+      header: "Actions",
+      accessor: (item: AdminOrder) => (
+        <div className="flex flex-col gap-1.5">
+          {item.paymentMethod === "bank_transfer" &&
+            (item.status === "pending" || item.status === "awaiting_confirmation") && (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={confirmPayment.isPending}
+                onClick={() => confirmPayment.mutate(item.id)}
+                className="!text-[10px] !py-1.5 whitespace-nowrap"
+              >
+                Confirm Payment
+              </Button>
+            )}
+          {(item.status === "paid" || item.status === "shipped") && (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={notifyDelivery.isPending}
+              onClick={() => notifyDelivery.mutate(item.id)}
+              className="!text-[10px] !py-1.5 whitespace-nowrap"
+            >
+              Notify Delivery
+            </Button>
+          )}
+        </div>
       ),
     },
   ];

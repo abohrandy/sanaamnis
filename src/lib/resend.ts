@@ -1,4 +1,4 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY || "re_test_mockkey";
+import { getSetting } from "@/lib/settings";
 
 export interface SendEmailPayload {
   to: string | string[];
@@ -13,6 +13,10 @@ export async function sendEmail({
   html,
   from = "Sana Amnis <orders@sanaamnis.com>",
 }: SendEmailPayload) {
+  // The admin Settings > Payments page lets staff set this without a redeploy;
+  // it falls back to the env var for deployments that configure it that way.
+  const RESEND_API_KEY = (await getSetting("resend-api-key")) || process.env.RESEND_API_KEY || "re_test_mockkey";
+
   // If we are in dev/test environment and key is not set, log it out
   if (RESEND_API_KEY === "re_test_mockkey") {
     console.log(`[Mock Email Sent] To: ${to}, Subject: ${subject}`);

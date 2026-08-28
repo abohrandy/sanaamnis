@@ -214,8 +214,10 @@ export const orders = pgTable("orders", {
   orderNumber: text("order_number").notNull().unique(),
   totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
   couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "set null" }),
-  // pending, paid, payment_failed, shipped, delivered, cancelled
+  // pending, awaiting_confirmation, paid, payment_failed, shipped, delivered, cancelled
   status: text("status").default("pending").notNull(),
+  // paystack, bank_transfer
+  paymentMethod: text("payment_method").default("paystack").notNull(),
   paymentReference: text("payment_reference"),
   shippingAddress: text("shipping_address").notNull(),
   // Previously the only place the customer's name/email were recorded was baked

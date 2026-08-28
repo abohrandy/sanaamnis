@@ -7,9 +7,16 @@ import { orders, orderItems, productVariants } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { initializePaystackPayment } from "@/lib/paystack";
 import { computeTotals, type PricedLine } from "@/lib/pricing";
-import { findVariant } from "@/lib/catalog";
+import { findVariant, formatNaira, variantImage, PLACEHOLDER_IMAGE } from "@/lib/catalog";
 import { BUNDLES as CATALOG_BUNDLES } from "@/lib/bundles";
 import { findDeliveryZone } from "@/lib/deliveryZones";
+import { sendEmail } from "@/lib/resend";
+import {
+  CUSTOMER_CARE_RECIPIENTS,
+  signOrderToken,
+  customerBankDetailsEmail,
+  staffNewBankTransferEmail,
+} from "@/lib/bankTransfer";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +24,7 @@ const createOrderSchema = z
   .object({
     email: z.string().email(),
     name: z.string().min(2).max(120),
+    paymentMethod: z.enum(["paystack", "bank_transfer"]).default("paystack"),
     deliveryMethod: z.enum(["pickup", "delivery"]),
     pickupLocation: z.string().max(160).optional(),
     shippingAddress: z.string().max(500).optional(),
@@ -182,6 +190,37 @@ async function priceComponents(requests: RequestedComponent[]) {
   return { priced, unknown: [...unknown], outOfStock };
 }
 
+/** Line items for the bank-transfer emails — same priced lines the order total
+ * is computed from, resolved back to a product/bundle title and image so the
+ * email can show a thumbnail per line. Image paths are site-relative, so the
+ * caller must prefix them with the request's own origin before emailing —
+ * email clients cannot load a bare "/products/...jpg". */
+function buildOrderLines(
+  priced: Array<{ variantId: string; quantity: number; bundleId: string | null; sku: string }>,
+  bundleLines: PricedLine[]
+): Array<{ label: string; quantity: number; imageUrl: string }> {
+  const lines: Array<{ label: string; quantity: number; imageUrl: string }> = [];
+
+  for (const line of priced.filter((l) => l.bundleId === null)) {
+    const found = findVariant(line.variantId);
+    const label = found ? `${found.product.title} (${found.variant.name})` : line.sku;
+    const imageUrl = found ? variantImage(found.product, found.variant) : PLACEHOLDER_IMAGE;
+    lines.push({ label, quantity: line.quantity, imageUrl });
+  }
+
+  for (const bundleLine of bundleLines) {
+    const bundleId = bundleLine.variantId.replace("bundle:", "");
+    const bundle = CATALOG_BUNDLES.find((b) => b.id === bundleId);
+    lines.push({
+      label: bundle?.title ?? "Bundle",
+      quantity: bundleLine.quantity,
+      imageUrl: bundle?.heroImageUrl ?? PLACEHOLDER_IMAGE,
+    });
+  }
+
+  return lines;
+}
+
 export async function POST(request: Request) {
   let payload: unknown;
   try {
@@ -262,16 +301,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
   }
 
-  // --- Payment must be configured ------------------------------------------
-  const paystackKey = process.env.PAYSTACK_SECRET_KEY;
-  if (!paystackKey || paystackKey === "sk_test_mockkey") {
-    // This used to fall through to /checkout/success, which showed the customer a
-    // "Payment Confirmed" page for an order that was never paid for.
-    console.error("[orders] PAYSTACK_SECRET_KEY is not configured — refusing checkout.");
-    return NextResponse.json(
-      { error: "Payments are temporarily unavailable. Please try again shortly." },
-      { status: 503 }
-    );
+  // --- Payment must be configured (Paystack path only) -----------------------
+  if (input.paymentMethod === "paystack") {
+    const paystackKey = process.env.PAYSTACK_SECRET_KEY;
+    if (!paystackKey || paystackKey === "sk_test_mockkey") {
+      // This used to fall through to /checkout/success, which showed the customer a
+      // "Payment Confirmed" page for an order that was never paid for.
+      console.error("[orders] PAYSTACK_SECRET_KEY is not configured — refusing checkout.");
+      return NextResponse.json(
+        { error: "Payments are temporarily unavailable. Please try again shortly." },
+        { status: 503 }
+      );
+    }
   }
 
   const orderNumber = `SA-${Date.now().toString(36).toUpperCase()}-${Math.floor(
@@ -301,6 +342,9 @@ export async function POST(request: Request) {
           orderNumber,
           totalAmount: totals.total.toFixed(2),
           status: "pending",
+          paymentMethod: input.paymentMethod,
+          customerName: input.name,
+          customerEmail: input.email,
           shippingAddress:
             input.deliveryMethod === "pickup"
               ? `${input.name}\nPICKUP: ${input.pickupLocation}\n${input.email}`
@@ -330,10 +374,57 @@ export async function POST(request: Request) {
     );
   }
 
-  // --- Hand off to Paystack --------------------------------------------------
   const requestHeaders = await headers();
   const host = requestHeaders.get("host") ?? "sanaamniscoconut.com";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
+
+  // --- Bank transfer: no gateway, email the customer the bank details --------
+  if (input.paymentMethod === "bank_transfer") {
+    const amountLabel = formatNaira(totals.total);
+    const confirmUrl = `${protocol}://${host}/api/orders/${orderId}/confirm-transfer?token=${signOrderToken(orderId)}`;
+    const siteOrigin = `${protocol}://${host}`;
+    const items = buildOrderLines(priced, bundleLines).map((line) => ({
+      ...line,
+      imageUrl: line.imageUrl.startsWith("http") ? line.imageUrl : `${siteOrigin}${line.imageUrl}`,
+    }));
+    const deliveryLabel =
+      input.deliveryMethod === "pickup"
+        ? `Pickup — ${input.pickupLocation}`
+        : deliveryZone
+        ? `Delivery to ${input.shippingAddress} (${deliveryZone.area}, ${deliveryZone.city})`
+        : `Delivery to ${input.shippingAddress}`;
+
+    try {
+      await sendEmail({
+        to: input.email,
+        subject: `Bank transfer details — ${orderNumber}`,
+        html: await customerBankDetailsEmail({ orderNumber, amountLabel, confirmUrl, items, deliveryLabel }),
+      });
+    } catch (emailError) {
+      console.error("[orders] bank transfer details email failed:", emailError);
+    }
+
+    try {
+      await sendEmail({
+        to: CUSTOMER_CARE_RECIPIENTS,
+        subject: `New bank transfer order — ${orderNumber}`,
+        html: staffNewBankTransferEmail({
+          orderNumber,
+          amountLabel,
+          customerName: input.name,
+          customerEmail: input.email,
+          items,
+          deliveryLabel,
+        }),
+      });
+    } catch (emailError) {
+      console.error("[orders] staff bank transfer notification failed:", emailError);
+    }
+
+    return NextResponse.json({ success: true, orderNumber, total: totals.total });
+  }
+
+  // --- Hand off to Paystack --------------------------------------------------
   const callbackUrl = `${protocol}://${host}/checkout/success?reference=${encodeURIComponent(orderNumber)}`;
 
   try {

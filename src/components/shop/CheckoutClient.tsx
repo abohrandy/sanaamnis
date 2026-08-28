@@ -21,6 +21,7 @@ import {
   Check,
   Phone,
   MessageCircle,
+  Landmark,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,7 @@ export interface CheckoutClientProps {
 }
 
 type DeliveryMethod = "pickup" | "delivery";
+type PaymentMethod = "paystack" | "bank_transfer";
 
 export function CheckoutClient({ distributors }: CheckoutClientProps) {
   const isHydrated = useHydrated();
@@ -49,6 +51,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [pickupLocation, setPickupLocation] = useState(distributors[0]?.region ?? "");
   const [deliveryCity, setDeliveryCity] = useState<string>(NOT_LISTED);
@@ -96,6 +99,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
         body: JSON.stringify({
           email,
           name,
+          paymentMethod,
           deliveryMethod,
           pickupLocation: deliveryMethod === "pickup" ? pickupLocation : undefined,
           shippingAddress: deliveryMethod === "delivery" ? address : undefined,
@@ -113,7 +117,18 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
 
       const data = await response.json();
 
-      if (!response.ok || !data.authorizationUrl) {
+      if (!response.ok) {
+        throw new Error(data.error || "We could not start your payment. Please try again.");
+      }
+
+      if (paymentMethod === "bank_transfer") {
+        // No gateway redirect — the bank details are on their way by email.
+        // The cart is left intact; the success page clears it once paid.
+        window.location.href = `/checkout/success?reference=${encodeURIComponent(data.orderNumber)}`;
+        return;
+      }
+
+      if (!data.authorizationUrl) {
         throw new Error(data.error || "We could not start your payment. Please try again.");
       }
 
@@ -161,7 +176,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-[#676E6A]" />
               <span className="flex items-center gap-1.5 text-[#676E6A]">
-                3. Paystack Security
+                3. {paymentMethod === "bank_transfer" ? "Bank Transfer" : "Paystack Security"}
               </span>
             </div>
           </div>
@@ -396,7 +411,49 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                 </div>
               </div>
 
-              {/* Paystack Submit Trigger */}
+              {/* Payment Method */}
+              <div className="p-8 rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-4">
+                <div className="flex items-center gap-2 border-b border-[#E2E6E3] pb-4">
+                  <CreditCard className="w-4 h-4 text-[#C9A227]" />
+                  <h3 className="font-serif text-lg font-medium text-[#161A17]">Payment Method</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("paystack")}
+                    className={`flex items-center gap-3 p-4 rounded-[0.75rem] border text-left transition-colors cursor-pointer ${
+                      paymentMethod === "paystack"
+                        ? "border-[#1C3322] bg-[#F3EFE8]"
+                        : "border-[#E2E6E3] hover:border-[#1C3322]/40"
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4 text-[#C9A227] shrink-0" />
+                    <div>
+                      <span className="block text-xs font-sans font-bold text-[#161A17]">Pay with Paystack</span>
+                      <span className="block text-[10px] text-[#676E6A]">Card, transfer or USSD — instant confirmation</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("bank_transfer")}
+                    className={`flex items-center gap-3 p-4 rounded-[0.75rem] border text-left transition-colors cursor-pointer ${
+                      paymentMethod === "bank_transfer"
+                        ? "border-[#1C3322] bg-[#F3EFE8]"
+                        : "border-[#E2E6E3] hover:border-[#1C3322]/40"
+                    }`}
+                  >
+                    <Landmark className="w-4 h-4 text-[#C9A227] shrink-0" />
+                    <div>
+                      <span className="block text-xs font-sans font-bold text-[#161A17]">Bank Transfer</span>
+                      <span className="block text-[10px] text-[#676E6A]">We&apos;ll email you the account details</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Trigger */}
               <div className="space-y-4">
                 <Button
                   type="submit"
@@ -408,7 +465,12 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Securing Paystack Gateway...</span>
+                      <span>{paymentMethod === "bank_transfer" ? "Placing Order..." : "Securing Paystack Gateway..."}</span>
+                    </>
+                  ) : paymentMethod === "bank_transfer" ? (
+                    <>
+                      <Landmark className="w-4 h-4" />
+                      <span>Place Order — Pay ₦{grandTotal.toLocaleString()} by Bank Transfer</span>
                     </>
                   ) : (
                     <>
@@ -427,7 +489,8 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                     <Lock className="w-3.5 h-3.5 text-[#C9A227]" /> PCI-DSS Level 1
                   </span>
                   <span className="flex items-center justify-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" /> Paystack Direct
+                    <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" />
+                    {paymentMethod === "bank_transfer" ? "Manual Verification" : "Paystack Direct"}
                   </span>
                 </div>
               </div>
