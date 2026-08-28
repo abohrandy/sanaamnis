@@ -4,6 +4,7 @@ import { orders, transactions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { verifyPaystackPayment } from "@/lib/paystack";
 import { sendEmail } from "@/lib/resend";
+import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER } from "@/lib/emailTemplate";
 import { z } from "zod";
 
 const reconcileSchema = z.object({
@@ -71,19 +72,13 @@ export async function POST(request: Request) {
 
       // Send Confirmation Receipt
       await sendEmail({
-        to: order.shippingAddress.includes("chika.obi@gmail.com")
-          ? "chika.obi@gmail.com"
-          : customer.email,
-        subject: `Order Confirmation - ${order.orderNumber}`,
-        html: `
-          <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea;">
-            <h2 style="font-family: serif; color: #1d4626;">SANA AMNIS</h2>
-            <hr style="border: 0; border-top: 1px solid #eaeaea;" />
-            <p>Hello,</p>
-            <p>We verified your payment for order <strong>${order.orderNumber}</strong> via reconciliation.</p>
-            <p>Thank you for choosing Sana Amnis.</p>
-          </div>
-        `,
+        to: order.customerEmail || customer.email,
+        subject: `Order confirmed — ${order.orderNumber}`,
+        html: wrapEmailHtml(`
+          ${emailEyebrow("Order confirmed")}
+          <p>We have verified your payment for order <strong>${order.orderNumber}</strong>. Thank you for choosing Sana Amnis.</p>
+          ${EMAIL_FOOTER}
+        `),
       });
 
       return NextResponse.json({

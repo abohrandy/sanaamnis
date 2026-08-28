@@ -1,10 +1,12 @@
 import crypto from "crypto";
 import { getSetting } from "@/lib/settings";
+import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER, escapeHtml, SANS_STACK, CONTACT_EMAIL } from "@/lib/emailTemplate";
 
 const TOKEN_SECRET =
   process.env.BANK_TRANSFER_TOKEN_SECRET || "fallback_default_secret_minimum_32_characters_for_sana_amnis";
 
-export const CUSTOMER_CARE_RECIPIENTS = ["info@sanaamniscoconut.com", "communitymart@gmail.com"];
+// Single inbox for all customer-care notifications — see CONTACT_EMAIL.
+export const CUSTOMER_CARE_RECIPIENTS = [CONTACT_EMAIL];
 
 export interface OrderLine {
   label: string;
@@ -42,52 +44,6 @@ export async function getBankDetails() {
   };
 }
 
-// Same faces as the website (src/app/layout.tsx: Outfit for body/UI text,
-// Playfair Display for headings) — loaded via Google Fonts' CSS endpoint since
-// email clients can't use next/font. Most webmail/Apple Mail/Outlook-on-the-web
-// render it; clients that ignore @import (older desktop Outlook) fall back
-// cleanly to the serif/sans-serif stacks listed alongside each font name.
-const FONT_IMPORT = `@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');`;
-const SANS_STACK = "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-const SERIF_STACK = "'Playfair Display', Georgia, serif";
-
-function wrapEmail(bodyHtml: string): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>${FONT_IMPORT}</style>
-      </head>
-      <body style="margin: 0; background: #FAF8F5;">
-        <div style="font-family: ${SANS_STACK}; padding: 28px; max-width: 600px; margin: 0 auto; background: #FAF8F5; color: #161A17;">
-          <h2 style="font-family: ${SERIF_STACK}; color: #1C3322; margin: 0 0 6px; font-size: 24px;">Sana Amnis</h2>
-          ${bodyHtml}
-        </div>
-      </body>
-    </html>
-  `;
-}
-
-const EYEBROW = (text: string) =>
-  `<p style="font-family: ${SANS_STACK}; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #C9A227; margin: 0 0 20px;">${text}</p>
-   <hr style="border: 0; border-top: 1px solid #E2E6E3;" />`;
-
-const FOOTER = `
-  <p style="margin-top: 24px; font-size: 13px; color: #676E6A;">
-    Questions? Write to info@sanaamniscoconut.com or communitymart@gmail.com.
-  </p>
-  <p style="margin-top: 20px; font-family: ${SERIF_STACK}; color: #1C3322;">Sana Amnis</p>
-`;
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
 function itemsTableHtml(items: OrderLine[]): string {
   if (items.length === 0) return "";
   const rows = items
@@ -114,8 +70,8 @@ export async function customerBankDetailsEmail(opts: {
   deliveryLabel: string;
 }) {
   const { bankName, accountName, accountNumber } = await getBankDetails();
-  return wrapEmail(`
-    ${EYEBROW("Bank transfer details")}
+  return wrapEmailHtml(`
+    ${emailEyebrow("Bank transfer details")}
     <p>Thank you for your order <strong>${opts.orderNumber}</strong>. Please pay <strong>${opts.amountLabel}</strong> by bank transfer using the details below:</p>
     <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
       <tr><td style="padding: 6px 0; color: #676E6A;">Bank</td><td style="padding: 6px 0; font-weight: bold;">${bankName}</td></tr>
@@ -131,7 +87,7 @@ export async function customerBankDetailsEmail(opts: {
         I've Made This Payment
       </a>
     </p>
-    ${FOOTER}
+    ${EMAIL_FOOTER}
   `);
 }
 
@@ -143,14 +99,14 @@ export function staffNewBankTransferEmail(opts: {
   items: OrderLine[];
   deliveryLabel: string;
 }) {
-  return wrapEmail(`
-    ${EYEBROW("New bank transfer order")}
+  return wrapEmailHtml(`
+    ${emailEyebrow("New bank transfer order")}
     <p>Order <strong>${opts.orderNumber}</strong> from <strong>${opts.customerName}</strong> (${opts.customerEmail}) chose bank transfer for <strong>${opts.amountLabel}</strong>.</p>
     <p style="color: #676E6A; margin: 0 0 6px;">Items ordered:</p>
     ${itemsTableHtml(opts.items)}
     <p style="color: #676E6A; margin: 0 0 20px;">${escapeHtml(opts.deliveryLabel)}</p>
     <p>It is awaiting payment. No action is needed until the customer confirms they have paid.</p>
-    ${FOOTER}
+    ${EMAIL_FOOTER}
   `);
 }
 
@@ -160,26 +116,26 @@ export function staffPaymentClaimedEmail(opts: {
   customerName: string;
   customerEmail: string;
 }) {
-  return wrapEmail(`
-    ${EYEBROW("Payment claimed — please verify")}
+  return wrapEmailHtml(`
+    ${emailEyebrow("Payment claimed — please verify")}
     <p><strong>${opts.customerName}</strong> (${opts.customerEmail}) says they have paid by bank transfer for order <strong>${opts.orderNumber}</strong> (${opts.amountLabel}).</p>
     <p>Please check the bank account, then confirm the payment in the admin orders panel.</p>
-    ${FOOTER}
+    ${EMAIL_FOOTER}
   `);
 }
 
 export function customerPaymentConfirmedEmail(opts: { orderNumber: string; amountLabel: string }) {
-  return wrapEmail(`
-    ${EYEBROW("Payment confirmed")}
+  return wrapEmailHtml(`
+    ${emailEyebrow("Payment confirmed")}
     <p>Thank you — we have confirmed your bank transfer of <strong>${opts.amountLabel}</strong> for order <strong>${opts.orderNumber}</strong>. We are packing your order now.</p>
-    ${FOOTER}
+    ${EMAIL_FOOTER}
   `);
 }
 
 export function customerDeliveryEmail(opts: { orderNumber: string }) {
-  return wrapEmail(`
-    ${EYEBROW("Order delivered")}
+  return wrapEmailHtml(`
+    ${emailEyebrow("Order delivered")}
     <p>Your order <strong>${opts.orderNumber}</strong> has been delivered. We hope you enjoy it!</p>
-    ${FOOTER}
+    ${EMAIL_FOOTER}
   `);
 }

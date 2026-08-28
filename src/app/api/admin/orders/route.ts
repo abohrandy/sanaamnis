@@ -39,6 +39,7 @@ export async function GET(request: Request) {
         totalAmount: Number(order.totalAmount),
         customerName: order.customerName,
         customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
         shippingAddress: order.shippingAddress,
         createdAt: order.createdAt,
         items: order.items.map((item) => ({

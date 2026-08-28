@@ -26,6 +26,7 @@ interface AdminOrder {
   totalAmount: number;
   customerName: string | null;
   customerEmail: string | null;
+  customerPhone: string | null;
   createdAt: string;
   items: OrderItem[];
 }
@@ -164,7 +165,8 @@ export default function AdminOperationsPage() {
       accessor: (item: AdminOrder) => (
         <div>
           <span className="block">{item.customerName || "Guest"}</span>
-          <span className="text-[10px] text-muted-foreground">{item.customerEmail || "—"}</span>
+          <span className="text-[10px] text-muted-foreground block">{item.customerEmail || "—"}</span>
+          <span className="text-[10px] text-muted-foreground block">{item.customerPhone || "—"}</span>
         </div>
       ),
     },

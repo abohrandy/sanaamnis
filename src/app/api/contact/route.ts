@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { sendEmail } from "@/lib/resend";
+import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER, CONTACT_EMAIL } from "@/lib/emailTemplate";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ const contactSchema = z.object({
   company: z.string().optional(),
 });
 
-const CONTACT_INBOX = process.env.CONTACT_EMAIL || "info@sanaamniscoconut.com";
+const CONTACT_INBOX = process.env.CONTACT_EMAIL || CONTACT_EMAIL;
 
 /**
  * Delivers the contact form to the team inbox.
@@ -55,10 +56,12 @@ export async function POST(request: Request) {
   const result = await sendEmail({
     to: CONTACT_INBOX,
     subject: `Website enquiry from ${name}`,
-    html: `
+    html: wrapEmailHtml(`
+      ${emailEyebrow("Website enquiry")}
       <p><strong>From:</strong> ${escape(name)} (${escape(email)})</p>
       <p style="white-space: pre-wrap;">${escape(message)}</p>
-    `,
+      ${EMAIL_FOOTER}
+    `),
   });
 
   if (!result.success) {

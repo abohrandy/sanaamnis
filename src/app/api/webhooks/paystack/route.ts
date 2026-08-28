@@ -5,6 +5,7 @@ import { orders, orderItems, transactions, productVariants } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { sendEmail } from "@/lib/resend";
 import { formatNaira } from "@/lib/catalog";
+import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER } from "@/lib/emailTemplate";
 
 export const dynamic = "force-dynamic";
 
@@ -101,18 +102,11 @@ export async function POST(request: Request) {
       await sendEmail({
         to: customer.email,
         subject: `Order confirmed — ${orderNumber}`,
-        html: `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 28px; max-width: 600px; margin: 0 auto; background: #FAF8F5; color: #161A17;">
-            <h2 style="font-family: Georgia, serif; color: #1C3322; margin: 0 0 6px;">Sana Amnis</h2>
-            <p style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #C9A227; margin: 0 0 20px;">Order confirmed</p>
-            <hr style="border: 0; border-top: 1px solid #E2E6E3;" />
-            <p>Thank you — we have received your payment of <strong>${formatNaira(paidNaira)}</strong> for order <strong>${orderNumber}</strong>.</p>
-            <p style="margin-top: 24px; font-size: 13px; color: #676E6A;">
-              Questions? Write to info@sanaamniscoconut.com or communitymart@gmail.com.
-            </p>
-            <p style="margin-top: 20px;">Sana Amnis</p>
-          </div>
-        `,
+        html: wrapEmailHtml(`
+          ${emailEyebrow("Order confirmed")}
+          <p>Thank you — we have received your payment of <strong>${formatNaira(paidNaira)}</strong> for order <strong>${orderNumber}</strong>.</p>
+          ${EMAIL_FOOTER}
+        `),
       });
     } catch (emailError) {
       console.error(`[paystack-webhook] confirmation email failed for ${orderNumber}:`, emailError);

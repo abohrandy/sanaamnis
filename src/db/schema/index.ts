@@ -227,6 +227,7 @@ export const orders = pgTable("orders", {
   // it isn't reliably extractable from free text.
   customerName: text("customer_name"),
   customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (t) => [
   index("order_num_idx").on(t.orderNumber),

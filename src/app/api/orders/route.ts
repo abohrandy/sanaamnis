@@ -24,6 +24,12 @@ const createOrderSchema = z
   .object({
     email: z.string().email(),
     name: z.string().min(2).max(120),
+    phone: z
+      .string()
+      .trim()
+      .min(7, "Please provide a valid WhatsApp number.")
+      .max(20, "Please provide a valid WhatsApp number.")
+      .regex(/^[+0-9\s-]+$/, "Please provide a valid WhatsApp number."),
     paymentMethod: z.enum(["paystack", "bank_transfer"]).default("paystack"),
     deliveryMethod: z.enum(["pickup", "delivery"]),
     pickupLocation: z.string().max(160).optional(),
@@ -345,6 +351,7 @@ export async function POST(request: Request) {
           paymentMethod: input.paymentMethod,
           customerName: input.name,
           customerEmail: input.email,
+          customerPhone: input.phone,
           shippingAddress:
             input.deliveryMethod === "pickup"
               ? `${input.name}\nPICKUP: ${input.pickupLocation}\n${input.email}`

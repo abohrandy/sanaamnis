@@ -51,6 +51,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [pickupLocation, setPickupLocation] = useState(distributors[0]?.region ?? "");
@@ -99,6 +100,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
         body: JSON.stringify({
           email,
           name,
+          phone,
           paymentMethod,
           deliveryMethod,
           pickupLocation: deliveryMethod === "pickup" ? pickupLocation : undefined,
@@ -214,7 +216,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   <h3 className="font-serif text-lg font-medium text-[#161A17]">Contact Information</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
                   <div className="space-y-1.5">
                     <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
                       Full Name *
@@ -229,18 +231,34 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
-                      Email Address (for Order Receipt) *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="e.g. amina@example.com"
-                      className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322]"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
+                        Email Address (for Order Receipt) *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="e.g. amina@example.com"
+                        className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322]"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-sans font-bold tracking-[0.18em] text-[#676E6A] block">
+                        WhatsApp Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="e.g. +234 913 735 8352"
+                        className="w-full p-3.5 bg-[#F3EFE8] border border-[#E2E6E3] rounded-[0.5rem] text-xs font-sans text-[#161A17] outline-none focus:border-[#1C3322]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
