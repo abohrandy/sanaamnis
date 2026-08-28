@@ -167,7 +167,18 @@ export default async function CoconutRiceLandingPage() {
 
         {/* The memory — emotional beat, full-bleed dark section */}
         <section className="bg-[#1C3322] text-[#FAF8F5]">
-          <div className="max-w-3xl mx-auto px-5 md:px-8 py-20 md:py-28 text-center space-y-8">
+          <div className="max-w-3xl mx-auto px-5 md:px-8 py-20 md:py-28 text-center space-y-10">
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
+                <Image
+                  src="/coconutrice/hero-pot.jpg"
+                  alt="A steaming pot of coconut rice with fried plantain, being served at the table"
+                  width={1400}
+                  height={1000}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
             <ScrollReveal>
               <p className="font-serif text-2xl md:text-[2.15rem] leading-[1.5] md:leading-[1.5]">
                 You know that Sunday afternoon feeling &mdash; pot bubbling, that coconut smell filling the
@@ -185,6 +196,17 @@ export default async function CoconutRiceLandingPage() {
               <p className="font-serif text-3xl md:text-4xl font-medium text-[#C9A227] pt-2">
                 We kept the memory. We removed the wahala.
               </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.28}>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
+                <Image
+                  src="/coconutrice/before-after.jpg"
+                  alt="Before: a grater, cracked coconuts and a straining cloth, messy and time-consuming. After: Sana Amnis coconut milk, oil and powder, pure and convenient."
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </ScrollReveal>
           </div>
         </section>
@@ -210,11 +232,24 @@ export default async function CoconutRiceLandingPage() {
         {/* Everything you need. Nothing you don't. */}
         <section className="bg-[#F3EFE8] py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-5 md:px-8 space-y-12">
-            <ScrollReveal className="max-w-xl">
-              <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
-                Everything you need. Nothing you don&apos;t.
-              </h2>
-            </ScrollReveal>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+              <ScrollReveal className="lg:col-span-5 order-2 lg:order-1">
+                <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
+                  Everything you need. Nothing you don&apos;t.
+                </h2>
+              </ScrollReveal>
+              <ScrollReveal direction="left" className="lg:col-span-7 order-1 lg:order-2">
+                <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+                  <Image
+                    src="/coconutrice/bundle-flatlay.jpg"
+                    alt="Rice Don Set contents laid flat — coconut milk, coconut oil and coconut milk powder"
+                    width={1536}
+                    height={1024}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </ScrollReveal>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {BUNDLE_ITEMS.map((item, i) => (
@@ -259,9 +294,38 @@ export default async function CoconutRiceLandingPage() {
           </div>
         </section>
 
+        {/* How it comes together */}
+        <section className="max-w-6xl mx-auto px-5 md:px-8 py-20 md:py-24">
+          <ScrollReveal className="max-w-xl mb-10">
+            <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
+              From pot to plate, four steps.
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal delay={0.08}>
+            <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+              <Image
+                src="/coconutrice/recipe-steps.jpg"
+                alt="Four steps: sauté onions and peppers, pour in coconut milk, sprinkle coconut milk powder, stir the finished coconut rice"
+                width={1536}
+                height={787}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </ScrollReveal>
+        </section>
+
         {/* Objection handling */}
-        <section className="max-w-3xl mx-auto px-5 md:px-8 py-20 md:py-24">
-          <ScrollReveal className="rounded-[1.75rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-md p-8 md:p-12 space-y-5">
+        <section className="max-w-3xl mx-auto px-5 md:px-8 py-20 md:py-24 space-y-8">
+          <ScrollReveal className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+            <Image
+              src="/coconutrice/richness-comparison.jpg"
+              alt="Side by side: plain coconut milk, thin and watery; other brands, average; Sana Amnis coconut milk, thick, creamy and naturally golden"
+              width={1536}
+              height={1024}
+              className="w-full h-auto object-cover"
+            />
+          </ScrollReveal>
+          <ScrollReveal delay={0.08} className="rounded-[1.75rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-md p-8 md:p-12 space-y-5">
             <p className="font-serif text-xl md:text-2xl text-[#161A17] italic">
               &ldquo;But I could just buy plain coconut milk&hellip;&rdquo;
             </p>
@@ -274,7 +338,7 @@ export default async function CoconutRiceLandingPage() {
           </ScrollReveal>
         </section>
 
-        {/* Testimonials — placeholders until real reviews are added */}
+        {/* Testimonials — one real, one placeholder until more reviews come in */}
         <section className="bg-[#F3EFE8] py-20 md:py-24">
           <div className="max-w-4xl mx-auto px-5 md:px-8 space-y-10">
             <ScrollReveal>
@@ -283,22 +347,30 @@ export default async function CoconutRiceLandingPage() {
               </h2>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[0, 1].map((i) => (
-                <ScrollReveal key={i} delay={i * 0.08}>
-                  <div className="h-full rounded-[1.5rem] border border-dashed border-[#C9A227]/50 bg-[#FAF8F5] p-6 space-y-3">
-                    <Sparkles className="w-4 h-4 text-[#C9A227]" />
-                    <p className="text-sm text-[#676E6A] italic leading-relaxed">
-                      A real customer quote will go here once we have one &mdash; how the rice turned out,
-                      what their family said, or whether they came back for more.
-                    </p>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C531B]">
-                      Customer name / handle
-                    </p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+                <Image
+                  src="/coconutrice/testimonial-family.jpg"
+                  alt="A family sharing a meal of coconut rice together"
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.08}>
+              <div className="rounded-[1.5rem] border border-dashed border-[#C9A227]/50 bg-[#FAF8F5] p-6 space-y-3 max-w-md">
+                <Sparkles className="w-4 h-4 text-[#C9A227]" />
+                <p className="text-sm text-[#676E6A] italic leading-relaxed">
+                  A real customer quote will go here once we have one &mdash; how the rice turned out, what
+                  their family said, or whether they came back for more.
+                </p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C531B]">
+                  Customer name / handle
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
         </section>
 
@@ -332,16 +404,29 @@ export default async function CoconutRiceLandingPage() {
 
         {/* Final CTA */}
         <section className="bg-[#1C3322] text-[#FAF8F5] py-20 md:py-28">
-          <ScrollReveal className="max-w-2xl mx-auto px-5 md:px-8 text-center space-y-8">
-            <p className="font-serif text-3xl md:text-5xl font-medium">
-              Tonight, Rice Don Set. <span className="whitespace-nowrap">🥥❤️</span>
-            </p>
-            <Link href={buyHref} className="inline-block">
-              <Button variant="gold" size="lg" className="flex items-center gap-2">
-                Get Your Bundle <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-          </ScrollReveal>
+          <div className="max-w-4xl mx-auto px-5 md:px-8 space-y-10 text-center">
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
+                <Image
+                  src="/coconutrice/shop-now-banner.jpg"
+                  alt="Rice Don Set — coconut milk, oil and powder, ready to shop"
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08} className="space-y-8">
+              <p className="font-serif text-3xl md:text-5xl font-medium">
+                Tonight, Rice Don Set. <span className="whitespace-nowrap">🥥❤️</span>
+              </p>
+              <Link href={buyHref} className="inline-block">
+                <Button variant="gold" size="lg" className="flex items-center gap-2">
+                  Get Your Bundle <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </ScrollReveal>
+          </div>
         </section>
       </main>
 
