@@ -171,10 +171,10 @@ export default async function CoconutRiceLandingPage() {
             <ScrollReveal>
               <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
                 <Image
-                  src="/coconutrice/hero-pot.jpg"
+                  src="/coconutrice/hero-pot.png"
                   alt="A steaming pot of coconut rice with fried plantain, being served at the table"
-                  width={1400}
-                  height={1000}
+                  width={1402}
+                  height={1122}
                   className="w-full h-auto object-cover"
                 />
               </div>
@@ -200,7 +200,7 @@ export default async function CoconutRiceLandingPage() {
             <ScrollReveal delay={0.28}>
               <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
                 <Image
-                  src="/coconutrice/before-after.jpg"
+                  src="/coconutrice/before-after.png"
                   alt="Before: a grater, cracked coconuts and a straining cloth, messy and time-consuming. After: Sana Amnis coconut milk, oil and powder, pure and convenient."
                   width={1536}
                   height={1024}
@@ -241,10 +241,10 @@ export default async function CoconutRiceLandingPage() {
               <ScrollReveal direction="left" className="lg:col-span-7 order-1 lg:order-2">
                 <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
                   <Image
-                    src="/coconutrice/bundle-flatlay.jpg"
+                    src="/coconutrice/bundle-flatlay.png"
                     alt="Rice Don Set contents laid flat — coconut milk, coconut oil and coconut milk powder"
-                    width={1536}
-                    height={1024}
+                    width={1402}
+                    height={1122}
                     className="w-full h-auto object-cover"
                   />
                 </div>
@@ -304,10 +304,10 @@ export default async function CoconutRiceLandingPage() {
           <ScrollReveal delay={0.08}>
             <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
               <Image
-                src="/coconutrice/recipe-steps.jpg"
+                src="/coconutrice/recipe-steps.png"
                 alt="Four steps: sauté onions and peppers, pour in coconut milk, sprinkle coconut milk powder, stir the finished coconut rice"
                 width={1536}
-                height={787}
+                height={1024}
                 className="w-full h-auto object-cover"
               />
             </div>
@@ -318,7 +318,7 @@ export default async function CoconutRiceLandingPage() {
         <section className="max-w-3xl mx-auto px-5 md:px-8 py-20 md:py-24 space-y-8">
           <ScrollReveal className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
             <Image
-              src="/coconutrice/richness-comparison.jpg"
+              src="/coconutrice/richness-comparison.png"
               alt="Side by side: plain coconut milk, thin and watery; other brands, average; Sana Amnis coconut milk, thick, creamy and naturally golden"
               width={1536}
               height={1024}
@@ -350,7 +350,7 @@ export default async function CoconutRiceLandingPage() {
             <ScrollReveal>
               <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
                 <Image
-                  src="/coconutrice/testimonial-family.jpg"
+                  src="/coconutrice/testimonial-family.png"
                   alt="A family sharing a meal of coconut rice together"
                   width={1536}
                   height={1024}
@@ -408,7 +408,7 @@ export default async function CoconutRiceLandingPage() {
             <ScrollReveal>
               <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
                 <Image
-                  src="/coconutrice/shop-now-banner.jpg"
+                  src="/coconutrice/shop-now-banner.png"
                   alt="Rice Don Set — coconut milk, oil and powder, ready to shop"
                   width={1536}
                   height={1024}
@@ -416,10 +416,7 @@ export default async function CoconutRiceLandingPage() {
                 />
               </div>
             </ScrollReveal>
-            <ScrollReveal delay={0.08} className="space-y-8">
-              <p className="font-serif text-3xl md:text-5xl font-medium">
-                Tonight, Rice Don Set. <span className="whitespace-nowrap">🥥❤️</span>
-              </p>
+            <ScrollReveal delay={0.08}>
               <Link href={buyHref} className="inline-block">
                 <Button variant="gold" size="lg" className="flex items-center gap-2">
                   Get Your Bundle <ArrowRight className="w-4 h-4" />
