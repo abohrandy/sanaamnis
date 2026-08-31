@@ -11,7 +11,7 @@ export async function sendEmail({
   to,
   subject,
   html,
-  from = "Sana Amnis <orders@sanaamnis.com>",
+  from = "Sana Amnis <orders@sanaamniscoconut.com>",
 }: SendEmailPayload) {
   // The admin Settings > Payments page lets staff set this without a redeploy;
   // it falls back to the env var for deployments that configure it that way.
