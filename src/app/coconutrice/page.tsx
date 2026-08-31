@@ -6,12 +6,14 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ds/motion/ScrollReveal";
+import { InstagramEmbed } from "@/components/shop/InstagramEmbed";
 import { getBundle, getBundles, BUNDLES } from "@/lib/bundles";
 import { Check, ArrowRight, Droplets, Sparkles } from "lucide-react";
 
 export const revalidate = 300;
 
 const SLUG = "rice-don-set";
+const REEL_URL = "https://www.instagram.com/reel/DUP8RlCGN9/";
 const naira = (value: number) => `₦${Math.round(value).toLocaleString("en-NG")}`;
 
 export async function generateStaticParams() {
@@ -54,24 +56,6 @@ const WHO_ITS_FOR = [
   {
     line: "The person tired of jollof and fried rice on repeat.",
     detail: "Who wants “what's that in the pot? it smells amazing” energy at the table.",
-  },
-];
-
-const BUNDLE_ITEMS = [
-  {
-    label: "2 × 500ml Full-Cream Coconut Milk",
-    detail: "The creamy, unmistakable base.",
-    image: "/products/full-cream-coconut-milk.jpg",
-  },
-  {
-    label: "100g Coconut Milk Powder",
-    detail: "For when you want the coconut flavour LOUDER.",
-    image: "/products/coconut-milk-powder.jpg",
-  },
-  {
-    label: "200ml Cold-Pressed Coconut Oil",
-    detail: "Flavour from the very first sauté.",
-    image: "/products/coconut-oil-cold-pressed-200ml.jpg",
   },
 ];
 
@@ -123,6 +107,14 @@ export default async function CoconutRiceLandingPage() {
               <h1 className="font-serif text-[2.75rem] leading-[1.05] md:text-6xl md:leading-[1.04] font-medium tracking-tight text-[#161A17]">
                 Rice Don Set <span className="whitespace-nowrap">🥥🍚</span>
               </h1>
+
+              <InstagramEmbed url={REEL_URL} />
+
+              <p className="font-serif text-xl md:text-2xl text-[#161A17] leading-snug">
+                You know that Sunday afternoon feeling &mdash; pot bubbling, that coconut smell filling the
+                whole house, everybody already hovering near the kitchen asking &ldquo;is it ready?&rdquo;
+              </p>
+
               <p className="text-lg md:text-xl text-[#1C3322] font-medium leading-snug max-w-md">
                 The coconut rice you crave, without the coconut wahala.
               </p>
@@ -179,12 +171,6 @@ export default async function CoconutRiceLandingPage() {
                 />
               </div>
             </ScrollReveal>
-            <ScrollReveal>
-              <p className="font-serif text-2xl md:text-[2.15rem] leading-[1.5] md:leading-[1.5]">
-                You know that Sunday afternoon feeling &mdash; pot bubbling, that coconut smell filling the
-                whole house, everybody already hovering near the kitchen asking &ldquo;is it ready?&rdquo;
-              </p>
-            </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <p className="text-base md:text-lg text-[#FAF8F5]/70 leading-relaxed">
                 That&apos;s the coconut rice memory. Not the three hours before it &mdash; the breaking,
@@ -232,46 +218,11 @@ export default async function CoconutRiceLandingPage() {
         {/* Everything you need. Nothing you don't. */}
         <section className="bg-[#F3EFE8] py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-5 md:px-8 space-y-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-              <ScrollReveal className="lg:col-span-5 order-2 lg:order-1">
-                <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
-                  Everything you need. Nothing you don&apos;t.
-                </h2>
-              </ScrollReveal>
-              <ScrollReveal direction="left" className="lg:col-span-7 order-1 lg:order-2">
-                <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
-                  <Image
-                    src="/coconutrice/bundle-flatlay.png"
-                    alt="Rice Don Set contents laid flat — coconut milk, coconut oil and coconut milk powder"
-                    width={1402}
-                    height={1122}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              </ScrollReveal>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {BUNDLE_ITEMS.map((item, i) => (
-                <ScrollReveal key={item.label} delay={i * 0.08}>
-                  <div className="h-full rounded-[1.5rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-sm overflow-hidden flex flex-col">
-                    <div className="relative w-full aspect-[4/3] bg-white">
-                      <Image
-                        src={item.image}
-                        alt={item.label}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-contain p-6"
-                      />
-                    </div>
-                    <div className="p-6 space-y-1.5">
-                      <p className="font-sans text-sm font-bold text-[#161A17]">{item.label}</p>
-                      <p className="text-xs text-[#676E6A] leading-relaxed">{item.detail}</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+            <ScrollReveal className="max-w-xl">
+              <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
+                Everything you need. Nothing you don&apos;t.
+              </h2>
+            </ScrollReveal>
 
             <ScrollReveal className="pt-4 space-y-6">
               <p className="font-serif text-2xl md:text-3xl text-[#1C3322] max-w-xl">
@@ -316,16 +267,7 @@ export default async function CoconutRiceLandingPage() {
 
         {/* Objection handling */}
         <section className="max-w-3xl mx-auto px-5 md:px-8 py-20 md:py-24 space-y-8">
-          <ScrollReveal className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
-            <Image
-              src="/coconutrice/richness-comparison.png"
-              alt="Side by side: plain coconut milk, thin and watery; other brands, average; Sana Amnis coconut milk, thick, creamy and naturally golden"
-              width={1536}
-              height={1024}
-              className="w-full h-auto object-cover"
-            />
-          </ScrollReveal>
-          <ScrollReveal delay={0.08} className="rounded-[1.75rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-md p-8 md:p-12 space-y-5">
+          <ScrollReveal className="rounded-[1.75rem] bg-[#FAF8F5] border border-[#E2E6E3] shadow-ambient-md p-8 md:p-12 space-y-5">
             <p className="font-serif text-xl md:text-2xl text-[#161A17] italic">
               &ldquo;But I could just buy plain coconut milk&hellip;&rdquo;
             </p>
