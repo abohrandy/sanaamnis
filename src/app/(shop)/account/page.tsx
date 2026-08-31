@@ -27,10 +27,10 @@ export default function AccountPage() {
             YOUR PROFILE
           </span>
           <h1 className="font-serif text-3xl md:text-5xl font-medium tracking-tight text-[#161A17]">
-            My Collector Account
+            My Account
           </h1>
           <p className="text-xs text-[#676E6A] font-sans">
-            Manage your saved formulations, delivery destinations, order tracking archives, and Glass Circle privilege points.
+            Manage your wishlist, delivery addresses and order history.
           </p>
         </div>
 

@@ -111,11 +111,11 @@ export function AccountClient() {
 
   const TABS = [
     { id: "overview", label: "Account Overview", icon: User },
-    { id: "orders", label: "Orders Archive", icon: ShoppingBag, badge: orders.length },
-    { id: "wishlist", label: "Saved Formulations", icon: Heart, badge: wishlistCount },
-    { id: "addresses", label: "Saved Destinations", icon: MapPin },
-    { id: "reviews", label: "My Critiques", icon: MessageSquare },
-    { id: "rewards", label: "Glass Circle Rewards", icon: Award },
+    { id: "orders", label: "My Orders", icon: ShoppingBag, badge: orders.length },
+    { id: "wishlist", label: "Wishlist", icon: Heart, badge: wishlistCount },
+    { id: "addresses", label: "Delivery Addresses", icon: MapPin },
+    { id: "reviews", label: "My Reviews", icon: MessageSquare },
+    { id: "rewards", label: "Rewards", icon: Award },
     { id: "security", label: "Profile & Security", icon: Shield },
     { id: "notifications", label: "Preferences", icon: Bell },
   ];
@@ -132,7 +132,7 @@ export function AccountClient() {
             </div>
             <div>
               <h3 className="font-serif text-lg font-medium text-[#161A17]">{profileName}</h3>
-              <Badge variant="gold">BOTANICAL PATRON TIER</Badge>
+              <Badge variant="gold">SANA AMNIS CUSTOMER</Badge>
             </div>
           </div>
 
@@ -197,7 +197,7 @@ export function AccountClient() {
               </div>
 
               <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-2">
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#676E6A]">Saved Formulations</span>
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#676E6A]">Wishlist Items</span>
                 <span className="font-serif text-3xl font-bold text-[#1C3322] block">{wishlistCount}</span>
                 <button onClick={() => setActiveTab("wishlist")} className="text-[10px] text-[#C9A227] font-bold uppercase tracking-wider hover:underline">
                   View Wishlist →
@@ -205,9 +205,11 @@ export function AccountClient() {
               </div>
 
               <div className="p-6 rounded-[1.25rem] bg-[#FAF8F5] border border-[#E2E6E3] glass-alabaster shadow-ambient-sm space-y-2">
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#676E6A]">Glass Circle Points</span>
-                <span className="font-serif text-3xl font-bold text-[#1C3322] block">450 PTS</span>
-                <span className="text-[10px] text-[#676E6A] font-semibold">5 Amber Bottles Returned</span>
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#676E6A]">Rewards</span>
+                <span className="font-serif text-xl font-bold text-[#1C3322] block">Coming soon</span>
+                <button onClick={() => setActiveTab("rewards")} className="text-[10px] text-[#C9A227] font-bold uppercase tracking-wider hover:underline">
+                  Learn more →
+                </button>
               </div>
             </div>
 
@@ -216,7 +218,7 @@ export function AccountClient() {
               <div className="flex items-center justify-between border-b border-[#E2E6E3] pb-4">
                 <h3 className="font-serif text-xl font-medium text-[#161A17]">Recent Order</h3>
                 <button onClick={() => setActiveTab("orders")} className="text-xs font-bold uppercase tracking-[0.18em] text-[#1C3322] hover:text-[#C9A227]">
-                  View All Archive →
+                  View All Orders →
                 </button>
               </div>
 

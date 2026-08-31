@@ -66,7 +66,7 @@ export function NotFoundState() {
         Page Not Found
       </h1>
       <p className="text-xs md:text-sm text-[#676E6A] font-sans max-w-md leading-relaxed mb-8">
-        The botanical formulation or editorial page you are searching for has moved or is no longer available.
+        The product or page you are looking for has moved or is no longer available.
       </p>
       <Link href="/">
         <Button variant="botanical" size="lg">

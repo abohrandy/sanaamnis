@@ -44,7 +44,7 @@ export function CollectionBanner({
           <Badge variant="gold">{subtitle}</Badge>
           {itemCount !== undefined && (
             <span className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-[#FAF8F5]/60 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-[#C9A227]" /> {itemCount} Formulations
+              <Sparkles className="w-3 h-3 text-[#C9A227]" /> {itemCount} Products
             </span>
           )}
         </div>

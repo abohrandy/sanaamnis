@@ -388,7 +388,7 @@ export const recipes = pgTable("recipes", {
 export const testimonials = pgTable("testimonials", {
   id: uuid("id").primaryKey().defaultRandom(),
   clientName: text("client_name").notNull(),
-  role: text("role"), // e.g. "Verified Collector"
+  role: text("role"), // e.g. "Verified Customer"
   quote: text("quote").notNull(),
   rating: integer("rating").default(5).notNull(),
   imageUrl: text("image_url"),
