@@ -199,6 +199,11 @@ export default async function CoconutRiceLandingPage() {
 
         {/* Who this is for */}
         <section className="max-w-4xl mx-auto px-5 md:px-8 py-20 md:py-28">
+          <ScrollReveal className="mb-12">
+            <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
+              This could be you!
+            </h2>
+          </ScrollReveal>
           <div className="space-y-14">
             {WHO_ITS_FOR.map((item, i) => (
               <ScrollReveal key={item.line} delay={i * 0.08}>
