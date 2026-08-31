@@ -120,6 +120,11 @@ export function OrderConfirmation() {
           {copy.title}
         </h1>
         <p className="text-sm text-[#676E6A] leading-relaxed">{copy.body}</p>
+        {state !== "unknown" && (
+          <p className="font-serif text-lg text-[#1C3322] pt-2">
+            Thank you for shopping with Sana Amnis — we appreciate you.
+          </p>
+        )}
       </div>
 
       {reference && state !== "unknown" && (
