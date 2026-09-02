@@ -114,10 +114,10 @@ export default async function CoconutMilkPowderLandingPage() {
             <ScrollReveal direction="left" className="lg:col-span-6">
               <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg bg-white">
                 <Image
-                  src="/products/coconut-milk-powder-supplied.jpg"
-                  alt="Sana Amnis Coconut Milk Powder pouches"
-                  width={1280}
-                  height={960}
+                  src="/coconutmilkpowder/hero-lifestyle.png"
+                  alt="Pouring Sana Amnis Coconut Milk Powder into a glass of water"
+                  width={1402}
+                  height={1122}
                   className="w-full h-auto object-cover"
                   priority
                 />
@@ -145,6 +145,17 @@ export default async function CoconutMilkPowderLandingPage() {
               <p className="font-serif text-3xl md:text-4xl font-medium text-[#C9A227] pt-2">
                 We kept the coconut milk. We removed the shelf life.
               </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.28}>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
+                <Image
+                  src="/coconutmilkpowder/before-after.png"
+                  alt="Before: grating and squeezing a coconut by hand. After: a glass of coconut milk next to a Sana Amnis Coconut Milk Powder pouch."
+                  width={1448}
+                  height={1086}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </ScrollReveal>
           </div>
         </section>
@@ -208,10 +219,21 @@ export default async function CoconutMilkPowderLandingPage() {
 
         {/* Uses grid */}
         <section className="max-w-6xl mx-auto px-5 md:px-8 py-20 md:py-24">
-          <ScrollReveal className="max-w-xl mb-12">
+          <ScrollReveal className="max-w-xl mb-10">
             <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17]">
               One pouch, so many pots.
             </h2>
+          </ScrollReveal>
+          <ScrollReveal delay={0.06} className="mb-12">
+            <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+              <Image
+                src="/coconutmilkpowder/recipe-steps.png"
+                alt="Four steps: scoop the powder, stir into a simmering pot, mix into a hot drink, sprinkle over a finished dish"
+                width={1774}
+                height={887}
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </ScrollReveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {USES.map((item, i) => (
@@ -248,6 +270,18 @@ export default async function CoconutMilkPowderLandingPage() {
               <h2 className="font-serif text-3xl md:text-4xl font-medium tracking-tight text-[#161A17] max-w-xl">
                 From the kitchens that have tried it
               </h2>
+            </ScrollReveal>
+
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+                <Image
+                  src="/coconutmilkpowder/testimonial-family.png"
+                  alt="A home cook holding Sana Amnis Coconut Milk Powder while cooking"
+                  width={1402}
+                  height={1122}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </ScrollReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

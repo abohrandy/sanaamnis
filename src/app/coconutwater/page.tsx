@@ -115,10 +115,10 @@ export default async function CoconutWaterLandingPage() {
             <ScrollReveal direction="left" className="lg:col-span-6">
               <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg bg-white">
                 <Image
-                  src="/products/coconut-water-range.jpg"
-                  alt="Sana Amnis Coconut Water — 250ml pouch and 500ml bottle"
-                  width={1280}
-                  height={960}
+                  src="/coconutwater/hero-lifestyle.png"
+                  alt="A woman drinking Sana Amnis Coconut Water in the back of a car"
+                  width={1402}
+                  height={1122}
                   className="w-full h-auto object-cover"
                   priority
                 />
@@ -148,6 +148,17 @@ export default async function CoconutWaterLandingPage() {
               <p className="font-serif text-3xl md:text-4xl font-medium text-[#C9A227] pt-2">
                 We kept the water. We removed the gamble.
               </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.28}>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
+                <Image
+                  src="/coconutwater/before-after.png"
+                  alt="Before: a roadside coconut seller cracking coconuts with a machete. After: Sana Amnis Coconut Water bottles and pouches, clean and ready."
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </ScrollReveal>
           </div>
         </section>
@@ -233,6 +244,18 @@ export default async function CoconutWaterLandingPage() {
               </h2>
             </ScrollReveal>
 
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+                <Image
+                  src="/coconutwater/testimonial-family.png"
+                  alt="Friends sharing Sana Amnis Coconut Water together outdoors"
+                  width={1402}
+                  height={1122}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {["/reviews/coconut-water-review-1.jpeg", "/reviews/coconut-water-review-3.jpeg"].map((src, i) => (
                 <ScrollReveal key={src} delay={i * 0.08}>
@@ -308,21 +331,34 @@ export default async function CoconutWaterLandingPage() {
 
         {/* Final CTA */}
         <section className="bg-[#1C3322] text-[#FAF8F5] py-20 md:py-28">
-          <ScrollReveal className="max-w-2xl mx-auto px-5 md:px-8 text-center space-y-8">
-            <div className="flex items-center justify-center gap-6 text-[#C9A227]">
-              <Leaf className="w-5 h-5" />
-              <Ban className="w-5 h-5" />
-              <Droplets className="w-5 h-5" />
-            </div>
-            <p className="font-serif text-3xl md:text-5xl font-medium">
-              Reach for real, tonight. <span className="whitespace-nowrap">🥥💧</span>
-            </p>
-            <Link href={buyHref} className="inline-block">
-              <Button variant="gold" size="lg" className="flex items-center gap-2">
-                Get Your Coconut Water <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-          </ScrollReveal>
+          <div className="max-w-4xl mx-auto px-5 md:px-8 space-y-10 text-center">
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#FAF8F5]/10 shadow-ambient-lg">
+                <Image
+                  src="/coconutwater/shop-now-banner.png"
+                  alt="Sana Amnis Coconut Water pouch and bottle"
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08} className="space-y-8">
+              <div className="flex items-center justify-center gap-6 text-[#C9A227]">
+                <Leaf className="w-5 h-5" />
+                <Ban className="w-5 h-5" />
+                <Droplets className="w-5 h-5" />
+              </div>
+              <p className="font-serif text-3xl md:text-5xl font-medium">
+                Reach for real, tonight. <span className="whitespace-nowrap">🥥💧</span>
+              </p>
+              <Link href={buyHref} className="inline-block">
+                <Button variant="gold" size="lg" className="flex items-center gap-2">
+                  Get Your Coconut Water <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </ScrollReveal>
+          </div>
         </section>
       </main>
 
