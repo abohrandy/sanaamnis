@@ -263,7 +263,7 @@ export default async function CoconutMilkPowderLandingPage() {
           </ScrollReveal>
         </section>
 
-        {/* Testimonials — placeholders until real reviews are added */}
+        {/* Testimonials */}
         <section className="bg-[#F3EFE8] py-20 md:py-24">
           <div className="max-w-4xl mx-auto px-5 md:px-8 space-y-10">
             <ScrollReveal>
@@ -283,23 +283,6 @@ export default async function CoconutMilkPowderLandingPage() {
                 />
               </div>
             </ScrollReveal>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[0, 1].map((i) => (
-                <ScrollReveal key={i} delay={i * 0.08}>
-                  <div className="h-full rounded-[1.5rem] border border-dashed border-[#C9A227]/50 bg-[#FAF8F5] p-6 space-y-3">
-                    <Sparkles className="w-4 h-4 text-[#C9A227]" />
-                    <p className="text-sm text-[#676E6A] italic leading-relaxed">
-                      A real customer quote will go here once we have one &mdash; how it mixed, what they
-                      cooked with it, or whether they came back for the bigger pack.
-                    </p>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C531B]">
-                      Customer name / handle
-                    </p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
           </div>
         </section>
 
