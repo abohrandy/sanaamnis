@@ -257,34 +257,34 @@ export default async function CoconutRiceLandingPage() {
               From pot to plate, four steps.
             </h2>
           </ScrollReveal>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            <ScrollReveal delay={0.08}>
-              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
-                <Image
-                  src="/coconutrice/recipe-steps.png"
-                  alt="Four steps: sauté onions and peppers, pour in coconut milk, sprinkle coconut milk powder, stir the finished coconut rice"
-                  width={1536}
-                  height={1024}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.16}>
-              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg bg-black aspect-[9/16] max-w-sm mx-auto lg:max-w-none">
-                <video
-                  src="/coconutrice/kitchen-demo.mp4"
-                  poster="/coconutrice/recipe-steps.png"
-                  className="w-full h-full object-cover"
-                  controls
-                  playsInline
-                  muted
-                  loop
-                  preload="metadata"
-                  aria-label="Watch the full Rice Don Set coconut rice recipe being cooked, start to finish"
-                />
-              </div>
-            </ScrollReveal>
-          </div>
+          <ScrollReveal delay={0.08}>
+            <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+              <Image
+                src="/coconutrice/recipe-steps.png"
+                alt="Four steps: sauté onions and peppers, pour in coconut milk, sprinkle coconut milk powder, stir the finished coconut rice"
+                width={1536}
+                height={1024}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.16} className="pt-10 flex flex-col items-center text-center gap-4">
+            <p className="text-sm md:text-base text-[#676E6A]">Prefer to watch it come together?</p>
+            <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg bg-black aspect-[9/16] w-full max-w-[280px]">
+              <video
+                src="/coconutrice/kitchen-demo.mp4"
+                poster="/coconutrice/kitchen-demo-poster.jpg"
+                className="w-full h-full object-cover"
+                controls
+                playsInline
+                muted
+                loop
+                preload="metadata"
+                aria-label="Watch the full Rice Don Set coconut rice recipe being cooked, start to finish"
+              />
+            </div>
+          </ScrollReveal>
         </section>
 
         {/* Objection handling */}
@@ -311,34 +311,36 @@ export default async function CoconutRiceLandingPage() {
               </h2>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <ScrollReveal>
-                <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
-                  <Image
-                    src="/coconutrice/testimonial-family.png"
-                    alt="A family sharing a meal of coconut rice together"
-                    width={1536}
-                    height={1024}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              </ScrollReveal>
+            <ScrollReveal>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg">
+                <Image
+                  src="/coconutrice/testimonial-family.png"
+                  alt="A family sharing a meal of coconut rice together"
+                  width={1536}
+                  height={1024}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
 
-              <ScrollReveal delay={0.08}>
-                <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg bg-black aspect-[9/16] max-w-sm mx-auto md:max-w-none">
-                  <video
-                    src="/coconutrice/promo-pricing.mp4"
-                    className="w-full h-full object-cover"
-                    controls
-                    playsInline
-                    muted
-                    loop
-                    preload="metadata"
-                    aria-label="A real customer tasting and reviewing Sana Amnis coconut milk"
-                  />
-                </div>
-              </ScrollReveal>
-            </div>
+            <ScrollReveal delay={0.08} className="flex flex-col items-center text-center gap-4">
+              <p className="text-sm md:text-base text-[#676E6A] max-w-md">
+                A real Sana Amnis customer trying the Rice Don Set bundle for the first time.
+              </p>
+              <div className="rounded-[1.75rem] overflow-hidden border border-[#E2E6E3] shadow-ambient-lg bg-black aspect-[9/16] w-full max-w-[280px]">
+                <video
+                  src="/coconutrice/promo-pricing.mp4"
+                  poster="/coconutrice/promo-pricing-poster.jpg"
+                  className="w-full h-full object-cover"
+                  controls
+                  playsInline
+                  muted
+                  loop
+                  preload="metadata"
+                  aria-label="A real customer tasting and reviewing Sana Amnis coconut milk"
+                />
+              </div>
+            </ScrollReveal>
           </div>
         </section>
 
