@@ -10,6 +10,7 @@ import { computeTotals, type PricedLine } from "@/lib/pricing";
 import { findVariant, formatNaira, variantImage, PLACEHOLDER_IMAGE } from "@/lib/catalog";
 import { BUNDLES as CATALOG_BUNDLES } from "@/lib/bundles";
 import { findDeliveryZone } from "@/lib/deliveryZones";
+import { generateOrderNumber } from "@/lib/orderNumber";
 import { sendEmail } from "@/lib/resend";
 import {
   CUSTOMER_CARE_RECIPIENTS,
@@ -321,9 +322,14 @@ export async function POST(request: Request) {
     }
   }
 
-  const orderNumber = `SA-${Date.now().toString(36).toUpperCase()}-${Math.floor(
-    1000 + Math.random() * 9000
-  )}`;
+  // Location segment: the delivery zone's area for known zones, the pickup
+  // location for pickup orders, or the start of the free-text address for a
+  // delivery outside the known zones (quoted/settled separately).
+  const locationLabel =
+    input.deliveryMethod === "pickup"
+      ? input.pickupLocation ?? "Pickup"
+      : deliveryZone?.area ?? input.shippingAddress?.split(",")[0] ?? "Delivery";
+  const orderNumber = await generateOrderNumber(locationLabel);
 
   // Attach the order to the signed-in customer when there is one, so it shows up
   // in their order history.

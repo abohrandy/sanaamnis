@@ -3,6 +3,7 @@ export type UserRole =
   | "editor"
   | "content_manager"
   | "store_manager"
+  | "sales"
   | "admin"
   | "super_admin";
 
@@ -27,6 +28,15 @@ const PERMISSIONS_MATRIX: Record<UserRole, string[]> = {
     "view:customers",
     "edit:coupons",
   ],
+  // Day-to-day order handling without catalog/coupon access. Deliberately does
+  // not include "delete:orders" — that stays super_admin-only, see below.
+  sales: [
+    "view:products",
+    "create:orders",
+    "view:orders",
+    "edit:orders",
+    "view:customers",
+  ],
   admin: [
     "view:products",
     "create:orders",
@@ -42,7 +52,11 @@ const PERMISSIONS_MATRIX: Record<UserRole, string[]> = {
     "view:analytics",
     "edit:settings",
   ],
-  super_admin: ["*"], // Granting all privileges
+  // Granting all privileges, including ones deliberately left out of every
+  // other role's list above — "delete:orders" and "edit:roles" (changing a
+  // user's role, see /api/admin/customers/[id]) are super_admin-exclusive
+  // this way, without needing an explicit deny anywhere.
+  super_admin: ["*"],
 };
 
 export function hasPermission(role: string | undefined | null, action: string): boolean {
@@ -63,6 +77,6 @@ export function hasPermission(role: string | undefined | null, action: string): 
 
 export function isAdminRole(role: string | undefined | null): boolean {
   if (!role) return false;
-  const adminRoles = ["editor", "content_manager", "store_manager", "admin", "super_admin"];
+  const adminRoles = ["editor", "content_manager", "store_manager", "sales", "admin", "super_admin"];
   return adminRoles.includes(role);
 }

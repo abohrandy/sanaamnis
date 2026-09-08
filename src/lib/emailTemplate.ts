@@ -8,6 +8,10 @@ export const LOGO_URL = `${SITE_URL}/logo3.png`;
 // Only one inbox going forward — see CUSTOMER_CARE_EMAIL in bankTransfer.ts.
 export const CONTACT_EMAIL = "communitymart@gmail.com";
 
+// Same number used site-wide (checkout page, contact page).
+export const CONTACT_WHATSAPP_URL = "https://wa.me/2349137358352";
+export const CONTACT_WHATSAPP_DISPLAY = "+234 913 735 8352";
+
 // Same faces as the website (src/app/layout.tsx: Outfit for body/UI text,
 // Playfair Display for headings) — loaded via Google Fonts' CSS endpoint since
 // email clients can't use next/font. Most webmail/Apple Mail/Outlook-on-the-web
@@ -42,7 +46,8 @@ export const emailEyebrow = (text: string) =>
 
 export const EMAIL_FOOTER = `
   <p style="margin-top: 24px; font-size: 13px; color: #676E6A;">
-    Questions? Write to ${CONTACT_EMAIL}.
+    Questions? Write to ${CONTACT_EMAIL} or WhatsApp us at
+    <a href="${CONTACT_WHATSAPP_URL}" style="color: #1C3322;">${CONTACT_WHATSAPP_DISPLAY}</a>.
   </p>
   <p style="margin-top: 20px; font-family: ${SERIF_STACK}; color: #1C3322;">Sana Amnis</p>
 `;

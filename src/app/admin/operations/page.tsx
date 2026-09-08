@@ -7,7 +7,9 @@ import { Table } from "@/components/ds/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
+import { Dialog } from "@/components/ds/dialog";
 import { useToast } from "@/hooks/useToast";
+import { useSession } from "@/lib/auth-client";
 import { Trash2, ShieldCheck } from "lucide-react";
 
 interface OrderItem {
@@ -79,6 +81,28 @@ const STATUS_OPTIONS = [
   label: s.replace("_", " "),
 }));
 
+// Roles a super_admin can assign, with proper labels for that management
+// control — it's only ever shown to the super_admin themselves, so there's
+// no reason to mask "Super Admin" there the way the read-only badge does.
+const ROLE_OPTIONS = [
+  { value: "customer", label: "Customer" },
+  { value: "editor", label: "Editor" },
+  { value: "content_manager", label: "Content Manager" },
+  { value: "store_manager", label: "Store Manager" },
+  { value: "sales", label: "Sales" },
+  { value: "admin", label: "Admin" },
+  { value: "super_admin", label: "Super Admin" },
+];
+
+// The passive badge everyone else with view:customers sees. super_admin reads
+// as "Admin" here on purpose, so staff browsing this table can't single out
+// the highest-privilege account.
+function displayRoleLabel(role: string | null): string {
+  if (!role || role === "customer") return "Customer";
+  if (role === "super_admin") return "Admin";
+  return ROLE_OPTIONS.find((o) => o.value === role)?.label ?? role;
+}
+
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { ...init, headers: { "Content-Type": "application/json", ...init?.headers } });
   const data = await res.json().catch(() => ({}));
@@ -89,6 +113,9 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
 export default function AdminOperationsPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "super_admin";
+  const [orderToDelete, setOrderToDelete] = useState<AdminOrder | null>(null);
 
   const ordersQuery = useQuery({
     queryKey: ["admin", "orders"],
@@ -132,6 +159,27 @@ export default function AdminOperationsPage() {
       queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
     },
     onError: (err: Error) => toast.error("Could not notify customer", err.message),
+  });
+
+  const deleteOrder = useMutation({
+    mutationFn: (id: string) => api(`/api/admin/orders/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast.success("Order deleted");
+      setOrderToDelete(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
+    },
+    onError: (err: Error) => toast.error("Could not delete order", err.message),
+  });
+
+  const updateRole = useMutation({
+    mutationFn: ({ id, role }: { id: string; role: string }) =>
+      api(`/api/admin/customers/${id}`, { method: "PATCH", body: JSON.stringify({ role }) }),
+    onSuccess: () => {
+      toast.success("Role updated");
+      queryClient.invalidateQueries({ queryKey: ["admin", "customers"] });
+    },
+    onError: (err: Error) => toast.error("Could not update role", err.message),
   });
 
   const removeSubscriber = useMutation({
@@ -209,6 +257,16 @@ export default function AdminOperationsPage() {
               Notify Delivery
             </Button>
           )}
+          {isSuperAdmin && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setOrderToDelete(item)}
+              className="!text-[10px] !py-1.5 whitespace-nowrap text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="w-3.5 h-3.5" /> Delete
+            </Button>
+          )}
         </div>
       ),
     },
@@ -217,7 +275,21 @@ export default function AdminOperationsPage() {
   const accountColumns = [
     { header: "Name", accessor: "name" as const },
     { header: "Email", accessor: "email" as const },
-    { header: "Role", accessor: (item: RegisteredAccount) => <Badge variant="secondary">{item.role || "customer"}</Badge> },
+    {
+      header: "Role",
+      accessor: (item: RegisteredAccount) =>
+        isSuperAdmin && item.id !== session?.user?.id ? (
+          <Select
+            value={item.role || "customer"}
+            onChange={(e) => updateRole.mutate({ id: item.id, role: e.target.value })}
+            options={ROLE_OPTIONS}
+            disabled={updateRole.isPending}
+            className="!py-2 !text-[10px] w-40"
+          />
+        ) : (
+          <Badge variant="secondary">{displayRoleLabel(item.role)}</Badge>
+        ),
+    },
     { header: "Joined", accessor: (item: RegisteredAccount) => new Date(item.createdAt).toLocaleDateString() },
   ];
 
@@ -318,6 +390,34 @@ export default function AdminOperationsPage() {
       </div>
 
       <Tabs tabs={tabContents} />
+
+      <Dialog
+        isOpen={orderToDelete !== null}
+        onClose={() => setOrderToDelete(null)}
+        title="Delete this order?"
+      >
+        <div className="space-y-5">
+          <p className="text-sm text-muted-foreground">
+            This permanently deletes order{" "}
+            <span className="font-serif font-bold text-foreground">{orderToDelete?.orderNumber}</span> and
+            its line items. This cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" size="sm" onClick={() => setOrderToDelete(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={deleteOrder.isPending}
+              onClick={() => orderToDelete && deleteOrder.mutate(orderToDelete.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete order
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }
