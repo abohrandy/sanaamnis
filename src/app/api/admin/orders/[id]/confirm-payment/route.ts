@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { sendEmail } from "@/lib/resend";
 import { formatNaira } from "@/lib/catalog";
 import { customerPaymentConfirmedEmail } from "@/lib/bankTransfer";
+import { sendTikTokEvent } from "@/lib/tiktokEvents";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +62,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         console.error(`[admin/orders/${id}/confirm-payment] confirmation email failed:`, emailError);
       }
     }
+
+    // Same "Purchase" event the Paystack webhook sends for a card payment,
+    // fired from the admin's manual confirmation instead since a bank
+    // transfer has no webhook of its own.
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com").replace(/\/$/, "");
+    void sendTikTokEvent(
+      "Purchase",
+      `${order.orderNumber}-purchase`,
+      {
+        url: `${siteUrl}/checkout/success`,
+        email: order.customerEmail,
+        phone: order.customerPhone,
+        externalId: order.id,
+      },
+      {
+        value: Number(order.totalAmount),
+        currency: "NGN",
+        contentId: order.orderNumber,
+        contentName: `Order ${order.orderNumber}`,
+      }
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {

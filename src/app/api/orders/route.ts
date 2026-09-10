@@ -12,6 +12,7 @@ import { BUNDLES as CATALOG_BUNDLES } from "@/lib/bundles";
 import { findDeliveryZone } from "@/lib/deliveryZones";
 import { generateOrderNumber } from "@/lib/orderNumber";
 import { sendEmail } from "@/lib/resend";
+import { sendTikTokEvent } from "@/lib/tiktokEvents";
 import {
   CUSTOMER_CARE_RECIPIENTS,
   signOrderToken,
@@ -390,6 +391,27 @@ export async function POST(request: Request) {
   const requestHeaders = await headers();
   const host = requestHeaders.get("host") ?? "sanaamniscoconut.com";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
+
+  // Fire-and-forget: a slow or failed TikTok call must never delay checkout.
+  void sendTikTokEvent(
+    "PlaceAnOrder",
+    orderNumber,
+    {
+      url: `${protocol}://${host}/checkout`,
+      ip: requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      userAgent: requestHeaders.get("user-agent"),
+      email: input.email,
+      phone: input.phone,
+      externalId: orderId,
+    },
+    {
+      value: totals.total,
+      currency: "NGN",
+      contentId: orderNumber,
+      contentName: `Order ${orderNumber}`,
+      quantity: persistableLines.reduce((sum, l) => sum + l.quantity, 0),
+    }
+  );
 
   // --- Bank transfer: no gateway, email the customer the bank details --------
   if (input.paymentMethod === "bank_transfer") {

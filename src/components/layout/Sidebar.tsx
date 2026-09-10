@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Image,
+  Image as ImageIcon,
   Loader2,
 } from "lucide-react";
 
@@ -39,7 +40,7 @@ const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard, permissions: ["view:analytics"], shortcutKey: "d" },
   { label: "Catalog", href: "/admin/catalog", icon: ShoppingBag, permissions: ["edit:catalog", "edit:coupons"], shortcutKey: "c" },
   { label: "Content", href: "/admin/content", icon: FileText, permissions: ["edit:blog", "edit:pages"], shortcutKey: "n" },
-  { label: "Media Library", href: "/admin/media", icon: Image, permissions: ["edit:catalog", "edit:pages"], shortcutKey: "m" },
+  { label: "Media Library", href: "/admin/media", icon: ImageIcon, permissions: ["edit:catalog", "edit:pages"], shortcutKey: "m" },
   { label: "Operations", href: "/admin/operations", icon: Users, permissions: ["view:orders", "view:customers"], shortcutKey: "o" },
   { label: "Settings", href: "/admin/settings", icon: Settings, permissions: ["edit:settings"], shortcutKey: "s" },
 ];
@@ -93,9 +94,7 @@ export function Sidebar({ className, userProfile }: SidebarProps) {
       <div>
         <div className="h-20 flex items-center justify-between px-6 border-b border-border/20">
           {!collapsed && (
-            <span className="font-serif text-sm uppercase tracking-widest font-bold text-foreground">
-              Amnis Hub
-            </span>
+            <Image src="/logo3.png" alt="Sana Amnis" width={132} height={87} className="h-10 w-auto object-contain" priority />
           )}
           {collapsed && <span className="font-serif text-xs font-bold text-primary">SA</span>}
           <button

@@ -6,6 +6,7 @@ import { eq, sql } from "drizzle-orm";
 import { sendEmail } from "@/lib/resend";
 import { formatNaira } from "@/lib/catalog";
 import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER } from "@/lib/emailTemplate";
+import { sendTikTokEvent } from "@/lib/tiktokEvents";
 
 export const dynamic = "force-dynamic";
 
@@ -111,6 +112,26 @@ export async function POST(request: Request) {
     } catch (emailError) {
       console.error(`[paystack-webhook] confirmation email failed for ${orderNumber}:`, emailError);
     }
+
+    // No customer request to read ip/user-agent from here (this is Paystack's server
+    // calling us) — email/phone match quality carries this event instead.
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com").replace(/\/$/, "");
+    void sendTikTokEvent(
+      "Purchase",
+      `${orderNumber}-purchase`,
+      {
+        url: `${siteUrl}/checkout/success`,
+        email: order.customerEmail ?? customer.email,
+        phone: order.customerPhone,
+        externalId: order.id,
+      },
+      {
+        value: paidNaira,
+        currency: "NGN",
+        contentId: orderNumber,
+        contentName: `Order ${orderNumber}`,
+      }
+    );
 
     return NextResponse.json({ status: "success" });
   } catch (error) {

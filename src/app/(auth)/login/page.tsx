@@ -7,13 +7,16 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/lib/auth-client";
+import { isAdminRole } from "@/lib/rbac";
 import { LogIn, Loader2, UserPlus, ArrowLeft } from "lucide-react";
 
 function LoginForm() {
   const searchParams = useSearchParams();
-  // Send the customer back to the page they came from (e.g. checkout) once
-  // signed in, rather than always landing on /account.
-  const redirectTo = searchParams.get("redirect") || "/account";
+  // An explicit ?redirect (e.g. bounced back from checkout, or from /admin/*
+  // by the middleware) always wins — it's exactly where the person was
+  // headed. Absent that, sign-in below picks /admin or /account based on role.
+  const explicitRedirect = searchParams.get("redirect");
+  const redirectTo = explicitRedirect || "/account";
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
@@ -38,7 +41,11 @@ function LoginForm() {
           setIsSubmitting(false);
           return;
         }
-        window.location.href = redirectTo;
+        // No specific page was asking for this sign-in, so route staff straight
+        // to the admin backend instead of the customer account page.
+        const destination =
+          explicitRedirect || (isAdminRole(res?.data?.user?.role) ? "/admin" : "/account");
+        window.location.href = destination;
       } else {
         const res = await signUp.email({ email, password, name, callbackURL: redirectTo });
         if (res?.error) {
