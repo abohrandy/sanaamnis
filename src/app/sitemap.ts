@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { CATALOG, CATEGORIES } from "@/lib/catalog";
+import { CATALOG } from "@/lib/catalog";
 import { RECIPES, ARTICLES } from "@/lib/content";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sanaamniscoconut.com";
@@ -30,12 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency,
       priority,
-    })),
-    ...Object.values(CATEGORIES).map((category) => ({
-      url: `${BASE_URL}/shop?category=${category.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
     })),
     ...CATALOG.map((product) => ({
       url: `${BASE_URL}/products/${product.slug}`,

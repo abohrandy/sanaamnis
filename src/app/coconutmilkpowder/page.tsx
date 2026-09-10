@@ -20,15 +20,28 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  const product = await getProduct(SLUG);
   const title = "Coconut Milk Powder — Coconut Milk, Whenever You Need It";
   const description =
     "Spray-dried coconut milk that keeps in the cupboard and mixes in seconds. No fridge, no spoilage, no breaking a coconut for two tablespoons.";
+  const image = product?.images[0];
 
   return {
     title,
     description,
     alternates: { canonical: "/coconutmilkpowder" },
-    openGraph: { title, description, type: "website" },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 

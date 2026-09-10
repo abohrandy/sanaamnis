@@ -41,6 +41,12 @@ export async function generateMetadata(): Promise<Metadata> {
       images: bundle ? [{ url: bundle.heroImageUrl }] : undefined,
       type: "website",
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: bundle ? [bundle.heroImageUrl] : undefined,
+    },
   };
 }
 

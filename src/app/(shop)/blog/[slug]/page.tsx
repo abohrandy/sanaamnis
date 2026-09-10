@@ -47,6 +47,12 @@ export async function generateMetadata({
       type: "article",
       publishedTime: article.date,
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `${article.title} | Sana Amnis`,
+      description: article.excerpt,
+      images: [article.image],
+    },
   };
 }
 

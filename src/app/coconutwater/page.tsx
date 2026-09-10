@@ -21,15 +21,28 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  const product = await getProduct(SLUG);
   const title = "Coconut Water — No Wahala, Just Coconut";
   const description =
     "No added sugar, no concentrate, no preservatives — just coconut water the way it comes from the nut. Made in Nigeria from home-grown coconuts.";
+  const image = product?.images[0];
 
   return {
     title,
     description,
     alternates: { canonical: "/coconutwater" },
-    openGraph: { title, description, type: "website" },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 

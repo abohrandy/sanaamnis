@@ -45,6 +45,12 @@ export async function generateMetadata({
       images: [{ url: recipe.image }],
       type: "article",
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `${recipe.title} | Sana Amnis`,
+      description: recipe.excerpt,
+      images: [recipe.image],
+    },
   };
 }
 
