@@ -13,6 +13,7 @@ import { findDeliveryZone } from "@/lib/deliveryZones";
 import { generateOrderNumber } from "@/lib/orderNumber";
 import { sendEmail } from "@/lib/resend";
 import { sendTikTokEvent } from "@/lib/tiktokEvents";
+import { sendMetaEvent } from "@/lib/metaEvents";
 import {
   CUSTOMER_CARE_RECIPIENTS,
   signOrderToken,
@@ -392,14 +393,17 @@ export async function POST(request: Request) {
   const host = requestHeaders.get("host") ?? "sanaamniscoconut.com";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
 
-  // Fire-and-forget: a slow or failed TikTok call must never delay checkout.
+  // Fire-and-forget: a slow or failed ad-platform call must never delay checkout.
+  const clientIp = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const userAgent = requestHeaders.get("user-agent");
+
   void sendTikTokEvent(
     "PlaceAnOrder",
     orderNumber,
     {
       url: `${protocol}://${host}/checkout`,
-      ip: requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim(),
-      userAgent: requestHeaders.get("user-agent"),
+      ip: clientIp,
+      userAgent,
       email: input.email,
       phone: input.phone,
       externalId: orderId,
@@ -410,6 +414,29 @@ export async function POST(request: Request) {
       contentId: orderNumber,
       contentName: `Order ${orderNumber}`,
       quantity: persistableLines.reduce((sum, l) => sum + l.quantity, 0),
+    }
+  );
+
+  // Meta has no "order placed, payment pending" standard event — InitiateCheckout
+  // is its closest equivalent for this moment (commitment to buy, before payment
+  // clears). The real, verified conversion is the "Purchase" event fired below
+  // once a payment actually settles.
+  void sendMetaEvent(
+    "InitiateCheckout",
+    `${orderNumber}-initiate`,
+    {
+      url: `${protocol}://${host}/checkout`,
+      ip: clientIp,
+      userAgent,
+      email: input.email,
+      phone: input.phone,
+      externalId: orderId,
+    },
+    {
+      value: totals.total,
+      currency: "NGN",
+      contentIds: persistableLines.map((l) => l.variantId),
+      contentName: `Order ${orderNumber}`,
     }
   );
 

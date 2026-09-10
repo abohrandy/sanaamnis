@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/resend";
 import { formatNaira } from "@/lib/catalog";
 import { customerPaymentConfirmedEmail } from "@/lib/bankTransfer";
 import { sendTikTokEvent } from "@/lib/tiktokEvents";
+import { sendMetaEvent } from "@/lib/metaEvents";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         value: Number(order.totalAmount),
         currency: "NGN",
         contentId: order.orderNumber,
+        contentName: `Order ${order.orderNumber}`,
+      }
+    );
+
+    void sendMetaEvent(
+      "Purchase",
+      `${order.orderNumber}-purchase`,
+      {
+        url: `${siteUrl}/checkout/success`,
+        email: order.customerEmail,
+        phone: order.customerPhone,
+        externalId: order.id,
+      },
+      {
+        value: Number(order.totalAmount),
+        currency: "NGN",
         contentName: `Order ${order.orderNumber}`,
       }
     );

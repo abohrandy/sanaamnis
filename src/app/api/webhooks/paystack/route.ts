@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/resend";
 import { formatNaira } from "@/lib/catalog";
 import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER } from "@/lib/emailTemplate";
 import { sendTikTokEvent } from "@/lib/tiktokEvents";
+import { sendMetaEvent } from "@/lib/metaEvents";
 
 export const dynamic = "force-dynamic";
 
@@ -129,6 +130,22 @@ export async function POST(request: Request) {
         value: paidNaira,
         currency: "NGN",
         contentId: orderNumber,
+        contentName: `Order ${orderNumber}`,
+      }
+    );
+
+    void sendMetaEvent(
+      "Purchase",
+      `${orderNumber}-purchase`,
+      {
+        url: `${siteUrl}/checkout/success`,
+        email: order.customerEmail ?? customer.email,
+        phone: order.customerPhone,
+        externalId: order.id,
+      },
+      {
+        value: paidNaira,
+        currency: "NGN",
         contentName: `Order ${orderNumber}`,
       }
     );

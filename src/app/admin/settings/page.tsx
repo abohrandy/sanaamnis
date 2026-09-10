@@ -50,6 +50,7 @@ export default function AdminSettingsPage() {
   const [bankAccountName, setBankAccountName] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
   const [tiktokAccessToken, setTiktokAccessToken] = useState("");
+  const [metaAccessToken, setMetaAccessToken] = useState("");
 
   // Populate the form once the real settings load — previously these fields
   // were hardcoded starting values ("Timeless garments designed with
@@ -67,6 +68,7 @@ export default function AdminSettingsPage() {
     setBankAccountName(s["bank-transfer-account-name"] ?? "");
     setBankAccountNumber(s["bank-transfer-account-number"] ?? "");
     setTiktokAccessToken(s["tiktok-events-api-token"] ?? "");
+    setMetaAccessToken(s["meta-conversions-api-token"] ?? "");
   }, [settingsQuery.data]);
 
   const saveSettings = useMutation({
@@ -402,34 +404,58 @@ export default function AdminSettingsPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            saveSettings.mutate({ "tiktok-events-api-token": tiktokAccessToken });
+            saveSettings.mutate({
+              "tiktok-events-api-token": tiktokAccessToken,
+              "meta-conversions-api-token": metaAccessToken,
+            });
           }}
-          className="space-y-6 max-w-xl"
+          className="space-y-8 max-w-xl"
         >
-          <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans mb-4">
-            TikTok Events API
-          </h3>
-          <p className="text-[11px] text-muted-foreground">
-            Lets the site report orders and payments to TikTok directly from the server — more
-            reliable than the on-page pixel alone, since it isn&apos;t affected by ad blockers or
-            browser privacy settings. Generate this in TikTok Events Manager under Assets → Events
-            → Web Events → Sana Amnis Pixels → Events API → Generate Access Token.
-          </p>
-          <Input
-            label="Access token"
-            type="password"
-            autoComplete="off"
-            value={tiktokAccessToken}
-            onChange={(e) => setTiktokAccessToken(e.target.value)}
-            placeholder="Paste the token from TikTok Events Manager"
-          />
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
+              TikTok Events API
+            </h3>
+            <p className="text-[11px] text-muted-foreground">
+              Lets the site report orders and payments to TikTok directly from the server — more
+              reliable than the on-page pixel alone, since it isn&apos;t affected by ad blockers or
+              browser privacy settings. Generate this in TikTok Events Manager under Assets → Events
+              → Web Events → Sana Amnis Pixels → Events API → Generate Access Token.
+            </p>
+            <Input
+              label="Access token"
+              type="password"
+              autoComplete="off"
+              value={tiktokAccessToken}
+              onChange={(e) => setTiktokAccessToken(e.target.value)}
+              placeholder="Paste the token from TikTok Events Manager"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-bold font-sans">
+              Meta Conversions API
+            </h3>
+            <p className="text-[11px] text-muted-foreground">
+              Same idea for Facebook/Instagram. Generate this in Meta Events Manager: open the
+              Sana Amnis pixel → Settings → Conversions API → Generate access token.
+            </p>
+            <Input
+              label="Access token"
+              type="password"
+              autoComplete="off"
+              value={metaAccessToken}
+              onChange={(e) => setMetaAccessToken(e.target.value)}
+              placeholder="Paste the token from Meta Events Manager"
+            />
+          </div>
+
           <Button type="submit" loading={saveSettings.isPending} className="flex items-center gap-1.5 rounded-none">
             <Save className="w-3.5 h-3.5" /> Save
           </Button>
           <p className="text-[11px] text-muted-foreground">
-            Once saved, new orders and confirmed payments report to TikTok automatically — nothing
-            else to configure. Falls back to the TIKTOK_EVENTS_API_ACCESS_TOKEN environment variable
-            if left blank.
+            Once saved, new orders and confirmed payments report to each platform automatically —
+            nothing else to configure. Each falls back to its own environment variable
+            (TIKTOK_EVENTS_API_ACCESS_TOKEN / META_CONVERSIONS_API_ACCESS_TOKEN) if left blank.
           </p>
         </form>
       ),
