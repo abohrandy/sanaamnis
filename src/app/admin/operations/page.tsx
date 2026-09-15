@@ -18,6 +18,7 @@ interface OrderItem {
   productTitle: string;
   productSlug: string | null;
   variantName: string;
+  bundleTitle: string | null;
 }
 
 interface AdminOrder {
@@ -25,10 +26,14 @@ interface AdminOrder {
   orderNumber: string;
   status: string;
   paymentMethod: string;
+  paymentReference: string | null;
   totalAmount: number;
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
+  shippingAddress: string;
+  deliveryLabel: string;
+  deliveryFee: number;
   createdAt: string;
   items: OrderItem[];
 }
@@ -191,7 +196,7 @@ export default function AdminOperationsPage() {
     onError: (err: Error) => toast.error("Could not remove subscriber", err.message),
   });
 
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [viewOrder, setViewOrder] = useState<AdminOrder | null>(null);
 
   const orders = ordersQuery.data?.orders ?? [];
   const accounts = customersQuery.data?.accounts ?? [];
@@ -202,8 +207,10 @@ export default function AdminOperationsPage() {
     {
       header: "Order",
       accessor: (item: AdminOrder) => (
-        <button onClick={() => setExpandedOrder(expandedOrder === item.id ? null : item.id)} className="text-left cursor-pointer">
-          <span className="font-serif font-bold text-sm text-foreground block">{item.orderNumber}</span>
+        <button onClick={() => setViewOrder(item)} className="text-left cursor-pointer hover:text-[#1C3322]">
+          <span className="font-serif font-bold text-sm text-foreground block underline decoration-dotted underline-offset-2">
+            {item.orderNumber}
+          </span>
           <span className="text-[10px] text-muted-foreground">{new Date(item.createdAt).toLocaleDateString()}</span>
         </button>
       ),
@@ -315,8 +322,6 @@ export default function AdminOperationsPage() {
     },
   ];
 
-  const expanded = orders.find((o) => o.id === expandedOrder);
-
   const tabContents = [
     {
       id: "orders",
@@ -327,17 +332,6 @@ export default function AdminOperationsPage() {
             Orders ({orders.length})
           </h3>
           <Table columns={orderColumns} data={orders} loading={ordersQuery.isLoading} />
-          {expanded && (
-            <div className="p-5 bg-card border border-border space-y-3">
-              <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">{expanded.orderNumber} — items</h4>
-              {expanded.items.map((item, i) => (
-                <div key={i} className="flex justify-between text-xs text-muted-foreground py-1.5 border-b border-border last:border-0">
-                  <span>{item.productTitle} — {item.variantName} × {item.quantity}</span>
-                  <span className="font-serif text-foreground">{naira(item.priceAtPurchase * item.quantity)}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       ),
     },
@@ -390,6 +384,69 @@ export default function AdminOperationsPage() {
       </div>
 
       <Tabs tabs={tabContents} />
+
+      <Dialog isOpen={viewOrder !== null} onClose={() => setViewOrder(null)} title={viewOrder?.orderNumber}>
+        {viewOrder && (
+          <div className="space-y-5 text-xs">
+            <div className="flex items-center justify-between">
+              <Badge variant={STATUS_VARIANT[viewOrder.status] ?? "secondary"}>{viewOrder.status.replace("_", " ")}</Badge>
+              <span className="text-muted-foreground">{new Date(viewOrder.createdAt).toLocaleString()}</span>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="font-bold text-foreground uppercase tracking-wider text-[10px]">Customer</h4>
+              <p className="text-foreground">{viewOrder.customerName || "Guest"}</p>
+              <p className="text-muted-foreground">{viewOrder.customerEmail || "—"}</p>
+              <p className="text-muted-foreground">{viewOrder.customerPhone || "—"}</p>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="font-bold text-foreground uppercase tracking-wider text-[10px]">Fulfilment</h4>
+              <p className="text-foreground">{viewOrder.deliveryLabel}</p>
+              <p className="text-muted-foreground whitespace-pre-line">{viewOrder.shippingAddress}</p>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="font-bold text-foreground uppercase tracking-wider text-[10px]">Payment</h4>
+              <p className="text-foreground capitalize">{viewOrder.paymentMethod.replace("_", " ")}</p>
+              {viewOrder.paymentReference && (
+                <p className="text-muted-foreground">Ref: {viewOrder.paymentReference}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-bold text-foreground uppercase tracking-wider text-[10px]">Items</h4>
+              {viewOrder.items.map((item, i) => (
+                <div key={i} className="flex justify-between py-1.5 border-b border-border last:border-0">
+                  <span className="text-muted-foreground">
+                    {item.productTitle}
+                    {item.variantName ? ` — ${item.variantName}` : ""} × {item.quantity}
+                    {item.bundleTitle && <span className="block text-[10px]">part of {item.bundleTitle}</span>}
+                  </span>
+                  <span className="font-serif text-foreground shrink-0 pl-3">
+                    {naira(item.priceAtPurchase * item.quantity)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-1 pt-2 border-t border-border">
+              <div className="flex justify-between text-muted-foreground">
+                <span>Items subtotal</span>
+                <span>{naira(viewOrder.totalAmount - viewOrder.deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>{viewOrder.deliveryLabel}</span>
+                <span>{naira(viewOrder.deliveryFee)}</span>
+              </div>
+              <div className="flex justify-between font-bold text-foreground pt-1">
+                <span>Total paid</span>
+                <span className="font-serif">{naira(viewOrder.totalAmount)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </Dialog>
 
       <Dialog
         isOpen={orderToDelete !== null}

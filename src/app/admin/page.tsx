@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { StatCard } from "@/components/ds/cards/stat-card";
 import { BarChart } from "@/components/ds/charts";
 import { Table } from "@/components/ds/table";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Clock, Mail, TrendingUp, ShieldCheck } from "lucide-react";
+import { ShoppingBag, Clock, Mail, TrendingUp, ShieldCheck, AlertTriangle, X } from "lucide-react";
 
 interface DashboardData {
   grossRevenue: number;
@@ -16,6 +16,14 @@ interface DashboardData {
   activeSubscribers: number;
   monthlyRevenue: Array<{ label: string; value: number }>;
   recentOrders: Array<{ id: string; orderNumber: string; customer: string; total: number; status: string }>;
+}
+
+interface EmailFailure {
+  id: string;
+  to: string;
+  subject: string;
+  error: string;
+  createdAt: string;
 }
 
 const STATUS_VARIANT: Record<string, "success" | "warning" | "primary" | "destructive" | "secondary"> = {
@@ -28,6 +36,8 @@ const STATUS_VARIANT: Record<string, "success" | "warning" | "primary" | "destru
 };
 
 export default function AdminDashboardPage() {
+  const queryClient = useQueryClient();
+
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "dashboard"],
     queryFn: async (): Promise<DashboardData> => {
@@ -36,6 +46,28 @@ export default function AdminDashboardPage() {
       return res.json();
     },
   });
+
+  // Surfaces failed/undeliverable order emails (see src/lib/resend.ts) so a
+  // rejected or misconfigured Resend send doesn't go unnoticed in server logs.
+  const { data: emailFailureData } = useQuery({
+    queryKey: ["admin", "email-failures"],
+    queryFn: async (): Promise<{ failures: EmailFailure[] }> => {
+      const res = await fetch("/api/admin/email-failures");
+      if (!res.ok) throw new Error("Could not load email failures.");
+      return res.json();
+    },
+    refetchInterval: 60_000,
+  });
+  const emailFailures = emailFailureData?.failures ?? [];
+
+  async function dismissEmailFailure(id: string) {
+    await fetch("/api/admin/email-failures", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    queryClient.invalidateQueries({ queryKey: ["admin", "email-failures"] });
+  }
 
   const columns = [
     { header: "Order", accessor: "orderNumber" as const },
@@ -63,6 +95,37 @@ export default function AdminDashboardPage() {
           <ShieldCheck className="w-4 h-4" /> Live database
         </div>
       </div>
+
+      {emailFailures.length > 0 && (
+        <div className="p-5 rounded-[1.25rem] bg-destructive/10 border border-destructive/30 space-y-3">
+          <div className="flex items-center gap-2 text-destructive font-semibold text-sm">
+            <AlertTriangle className="w-4 h-4" />
+            {emailFailures.length} order email{emailFailures.length > 1 ? "s" : ""} failed to send
+          </div>
+          <ul className="space-y-2">
+            {emailFailures.slice(0, 5).map((f) => (
+              <li
+                key={f.id}
+                className="flex items-start justify-between gap-4 text-xs bg-card rounded-[0.75rem] border border-border p-3"
+              >
+                <div className="space-y-0.5">
+                  <p className="font-semibold text-foreground">{f.subject} → {f.to}</p>
+                  <p className="text-muted-foreground">{f.error}</p>
+                  <p className="text-muted-foreground">{new Date(f.createdAt).toLocaleString()}</p>
+                </div>
+                <button
+                  onClick={() => dismissEmailFailure(f.id)}
+                  className="shrink-0 p-1 rounded-full hover:bg-secondary text-muted-foreground"
+                  aria-label="Dismiss"
+                  title="Mark as reviewed"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Paid Revenue" value={isLoading ? "…" : `₦${(data?.grossRevenue ?? 0).toLocaleString()}`} icon={TrendingUp} />

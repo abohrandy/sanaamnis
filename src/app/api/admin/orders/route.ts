@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { parseShippingAddress } from "@/lib/bankTransfer";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export async function GET(request: Request) {
         items: {
           with: {
             variant: { with: { product: { columns: { title: true, slug: true } } } },
+            bundle: { columns: { title: true } },
           },
         },
       },
@@ -31,25 +33,32 @@ export async function GET(request: Request) {
     const totalResult = await db.$count(orders);
 
     return NextResponse.json({
-      orders: rows.map((order) => ({
-        id: order.id,
-        orderNumber: order.orderNumber,
-        status: order.status,
-        paymentMethod: order.paymentMethod,
-        totalAmount: Number(order.totalAmount),
-        customerName: order.customerName,
-        customerEmail: order.customerEmail,
-        customerPhone: order.customerPhone,
-        shippingAddress: order.shippingAddress,
-        createdAt: order.createdAt,
-        items: order.items.map((item) => ({
-          quantity: item.quantity,
-          priceAtPurchase: Number(item.priceAtPurchase),
-          productTitle: item.variant?.product?.title ?? "Item",
-          productSlug: item.variant?.product?.slug ?? null,
-          variantName: item.variant?.name ?? "",
-        })),
-      })),
+      orders: rows.map((order) => {
+        const { deliveryFee, deliveryLabel } = parseShippingAddress(order.shippingAddress);
+        return {
+          id: order.id,
+          orderNumber: order.orderNumber,
+          status: order.status,
+          paymentMethod: order.paymentMethod,
+          paymentReference: order.paymentReference,
+          totalAmount: Number(order.totalAmount),
+          customerName: order.customerName,
+          customerEmail: order.customerEmail,
+          customerPhone: order.customerPhone,
+          shippingAddress: order.shippingAddress,
+          deliveryLabel,
+          deliveryFee,
+          createdAt: order.createdAt,
+          items: order.items.map((item) => ({
+            quantity: item.quantity,
+            priceAtPurchase: Number(item.priceAtPurchase),
+            productTitle: item.variant?.product?.title ?? "Item",
+            productSlug: item.variant?.product?.slug ?? null,
+            variantName: item.variant?.name ?? "",
+            bundleTitle: item.bundle?.title ?? null,
+          })),
+        };
+      }),
       page,
       pageSize: PAGE_SIZE,
       totalPages: Math.max(1, Math.ceil(totalResult / PAGE_SIZE)),

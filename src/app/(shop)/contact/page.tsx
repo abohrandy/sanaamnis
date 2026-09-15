@@ -92,8 +92,8 @@ export default function ContactPage() {
                 <Mail className="w-5 h-5 text-[#C9A227] shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-1">
                   <h2 className="text-[11px] uppercase tracking-[0.16em] font-bold text-[#161A17]">Email</h2>
-                  <a href="mailto:communitymart@gmail.com" className="block text-sm text-[#676E6A] hover:text-[#1C3322] transition-colors">
-                    communitymart@gmail.com
+                  <a href="mailto:communitymartlimited@gmail.com" className="block text-sm text-[#676E6A] hover:text-[#1C3322] transition-colors">
+                    communitymartlimited@gmail.com
                   </a>
                   <a href="mailto:info@sanaamniscoconut.com" className="block text-sm text-[#676E6A] hover:text-[#1C3322] transition-colors">
                     info@sanaamniscoconut.com

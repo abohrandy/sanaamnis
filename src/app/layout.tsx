@@ -105,7 +105,7 @@ const ORGANIZATION_JSON_LD = {
     {
       "@type": "ContactPoint",
       contactType: "customer service",
-      email: "communitymart@gmail.com",
+      email: "communitymartlimited@gmail.com",
       areaServed: "NG",
     },
   ],

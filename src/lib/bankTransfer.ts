@@ -132,10 +132,60 @@ export function customerPaymentConfirmedEmail(opts: { orderNumber: string; amoun
   `);
 }
 
-export function customerDeliveryEmail(opts: { orderNumber: string }) {
+/** The delivery fee and a human label were only ever recorded as free text inside
+ * orders.shippingAddress at checkout time (see the three formats orders/route.ts
+ * writes: pickup, a known delivery zone, or an out-of-zone address quoted
+ * separately) — there is no dedicated column to read instead. Parsing it back
+ * out here is what lets the delivery email show a delivery line that is
+ * guaranteed to reconcile with the amount actually charged, rather than a
+ * second, independently computed number that could drift from it. */
+export function parseShippingAddress(raw: string): { deliveryFee: number; deliveryLabel: string } {
+  const pickupMatch = raw.match(/PICKUP:\s*(.+)/);
+  if (pickupMatch) {
+    return { deliveryFee: 0, deliveryLabel: `Pickup — ${pickupMatch[1].trim()}` };
+  }
+
+  const zoneMatch = raw.match(/Delivery zone:\s*(.+?)\s*—\s*₦([\d,]+)\s*paid at checkout/);
+  if (zoneMatch) {
+    return { deliveryFee: Number(zoneMatch[2].replace(/,/g, "")), deliveryLabel: `Delivery — ${zoneMatch[1].trim()}` };
+  }
+
+  if (/cost to be communicated separately/.test(raw)) {
+    return { deliveryFee: 0, deliveryLabel: "Delivery — cost communicated separately" };
+  }
+
+  return { deliveryFee: 0, deliveryLabel: "Delivery" };
+}
+
+export function customerDeliveryEmail(opts: {
+  orderNumber: string;
+  items: OrderLine[];
+  subtotal: number;
+  deliveryFee: number;
+  deliveryLabel: string;
+  total: number;
+}) {
+  const money = (n: number) => `₦${Math.round(n).toLocaleString("en-NG")}`;
+
   return wrapEmailHtml(`
     ${emailEyebrow("Order delivered")}
     <p>Your order <strong>${opts.orderNumber}</strong> has been delivered. We hope you enjoy it!</p>
+    <p style="color: #676E6A; margin: 20px 0 6px;">What was delivered:</p>
+    ${itemsTableHtml(opts.items)}
+    <table style="width: 100%; border-collapse: collapse; margin: 4px 0 0;">
+      <tr>
+        <td style="padding: 6px 0; color: #676E6A;">Items subtotal</td>
+        <td style="padding: 6px 0; text-align: right;">${money(opts.subtotal)}</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 0; color: #676E6A;">${escapeHtml(opts.deliveryLabel)}</td>
+        <td style="padding: 6px 0; text-align: right;">${opts.deliveryFee > 0 ? money(opts.deliveryFee) : "₦0"}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 0 0; font-weight: bold; border-top: 1px solid #E2E6E3;">Total paid</td>
+        <td style="padding: 10px 0 0; font-weight: bold; text-align: right; border-top: 1px solid #E2E6E3;">${money(opts.total)}</td>
+      </tr>
+    </table>
     ${EMAIL_FOOTER}
   `);
 }

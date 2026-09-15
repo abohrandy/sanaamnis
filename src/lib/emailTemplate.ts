@@ -6,7 +6,7 @@ const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://sanaamniscoconut.
 export const LOGO_URL = `${SITE_URL}/logo3.png`;
 
 // Only one inbox going forward — see CUSTOMER_CARE_EMAIL in bankTransfer.ts.
-export const CONTACT_EMAIL = "communitymart@gmail.com";
+export const CONTACT_EMAIL = "communitymartlimited@gmail.com";
 
 // Same number used site-wide (checkout page, contact page).
 export const CONTACT_WHATSAPP_URL = "https://wa.me/2349137358352";

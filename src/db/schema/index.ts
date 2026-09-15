@@ -459,6 +459,20 @@ export const auditLogs = pgTable("audit_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Every failed/mocked send from src/lib/resend.ts lands here so a misconfigured
+// or rejected Resend account (e.g. an unverified sending domain) is visible to
+// staff instead of only ever reaching a server console log nobody reads.
+export const emailFailures = pgTable("email_failures", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  to: text("to").notNull(),
+  subject: text("subject").notNull(),
+  error: text("error").notNull(),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [
+  index("email_failure_created_idx").on(t.createdAt)
+]);
+
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id")
