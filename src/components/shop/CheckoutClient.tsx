@@ -52,7 +52,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paystack");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [pickupLocation, setPickupLocation] = useState(distributors[0]?.region ?? "");
   const [deliveryCity, setDeliveryCity] = useState<string>(NOT_LISTED);
@@ -178,7 +178,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-[#676E6A]" />
               <span className="flex items-center gap-1.5 text-[#676E6A]">
-                3. {paymentMethod === "bank_transfer" ? "Bank Transfer" : "Paystack Security"}
+                3. Bank Transfer
               </span>
             </div>
           </div>
@@ -439,17 +439,14 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod("paystack")}
-                    className={`flex items-center gap-3 p-4 rounded-[0.75rem] border text-left transition-colors cursor-pointer ${
-                      paymentMethod === "paystack"
-                        ? "border-[#1C3322] bg-[#F3EFE8]"
-                        : "border-[#E2E6E3] hover:border-[#1C3322]/40"
-                    }`}
+                    disabled
+                    title="Card payments are coming back soon"
+                    className="flex items-center gap-3 p-4 rounded-[0.75rem] border border-[#E2E6E3] text-left opacity-50 cursor-not-allowed"
                   >
-                    <CreditCard className="w-4 h-4 text-[#C9A227] shrink-0" />
+                    <CreditCard className="w-4 h-4 text-[#676E6A] shrink-0" />
                     <div>
                       <span className="block text-xs font-sans font-bold text-[#161A17]">Pay with Paystack</span>
-                      <span className="block text-[10px] text-[#676E6A]">Card, transfer or USSD — instant confirmation</span>
+                      <span className="block text-[10px] text-[#676E6A]">Temporarily unavailable — coming back soon</span>
                     </div>
                   </button>
 
@@ -483,17 +480,12 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>{paymentMethod === "bank_transfer" ? "Placing Order..." : "Securing Paystack Gateway..."}</span>
-                    </>
-                  ) : paymentMethod === "bank_transfer" ? (
-                    <>
-                      <Landmark className="w-4 h-4" />
-                      <span>Place Order — Pay ₦{grandTotal.toLocaleString()} by Bank Transfer</span>
+                      <span>Placing Order...</span>
                     </>
                   ) : (
                     <>
-                      <CreditCard className="w-4 h-4" />
-                      <span>Pay ₦{grandTotal.toLocaleString()} via Paystack</span>
+                      <Landmark className="w-4 h-4" />
+                      <span>Place Order — Pay ₦{grandTotal.toLocaleString()} by Bank Transfer</span>
                     </>
                   )}
                 </Button>
@@ -508,7 +500,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   </span>
                   <span className="flex items-center justify-center gap-1">
                     <Sparkles className="w-3.5 h-3.5 text-[#C9A227]" />
-                    {paymentMethod === "bank_transfer" ? "Manual Verification" : "Paystack Direct"}
+                    Manual Verification
                   </span>
                 </div>
               </div>

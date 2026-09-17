@@ -310,18 +310,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
   }
 
-  // --- Payment must be configured (Paystack path only) -----------------------
+  // --- Paystack is disabled until the live API key is in place ----------------
   if (input.paymentMethod === "paystack") {
-    const paystackKey = process.env.PAYSTACK_SECRET_KEY;
-    if (!paystackKey || paystackKey === "sk_test_mockkey") {
-      // This used to fall through to /checkout/success, which showed the customer a
-      // "Payment Confirmed" page for an order that was never paid for.
-      console.error("[orders] PAYSTACK_SECRET_KEY is not configured — refusing checkout.");
-      return NextResponse.json(
-        { error: "Payments are temporarily unavailable. Please try again shortly." },
-        { status: 503 }
-      );
-    }
+    return NextResponse.json(
+      { error: "Card payments are temporarily unavailable. Please choose Bank Transfer." },
+      { status: 503 }
+    );
   }
 
   // Location segment: the delivery zone's area for known zones, the pickup
