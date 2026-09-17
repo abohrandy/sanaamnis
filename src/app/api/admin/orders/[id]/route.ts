@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orders } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ const updateOrderSchema = z.object({
 });
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { deny } = await requireAdmin("edit:orders");
+  const { session, deny } = await requireAdmin("edit:orders");
   if (deny) return deny;
 
   const { id } = await params;
@@ -42,6 +43,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   try {
+    const existing = await db.query.orders.findFirst({
+      where: eq(orders.id, id),
+      columns: { orderNumber: true, status: true },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+    }
+
     const [updated] = await db
       .update(orders)
       .set({ status: parsed.data.status })
@@ -51,6 +60,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!updated) {
       return NextResponse.json({ error: "Order not found." }, { status: 404 });
     }
+
+    void logActivity({
+      userId: session?.userId ?? null,
+      action: "update:order_status",
+      entityName: "orders",
+      entityId: id,
+      details: { orderNumber: existing.orderNumber, from: existing.status, to: parsed.data.status },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -66,17 +83,28 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
  * store_manager can all manage orders but none of them can delete one.
  */
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { deny } = await requireAdmin("delete:orders");
+  const { session, deny } = await requireAdmin("delete:orders");
   if (deny) return deny;
 
   const { id } = await params;
 
   try {
-    const [deleted] = await db.delete(orders).where(eq(orders.id, id)).returning({ id: orders.id });
+    const [deleted] = await db
+      .delete(orders)
+      .where(eq(orders.id, id))
+      .returning({ id: orders.id, orderNumber: orders.orderNumber, totalAmount: orders.totalAmount });
 
     if (!deleted) {
       return NextResponse.json({ error: "Order not found." }, { status: 404 });
     }
+
+    void logActivity({
+      userId: session?.userId ?? null,
+      action: "delete:order",
+      entityName: "orders",
+      entityId: id,
+      details: { orderNumber: deleted.orderNumber, totalAmount: deleted.totalAmount },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

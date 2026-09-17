@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { coupons } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ const updateCouponSchema = z.object({
 });
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { deny } = await requireAdmin("edit:coupons");
+  const { session, deny } = await requireAdmin("edit:coupons");
   if (deny) return deny;
 
   const { id } = await params;
@@ -45,6 +46,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   try {
     await db.update(coupons).set(patch).where(eq(coupons.id, id));
+
+    void logActivity({
+      userId: session?.userId ?? null,
+      action: "update:coupon",
+      entityName: "coupons",
+      entityId: id,
+      details: patch,
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(`[admin/coupons/${id}] update failed:`, error);
@@ -53,13 +63,24 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { deny } = await requireAdmin("edit:coupons");
+  const { session, deny } = await requireAdmin("edit:coupons");
   if (deny) return deny;
 
   const { id } = await params;
 
   try {
+    const existing = await db.query.coupons.findFirst({ where: eq(coupons.id, id), columns: { code: true } });
+
     await db.delete(coupons).where(eq(coupons.id, id));
+
+    void logActivity({
+      userId: session?.userId ?? null,
+      action: "delete:coupon",
+      entityName: "coupons",
+      entityId: id,
+      details: existing ? { code: existing.code } : null,
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(`[admin/coupons/${id}] delete failed:`, error);

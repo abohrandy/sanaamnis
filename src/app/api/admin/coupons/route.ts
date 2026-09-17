@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { coupons } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { deny } = await requireAdmin("edit:coupons");
+  const { session, deny } = await requireAdmin("edit:coupons");
   if (deny) return deny;
 
   let payload: unknown;
@@ -64,6 +65,14 @@ export async function POST(request: Request) {
         isActive: true,
       })
       .returning({ id: coupons.id });
+
+    void logActivity({
+      userId: session?.userId ?? null,
+      action: "create:coupon",
+      entityName: "coupons",
+      entityId: created.id,
+      details: { code: input.code, discountType: input.discountType, discountValue: input.discountValue },
+    });
 
     return NextResponse.json({ id: created.id }, { status: 201 });
   } catch (error) {

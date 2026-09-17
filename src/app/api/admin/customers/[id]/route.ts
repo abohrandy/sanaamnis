@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/audit";
 import type { UserRole } from "@/lib/rbac";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +53,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   try {
+    const existing = await db.query.user.findFirst({
+      where: eq(user.id, id),
+      columns: { email: true, role: true },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Account not found." }, { status: 404 });
+    }
+
     const [updated] = await db
       .update(user)
       .set({ role: parsed.data.role })
@@ -61,6 +70,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!updated) {
       return NextResponse.json({ error: "Account not found." }, { status: 404 });
     }
+
+    void logActivity({
+      userId: session?.userId ?? null,
+      action: "update:role",
+      entityName: "user",
+      entityId: id,
+      details: { targetEmail: existing.email, from: existing.role, to: parsed.data.role },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

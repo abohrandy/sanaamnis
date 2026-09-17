@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { productVariants, products, orderItems } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ async function variantProductSlug(variantId: string): Promise<string | undefined
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { deny } = await requireAdmin("edit:catalog");
+  const { session, deny } = await requireAdmin("edit:catalog");
   if (deny) return deny;
 
   const { id } = await params;
@@ -63,7 +64,26 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: "Variant not found." }, { status: 404 });
     }
 
+    let previousPrice: string | undefined;
+    if (price !== undefined) {
+      const existing = await db.query.productVariants.findFirst({
+        where: eq(productVariants.id, id),
+        columns: { price: true, sku: true },
+      });
+      previousPrice = existing?.price;
+    }
+
     await db.update(productVariants).set(patch).where(eq(productVariants.id, id));
+
+    if (price !== undefined) {
+      void logActivity({
+        userId: session?.userId ?? null,
+        action: "update:price",
+        entityName: "product_variants",
+        entityId: id,
+        details: { from: previousPrice, to: patch.price },
+      });
+    }
 
     revalidatePath("/shop");
     revalidatePath(`/products/${slug}`);

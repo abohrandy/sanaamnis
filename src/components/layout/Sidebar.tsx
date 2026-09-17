@@ -18,6 +18,7 @@ import {
   LogOut,
   Image as ImageIcon,
   Loader2,
+  History,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -43,6 +44,10 @@ const NAV_ITEMS = [
   { label: "Media Library", href: "/admin/media", icon: ImageIcon, permissions: ["edit:catalog", "edit:pages"], shortcutKey: "m" },
   { label: "Operations", href: "/admin/operations", icon: Users, permissions: ["view:orders", "view:customers"], shortcutKey: "o" },
   { label: "Settings", href: "/admin/settings", icon: Settings, permissions: ["edit:settings"], shortcutKey: "s" },
+  // Not listed for any role in rbac.ts, so only super_admin's "*" wildcard
+  // satisfies it — this item (and the route behind it) is invisible to
+  // every other admin-tier role.
+  { label: "Activity Log", href: "/admin/audit-log", icon: History, permissions: ["view:audit_log"], shortcutKey: "a" },
 ];
 
 export function Sidebar({ className, userProfile }: SidebarProps) {

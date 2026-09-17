@@ -3,6 +3,7 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { orders, orderItems, transactions, productVariants } from "@/db/schema";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logActivity } from "@/lib/audit";
 import { sendEmail } from "@/lib/resend";
 import { formatNaira } from "@/lib/catalog";
 import { customerPaymentConfirmedEmail } from "@/lib/bankTransfer";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
  *  webhook does on charge.success: record the transaction, mark paid, decrement
  *  stock. There is no gateway here, so a human confirms it instead. */
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { deny } = await requireAdmin("edit:orders");
+  const { session, deny } = await requireAdmin("edit:orders");
   if (deny) return deny;
 
   const { id } = await params;
@@ -39,6 +40,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       });
 
       await tx.update(orders).set({ status: "paid" }).where(eq(orders.id, order.id));
+
+      void logActivity({
+        userId: session?.userId ?? null,
+        action: "confirm:payment",
+        entityName: "orders",
+        entityId: order.id,
+        details: { orderNumber: order.orderNumber, from: order.status, to: "paid" },
+      });
 
       const lines = await tx.query.orderItems.findMany({ where: eq(orderItems.orderId, order.id) });
       for (const line of lines) {
