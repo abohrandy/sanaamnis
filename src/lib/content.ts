@@ -394,14 +394,6 @@ export const DISTRIBUTORS: Distributor[] = [
     contactName: "Mrs Hope",
     phone: "08035311614",
   },
-  {
-    slug: "abuja-pickup",
-    region: "Abuja pickup location",
-    areasCovered: "Apo, Garki, Guzape, Gudu, Durumi",
-    contactName: "Mercy Jayeola",
-    phone: "08158495170",
-    address: "House 75, Marigold Close, Dogongada Village, behind Efab Estate, Lokogoma, Abuja",
-  },
 ];
 
 export function getDistributors(): Distributor[] {
