@@ -394,6 +394,14 @@ export const DISTRIBUTORS: Distributor[] = [
     contactName: "Mrs Hope",
     phone: "08035311614",
   },
+  {
+    slug: "abuja-office",
+    region: "Abuja",
+    address:
+      "Plot 506, Cadastral Zone, Dakibiyu — behind Christ Embassy, Dakibiyu, Jabi, Abuja, FCT, Nigeria",
+    phone: "0913 735 8352",
+    whatsapp: "0913 735 8352",
+  },
 ];
 
 export function getDistributors(): Distributor[] {
