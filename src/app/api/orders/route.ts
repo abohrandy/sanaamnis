@@ -477,7 +477,7 @@ export async function POST(request: Request) {
       console.error("[orders] staff bank transfer notification failed:", emailError);
     }
 
-    return NextResponse.json({ success: true, orderNumber, total: totals.total });
+    return NextResponse.json({ success: true, orderNumber, total: totals.total, confirmUrl });
   }
 
   // --- Hand off to Paystack --------------------------------------------------

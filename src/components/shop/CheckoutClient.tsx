@@ -126,7 +126,10 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
       if (paymentMethod === "bank_transfer") {
         // No gateway redirect — the bank details are on their way by email.
         // The cart is left intact; the success page clears it once paid.
-        window.location.href = `/checkout/success?reference=${encodeURIComponent(data.orderNumber)}`;
+        // confirmUrl is carried in the query string so the success page can offer
+        // an "I've made this payment" button without re-deriving the signed token.
+        const confirmParam = data.confirmUrl ? `&confirm=${encodeURIComponent(data.confirmUrl)}` : "";
+        window.location.href = `/checkout/success?reference=${encodeURIComponent(data.orderNumber)}${confirmParam}`;
         return;
       }
 
