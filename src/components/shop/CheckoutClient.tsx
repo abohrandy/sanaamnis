@@ -39,7 +39,7 @@ export interface CheckoutClientProps {
 }
 
 type DeliveryMethod = "pickup" | "delivery";
-type PaymentMethod = "paystack" | "bank_transfer";
+type PaymentMethod = "squad" | "bank_transfer";
 
 export function CheckoutClient({ distributors }: CheckoutClientProps) {
   const isHydrated = useHydrated();
@@ -52,7 +52,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("squad");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [pickupLocation, setPickupLocation] = useState(distributors[0]?.region ?? "");
   const [deliveryCity, setDeliveryCity] = useState<string>(NOT_LISTED);
@@ -137,7 +137,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
         throw new Error(data.error || "We could not start your payment. Please try again.");
       }
 
-      // The cart is deliberately left intact until Paystack confirms payment — the
+      // The cart is deliberately left intact until Squad confirms payment — the
       // success page clears it. Emptying it here lost the bag whenever a payment
       // was abandoned or declined.
       window.location.href = data.authorizationUrl;
@@ -181,7 +181,7 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-[#676E6A]" />
               <span className="flex items-center gap-1.5 text-[#676E6A]">
-                3. Bank Transfer
+                3. {paymentMethod === "bank_transfer" ? "Bank Transfer" : "Payment"}
               </span>
             </div>
           </div>
@@ -442,14 +442,17 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <button
                     type="button"
-                    disabled
-                    title="Card payments are coming back soon"
-                    className="flex items-center gap-3 p-4 rounded-[0.75rem] border border-[#E2E6E3] text-left opacity-50 cursor-not-allowed"
+                    onClick={() => setPaymentMethod("squad")}
+                    className={`flex items-center gap-3 p-4 rounded-[0.75rem] border text-left transition-colors cursor-pointer ${
+                      paymentMethod === "squad"
+                        ? "border-[#1C3322] bg-[#F3EFE8]"
+                        : "border-[#E2E6E3] hover:border-[#1C3322]/40"
+                    }`}
                   >
-                    <CreditCard className="w-4 h-4 text-[#676E6A] shrink-0" />
+                    <CreditCard className="w-4 h-4 text-[#C9A227] shrink-0" />
                     <div>
-                      <span className="block text-xs font-sans font-bold text-[#161A17]">Pay with Paystack</span>
-                      <span className="block text-[10px] text-[#676E6A]">Temporarily unavailable — coming back soon</span>
+                      <span className="block text-xs font-sans font-bold text-[#161A17]">Pay by Card / Transfer</span>
+                      <span className="block text-[10px] text-[#676E6A]">Secured checkout via Squad</span>
                     </div>
                   </button>
 
@@ -485,10 +488,15 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Placing Order...</span>
                     </>
-                  ) : (
+                  ) : paymentMethod === "bank_transfer" ? (
                     <>
                       <Landmark className="w-4 h-4" />
                       <span>Place Order — Pay ₦{grandTotal.toLocaleString()} by Bank Transfer</span>
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4" />
+                      <span>Place Order — Pay ₦{grandTotal.toLocaleString()}</span>
                     </>
                   )}
                 </Button>

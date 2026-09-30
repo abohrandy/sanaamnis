@@ -245,7 +245,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </Link>
 
                 <p className="text-center text-[10px] uppercase tracking-[0.15em] text-[#676E6A] flex items-center justify-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#C9A227]" /> 256-Bit Encrypted Payment Powered by Paystack
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#C9A227]" /> 256-Bit Encrypted Payment Powered by Squad
                 </p>
               </div>
             )}

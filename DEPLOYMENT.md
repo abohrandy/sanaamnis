@@ -15,7 +15,7 @@ Before deploying, ensure you configure the following variables in your Railway S
 | `BETTER_AUTH_URL` | Canonical URL of your deployed application | `https://sanaamnis-production.up.railway.app` |
 | `GOOGLE_CLIENT_ID` | Google OAuth credentials ID (for Social Sign-In) | `12345-abc.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET`| Google OAuth client secret key | `GOCSPX-abc123xyz` |
-| `PAYSTACK_SECRET_KEY` | Paystack merchant API private key | `sk_live_abc123...` |
+| `SQUAD_SECRET_KEY` | Squad merchant API secret key | `sk_abc123...` (or `sandbox_sk_...` for test mode) |
 | `RESEND_API_KEY` | Resend SMTP transaction private key | `re_abc123...` |
 | `PORT` | Listening port for the Next.js server (Default matches Railway config) | `3000` |
 

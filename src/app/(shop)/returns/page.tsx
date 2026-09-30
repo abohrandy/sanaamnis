@@ -46,7 +46,7 @@ export default function ReturnsPage() {
         {
           heading: "Refunds",
           body: [
-            "Once a returned item reaches us and passes inspection, we refund to your original payment method through Paystack. Banks typically take 5 to 10 working days to post the funds.",
+            "Once a returned item reaches us and passes inspection, we refund to your original payment method through Squad. Banks typically take 5 to 10 working days to post the funds.",
             "Refunds cover the price of the returned items. Original delivery charges are refunded only where the return is our fault — a damaged, faulty or incorrect item.",
           ],
         },

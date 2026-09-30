@@ -29,7 +29,7 @@ export default function PoliciesPage() {
         {
           heading: "What we collect",
           body: [
-            "To place an order we collect your name, email address, delivery address and phone number, and pass your order total to Paystack to take payment — we never see or store your card details ourselves.",
+            "To place an order we collect your name, email address, delivery address and phone number, and pass your order total to Squad to take payment — we never see or store your card details ourselves.",
             "If you create an account, we store your name and email against it. If you write to us, we keep your message and email address so we can reply and so we have a record if you follow up.",
           ],
         },
@@ -50,7 +50,7 @@ export default function PoliciesPage() {
         {
           heading: "Who we share it with",
           body: [
-            "Paystack processes your payment. Our delivery couriers receive your name, address and phone number to complete delivery. We do not share your details with anyone else except where required by law.",
+            "Squad processes your payment. Our delivery couriers receive your name, address and phone number to complete delivery. We do not share your details with anyone else except where required by law.",
           ],
         },
         {

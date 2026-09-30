@@ -5,7 +5,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { orders, orderItems, productVariants } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { initializePaystackPayment } from "@/lib/paystack";
+import { initializeSquadPayment } from "@/lib/squad";
 import { computeTotals, type PricedLine } from "@/lib/pricing";
 import { findVariant, formatNaira, variantImage, PLACEHOLDER_IMAGE } from "@/lib/catalog";
 import { BUNDLES as CATALOG_BUNDLES } from "@/lib/bundles";
@@ -33,7 +33,7 @@ const createOrderSchema = z
       .min(7, "Please provide a valid WhatsApp number.")
       .max(20, "Please provide a valid WhatsApp number.")
       .regex(/^[+0-9\s-]+$/, "Please provide a valid WhatsApp number."),
-    paymentMethod: z.enum(["paystack", "bank_transfer"]).default("paystack"),
+    paymentMethod: z.enum(["squad", "bank_transfer"]).default("squad"),
     deliveryMethod: z.enum(["pickup", "delivery"]),
     pickupLocation: z.string().max(160).optional(),
     shippingAddress: z.string().max(500).optional(),
@@ -310,14 +310,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
   }
 
-  // --- Paystack is disabled until the live API key is in place ----------------
-  if (input.paymentMethod === "paystack") {
-    return NextResponse.json(
-      { error: "Card payments are temporarily unavailable. Please choose Bank Transfer." },
-      { status: 503 }
-    );
-  }
-
   // Location segment: the delivery zone's area for known zones, the pickup
   // location for pickup orders, or the start of the free-text address for a
   // delivery outside the known zones (quoted/settled separately).
@@ -480,29 +472,32 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, orderNumber, total: totals.total, confirmUrl });
   }
 
-  // --- Hand off to Paystack --------------------------------------------------
+  // --- Hand off to Squad -------------------------------------------------------
   const callbackUrl = `${protocol}://${host}/checkout/success?reference=${encodeURIComponent(orderNumber)}`;
 
   try {
-    const session = await initializePaystackPayment(input.email, totals.total, callbackUrl, {
-      orderId,
+    const session = await initializeSquadPayment(
+      input.email,
+      totals.total,
+      callbackUrl,
       orderNumber,
-      customerName: input.name,
-    });
+      input.name,
+      { orderId, orderNumber, customerName: input.name }
+    );
 
     await db
       .update(orders)
-      .set({ paymentReference: session.data.reference })
+      .set({ paymentReference: session.data.transaction_ref })
       .where(eq(orders.id, orderId));
 
     return NextResponse.json({
       success: true,
-      authorizationUrl: session.data.authorization_url,
+      authorizationUrl: session.data.checkout_url,
       orderNumber,
       total: totals.total,
     });
   } catch (error) {
-    console.error("[orders] Paystack initialisation failed:", error);
+    console.error("[orders] Squad initialisation failed:", error);
 
     await db
       .update(orders)

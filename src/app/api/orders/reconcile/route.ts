@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { orders, transactions } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { verifyPaystackPayment } from "@/lib/paystack";
+import { verifySquadPayment } from "@/lib/squad";
 import { sendEmail } from "@/lib/resend";
 import { wrapEmailHtml, emailEyebrow, EMAIL_FOOTER } from "@/lib/emailTemplate";
 import { z } from "zod";
@@ -39,13 +39,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Call Paystack Transaction Verification
+    // Call Squad Transaction Verification
     console.log(`Reconciling order status with reference ${order.paymentReference}...`);
-    const paystackRes = await verifyPaystackPayment(order.paymentReference);
+    const squadRes = await verifySquadPayment(order.paymentReference);
 
-    if (paystackRes.status && paystackRes.data.status === "success") {
-      const { reference, customer, amount } = paystackRes.data;
-      const orderAmountInNaira = (amount / 100).toFixed(2);
+    if (squadRes.success && squadRes.data.transaction_status.toLowerCase() === "success") {
+      const { transaction_ref: reference, email, transaction_amount } = squadRes.data;
+      const orderAmountInNaira = (transaction_amount / 100).toFixed(2);
 
       // Check if transaction was logged previously
       const existingTx = await db.query.transactions.findFirst({
@@ -56,11 +56,11 @@ export async function POST(request: Request) {
         if (!existingTx) {
           await tx.insert(transactions).values({
             orderId: order.id,
-            gateway: "paystack",
+            gateway: "squad",
             reference: reference,
             amount: orderAmountInNaira,
             status: "success",
-            rawResponse: paystackRes.data,
+            rawResponse: squadRes.data,
           });
         }
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
       // Send Confirmation Receipt
       await sendEmail({
-        to: order.customerEmail || customer.email,
+        to: order.customerEmail || email,
         subject: `Order confirmed — ${order.orderNumber}`,
         html: wrapEmailHtml(`
           ${emailEyebrow("Order confirmed")}
@@ -90,8 +90,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: false,
-      message: `Transaction verified but not successful. Current status: ${paystackRes.data.status}`,
-      status: paystackRes.data.status,
+      message: `Transaction verified but not successful. Current status: ${squadRes.data.transaction_status}`,
+      status: squadRes.data.transaction_status,
     });
   } catch (error: any) {
     console.error("Reconciliation failed:", error);

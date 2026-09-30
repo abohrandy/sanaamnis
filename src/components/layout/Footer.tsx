@@ -134,7 +134,7 @@ export default function Footer() {
             </p>
           </address>
           <p className="text-[10px] uppercase tracking-[0.18em] text-[#FAF8F5]/45 pt-1">
-            Secure payment via Paystack
+            Secure payment via Squad
           </p>
         </div>
       </div>
