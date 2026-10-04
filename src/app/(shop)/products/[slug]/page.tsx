@@ -10,6 +10,13 @@ import { getProduct, getRelatedProducts, getReviews } from "@/lib/products";
 
 export const revalidate = 300;
 
+/** ISO 3166-2:NG codes for every state and the FCT except Lagos (LA), which has its own rate. */
+const OTHER_STATE_CODES = [
+  "AB", "AD", "AK", "AN", "BA", "BY", "BE", "BO", "CR", "DE", "EB", "ED", "EK", "EN",
+  "FC", "GO", "IM", "JI", "KD", "KN", "KT", "KE", "KO", "KW", "NA", "NI", "OG", "ON",
+  "OS", "OY", "PL", "RI", "SO", "TA", "YO", "ZA",
+];
+
 /**
  * Pre-render every product at build time.
  *
@@ -74,6 +81,66 @@ export default async function ProductDetailPage({
   ]);
   const category = categoryOrFallback(product.categorySlug);
 
+  // Mirrors /shipping and /returns; keep in step with those pages.
+  const deliveryTime = {
+    "@type": "ShippingDeliveryTime",
+    handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
+    transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 5, unitCode: "DAY" },
+  };
+  const shippingDetails = [
+    {
+      "@type": "OfferShippingDetails",
+      shippingRate: { "@type": "MonetaryAmount", value: 2500, currency: "NGN" },
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "NG",
+        addressRegion: "LA",
+      },
+      deliveryTime,
+    },
+    {
+      "@type": "OfferShippingDetails",
+      shippingRate: { "@type": "MonetaryAmount", value: 5000, currency: "NGN" },
+      shippingDestination: OTHER_STATE_CODES.map((addressRegion) => ({
+        "@type": "DefinedRegion",
+        addressCountry: "NG",
+        addressRegion,
+      })),
+      deliveryTime,
+    },
+  ];
+  const returnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "NG",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 14,
+    url: "https://sanaamniscoconut.com/returns",
+  };
+
+  // Only genuine, published reviews are marked up; never invent a rating.
+  const ratedReviews = reviews.filter((r) => r.rating >= 1 && r.rating <= 5);
+  const reviewJsonLd =
+    ratedReviews.length > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue:
+              Math.round(
+                (ratedReviews.reduce((sum, r) => sum + r.rating, 0) / ratedReviews.length) * 10
+              ) / 10,
+            reviewCount: ratedReviews.length,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: ratedReviews.map((r) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: r.author },
+            reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+            ...(r.comment ? { reviewBody: r.comment } : {}),
+          })),
+        }
+      : {};
+
   // Rich result data, so the listing carries price and availability in search.
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -83,6 +150,7 @@ export default async function ProductDetailPage({
     image: product.images,
     brand: { "@type": "Brand", name: "Sana Amnis" },
     category: category.name,
+    ...reviewJsonLd,
     offers: product.variants.map((variant) => ({
       "@type": "Offer",
       sku: variant.sku,
@@ -93,7 +161,9 @@ export default async function ProductDetailPage({
         variant.stock > 0
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
-      url: `/products/${product.slug}`,
+      url: `https://sanaamniscoconut.com/products/${product.slug}`,
+      shippingDetails,
+      hasMerchantReturnPolicy: returnPolicy,
     })),
   };
 
