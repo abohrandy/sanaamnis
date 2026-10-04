@@ -118,7 +118,14 @@ export default async function ProductDetailPage({
   };
 
   // Only genuine, published reviews are marked up; never invent a rating.
-  const ratedReviews = reviews.filter((r) => r.rating >= 1 && r.rating <= 5);
+  const ratedReviews = [
+    ...reviews.map((r) => ({ author: r.author, rating: r.rating, comment: r.comment })),
+    ...(product.structuredReviews ?? []).map((r) => ({
+      author: r.author,
+      rating: r.rating,
+      comment: r.text,
+    })),
+  ].filter((r) => r.rating >= 1 && r.rating <= 5);
   const reviewJsonLd =
     ratedReviews.length > 0
       ? {

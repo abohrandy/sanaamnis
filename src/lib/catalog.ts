@@ -43,6 +43,11 @@ export interface CatalogProduct {
   faqs?: CatalogFaq[];
   /** Screenshots of real customer reviews (WhatsApp, etc.) shown as a carousel on the product page. */
   reviewImages?: string[];
+  /**
+   * Text of the customer messages in `reviewImages`, used only for Review structured data (not shown on the page).
+   * Authors are anonymous in the screenshots; the star rating is not stated by customers.
+   */
+  structuredReviews?: { author: string; rating: number; text: string }[];
 }
 
 export type CategorySlug = "hydration" | "culinary" | "body";
@@ -154,6 +159,14 @@ export const CATALOG: CatalogProduct[] = [
       "/reviews/coconut-water-review-4.jpeg",
       "/reviews/coconut-water-review-5.jpeg",
       "/reviews/coconut-water-review-6.jpeg",
+    ],
+    structuredReviews: [
+      { author: "Verified customer", rating: 5, text: "I have received it thank you. This is so so nice. We love it!" },
+      { author: "Verified customer", rating: 5, text: "I received the coconut water this morning. Tasted great. Thank you." },
+      { author: "Verified customer", rating: 5, text: "Received, thank you. Very refreshing." },
+      { author: "Verified customer", rating: 5, text: "Just got home to my coconut water. It is pure. I love it." },
+      { author: "Verified customer", rating: 5, text: "Thanks, your coconut water took me through pregnancy in 2024." },
+      { author: "Verified customer", rating: 5, text: "Thank you so much, just got home to my coconut water. Anything for my coconut water." },
     ],
     variants: [
       {
