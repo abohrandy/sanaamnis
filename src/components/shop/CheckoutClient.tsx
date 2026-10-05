@@ -451,8 +451,8 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   >
                     <CreditCard className="w-4 h-4 text-[#C9A227] shrink-0" />
                     <div>
-                      <span className="block text-xs font-sans font-bold text-[#161A17]">Pay by Card / Transfer</span>
-                      <span className="block text-[10px] text-[#676E6A]">Secured checkout via Squad</span>
+                      <span className="block text-xs font-sans font-bold text-[#161A17]">Pay Online (Card / Bank / Wallet)</span>
+                      <span className="block text-[10px] text-[#676E6A]">Secure instant payment via Squad</span>
                     </div>
                   </button>
 
@@ -467,8 +467,8 @@ export function CheckoutClient({ distributors }: CheckoutClientProps) {
                   >
                     <Landmark className="w-4 h-4 text-[#C9A227] shrink-0" />
                     <div>
-                      <span className="block text-xs font-sans font-bold text-[#161A17]">Bank Transfer</span>
-                      <span className="block text-[10px] text-[#676E6A]">We&apos;ll email you the account details</span>
+                      <span className="block text-xs font-sans font-bold text-[#161A17]">Direct Bank Transfer</span>
+                      <span className="block text-[10px] text-[#676E6A]">Transfer to our bank account — manual confirmation</span>
                     </div>
                   </button>
                 </div>
